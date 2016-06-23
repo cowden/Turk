@@ -7,7 +7,7 @@
 #include <BWAPI.h>
 
 namespace Turk {
-	class Turk : public BWAPI::AIModule {
+	class TheTurk : public BWAPI::AIModule {
 	public:
 		// Virtual functions for callbacks, leave these as they are.
 		virtual void onStart();
@@ -28,5 +28,6 @@ namespace Turk {
 		virtual void onSaveGame(std::string gameName);
 		virtual void onUnitComplete(BWAPI::Unit unit);
 		// Everything below this line is safe to modify.
+		void drawTerrainData();
 	};
 }

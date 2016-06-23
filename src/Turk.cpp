@@ -5,13 +5,18 @@
 
 
 #include "Turk.h"
+#include <BWAPI.h>
+#include <BWTA.h>
 #include <iostream>
+#include <limits>
+#include <Windows.h>
 
 bool analyzed;
 bool analysis_just_finished;
 
 using namespace BWAPI;
 using namespace Filter;
+using namespace Turk;
 
 bool FirstGateExist = false;
 bool FirstPylonExist = false;
@@ -44,7 +49,7 @@ BWAPI::Position SecondField;
 BWAPI::TilePosition NexusLocation;
 
 
-void Turk::onStart()
+void TheTurk::onStart()
 {
 	// Hello World!
 	Broodwar->sendText("Duehee Lee Modified!");
@@ -59,8 +64,7 @@ void Turk::onStart()
 	Broodwar->enableFlag(Flag::UserInput);
 
 	// Uncomment the following line and the bot will know about everything through the fog of war (cheat).
-	//Broodwar->enableFl
-	ag(Flag::CompleteMapInformation);
+	//Broodwar->enableFlag(Flag::CompleteMapInformation);
 
 	// Set the command optimization level so that common commands can be grouped
 	// and reduce the bot's APM (Actions Per Minute).
@@ -145,7 +149,7 @@ void Turk::onStart()
 
 }
 
-void Turk::onEnd(bool isWinner)
+void TheTurk::onEnd(bool isWinner)
 {
 	// Called when the game ends
 	if (isWinner)
@@ -161,7 +165,7 @@ void Turk::onEnd(bool isWinner)
 
 
 
-void Turk::onFrame()
+void TheTurk::onFrame()
 {
 	// Called once every game frame
 
@@ -460,7 +464,7 @@ void Turk::onFrame()
 			{
 
 				BWAPI::TilePosition closestGeyser = BWAPI::TilePositions::None;
-				double minGeyserDistanceFromHome = std::numeric_limits<double>::max();
+				double minGeyserDistanceFromHome = (std::numeric_limits<double>::max)();
 				BWAPI::Position homePosition = BWAPI::Position(Broodwar->self()->getStartLocation());
 
 				// for each geyser
@@ -810,7 +814,7 @@ DWORD WINAPI AnalyzeThread()
 
 
 
-void Turk::drawTerrainData()
+void TheTurk::drawTerrainData()
 {
 	//we will iterate through all the base locations, and draw their outlines.
 	for (const auto& baseLocation : BWTA::getBaseLocations()) {
@@ -859,7 +863,7 @@ void Turk::drawTerrainData()
 }
 
 
-void Turk::onSendText(std::string text)
+void TheTurk::onSendText(std::string text)
 {
 	if (text == "/analyze") {
 		if (analyzed == false) {
@@ -873,20 +877,20 @@ void Turk::onSendText(std::string text)
 	}
 }
 
-void Turk::onReceiveText(BWAPI::Player player, std::string text)
+void TheTurk::onReceiveText(BWAPI::Player player, std::string text)
 {
 	// Parse the received text
 	Broodwar << player->getName() << " said \"" << text << "\"" << std::endl;
 }
 
-void Turk::onPlayerLeft(BWAPI::Player player)
+void TheTurk::onPlayerLeft(BWAPI::Player player)
 {
 	// Interact verbally with the other players in the game by
 	// announcing that the other player has left.
 	Broodwar->sendText("Goodbye %s!", player->getName().c_str());
 }
 
-void Turk::onNukeDetect(BWAPI::Position target)
+void TheTurk::onNukeDetect(BWAPI::Position target)
 {
 
 	// Check if the target is a valid position
@@ -904,23 +908,23 @@ void Turk::onNukeDetect(BWAPI::Position target)
 	// You can also retrieve all the nuclear missile targets using Broodwar->getNukeDots()!
 }
 
-void Turk::onUnitDiscover(BWAPI::Unit unit)
+void TheTurk::onUnitDiscover(BWAPI::Unit unit)
 {
 }
 
-void Turk::onUnitEvade(BWAPI::Unit unit)
+void TheTurk::onUnitEvade(BWAPI::Unit unit)
 {
 }
 
-void Turk::onUnitShow(BWAPI::Unit unit)
+void TheTurk::onUnitShow(BWAPI::Unit unit)
 {
 }
 
-void Turk::onUnitHide(BWAPI::Unit unit)
+void TheTurk::onUnitHide(BWAPI::Unit unit)
 {
 }
 
-void Turk::onUnitCreate(BWAPI::Unit unit)
+void TheTurk::onUnitCreate(BWAPI::Unit unit)
 {
 	//if ( Broodwar->isReplay() )
 	//{   /Protoss building starts
@@ -937,11 +941,11 @@ void Turk::onUnitCreate(BWAPI::Unit unit)
 	//}
 }
 
-void Turk::onUnitDestroy(BWAPI::Unit unit)
+void TheTurk::onUnitDestroy(BWAPI::Unit unit)
 {
 }
 
-void Turk::onUnitMorph(BWAPI::Unit unit)
+void TheTurk::onUnitMorph(BWAPI::Unit unit)
 {
 	//  if ( Broodwar->isReplay() )
 	// {  // Zerg Building Morphing
@@ -956,7 +960,7 @@ void Turk::onUnitMorph(BWAPI::Unit unit)
 	// }
 }
 
-void Turk::onUnitComplete(BWAPI::Unit unit)
+void TheTurk::onUnitComplete(BWAPI::Unit unit)
 {
 	if (unit->getType().isBuilding() && !unit->getPlayer()->isNeutral())
 	{
@@ -1003,11 +1007,11 @@ void Turk::onUnitComplete(BWAPI::Unit unit)
 
 
 
-void Turk::onUnitRenegade(BWAPI::Unit unit)
+void TheTurk::onUnitRenegade(BWAPI::Unit unit)
 {
 }
 
-void Turk::onSaveGame(std::string gameName)
+void TheTurk::onSaveGame(std::string gameName)
 {
 	Broodwar << "The game was saved to \"" << gameName << "\"" << std::endl;
 }
