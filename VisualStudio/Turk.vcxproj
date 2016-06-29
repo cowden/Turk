@@ -11,10 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\Commander.cpp" />
     <ClCompile Include="..\src\Dll.cpp" />
     <ClCompile Include="..\src\Turk.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\Commander.h" />
     <ClInclude Include="..\src\Turk.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
