@@ -1,6 +1,7 @@
+#pragma once
+
 #include "Commander.h"
-#include <BWAPI.h>
-#include <BWTA.h>
+#include "Common.h"
 
 
 
@@ -25,9 +26,28 @@ Commander & Commander::Instance()
 
 
 // Collect all valid units except dead bodies
-void Commander::ValidUnitCollector(){
+void Commander::ValidUnitCollector(BWAPI::Unit ScouterUnit){
 	_ValidUnits.clear();
-	SetValidUnits();
+	_BaseUnits.clear();
+	_WorkerUnits.clear();
+
+	for (auto &unit : BWAPI::Broodwar->self()->getUnits()){
+		if (IsValidUnit(unit)){
+			_ValidUnits.insert(unit);
+
+			if (unit->getType()==BWAPI::UnitTypes::Protoss_Nexus){
+				_BaseUnits.insert(unit);
+			}
+			else if (unit->getType().isWorker()){
+				_WorkerUnits.insert(unit);
+			}
+		}
+	}
+	if (ScouterUnit){
+		_WorkerUnits.erase(ScouterUnit);
+	}
+	
+
 
 	// Future unit sets
 	// SetScoutUnits();
@@ -59,22 +79,9 @@ void Commander::MineralSaver(BWAPI::Unitset Mineral){
 
 
 
-// Make a set of valid units
-void Commander::SetValidUnits(){
-	for (auto &unit : BWAPI::Broodwar->self()->getUnits()){
-		if (IsValidUnit(unit)){
-			_ValidUnits.insert(unit);
-
-			if (unit->getType().isResourceDepot()){
-				_BaseUnits.insert(unit);
-			}
-			else if (unit->getType().isWorker()){
-				_WorkerUnits.insert(unit);
-			}
-		}
-	}	
+void Commander::ScoutHander(BWAPI::Unit Scout){
+	_WorkerUnits.erase(Scout);
 }
-
 
 // unit represent the point.
 bool Commander::IsValidUnit(BWAPI::Unit unit){
@@ -147,6 +154,11 @@ void Commander::ProbeMaker(unsigned MaxWorkerCount){
 	}
 }
 
+/*  Worker Tasks
+1. Get Mineral
+2. If it is too far from a base, come back and work.
+3. Find the unoccupied closest mineral.
+*/
 
 void Commander::ProbeWork(int MaxMineralDist){
 	for (auto &unit2 : _WorkerUnits){
@@ -220,14 +232,15 @@ std::map<std::string, int> Commander::UnitCounter(){
 
 	int Pylon_Count = 0;
 	int GateWay_Count = 0;
+	int StarGate_Count = 0;
 	int Nexus_Count = 0;
 	int Probe_Count = 0;
 	int Zealot_Count = 0;
 	int Dragoon_Count = 0;
 	int Corsair_Count = 0;
 
-	for (auto & unit : _ValidUnits)
-	{
+
+	for (auto & unit : _ValidUnits){
 		// If the unit is a worker unit
 		if (unit->getType().isWorker())
 		{
@@ -253,6 +266,9 @@ std::map<std::string, int> Commander::UnitCounter(){
 		{
 			GateWay_Count = GateWay_Count + 1;
 		}
+		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Stargate){
+			StarGate_Count = StarGate_Count + 1;
+		}
 		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Nexus)
 		{
 			Nexus_Count = Nexus_Count + 1;
@@ -261,12 +277,25 @@ std::map<std::string, int> Commander::UnitCounter(){
 
 	UnitCount["Probe_Count"] = Probe_Count;
 	UnitCount["Zealot_Count"] = Zealot_Count;
+	UnitCount["Dragoon_Count"] = Dragoon_Count;
 	UnitCount["Corsair_Count"] = Corsair_Count;
 	
 	UnitCount["Pylon_Count"] = Pylon_Count;
 	UnitCount["GateWay_Count"] = GateWay_Count;
+	UnitCount["StarGate_Count"] = StarGate_Count;
 	UnitCount["Nexus_Count"] = Nexus_Count;
+
+
 
 	return UnitCount;
 
 }
+
+
+
+
+
+
+
+
+

@@ -1,19 +1,5 @@
 #pragma once
-
-#include <stdexcept>
-#include <string>
-#include <sstream>
-#include <algorithm>
-#include <vector>
-#include <deque>
-#include <list>
-#include <set>
-#include <map>
-#include <array>
-
-#include "BWAPI.h"
-#include <BWTA.h>
-// #include "Common.h"
+#include "Common.h"
 
 
 // Commander Class
@@ -29,10 +15,6 @@ class Commander
 	// A set of minerals: It is initiated at every starting and expansion
 	BWAPI::Unitset MineralSets;
 	
-	BWAPI::Unit Scouter;
-
-	bool FirstScout;
-
 
 
 
@@ -46,16 +28,16 @@ public:
 	Commander();
 	~Commander(){};
 
-	void ValidUnitCollector();
-	void SetValidUnits();
-	bool IsValidUnit(BWAPI::Unit unit);
+
+	// Unit Collector
+	void ValidUnitCollector(BWAPI::Unit);
+	bool IsValidUnit(BWAPI::Unit);
 
 	BWAPI::Unitset MineralCollector(BWTA::BaseLocation * StartingPoint);
 	BWAPI::Unitset MineralPresent();
 	BWAPI::Unitset UnitSetPresent();
 	BWAPI::Unitset BasePresent();
 	BWAPI::Unitset WorkerPresent();
-
 
 
 	// Save the locations of minerals around our bases
@@ -69,7 +51,8 @@ public:
 	// Make probes work
 	void ProbeWork(int);
 
-
+	// Scouter managenet
+	void ScoutHander(BWAPI::Unit Scout);
 
 	// 
 	std::map<std::string, int> Commander::UnitCounter();
