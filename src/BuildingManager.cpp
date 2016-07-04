@@ -4,6 +4,7 @@
 #include "Common.h"
 
 
+using namespace Turk;
 
 BuildingManager::BuildingManager()
 // : FirstScout(false)

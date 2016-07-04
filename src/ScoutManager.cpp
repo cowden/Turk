@@ -1,7 +1,7 @@
 #include "ScoutManager.h"
 
 
-
+using namespace Turk;
 
 
 ScoutManager::ScoutManager()

@@ -4,6 +4,7 @@
 #include "Common.h"
 
 
+using namespace Turk;
 
 Commander::Commander()
 	// : FirstScout(false)

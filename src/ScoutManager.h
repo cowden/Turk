@@ -1,41 +1,42 @@
 #pragma once
 #include "Common.h"
 
+namespace Turk {
 
+	// Commander Class
+	class ScoutManager
+	{
 
-// Commander Class
-class ScoutManager
-{
-
-	// Scout Variables
-	BWAPI::Unit Scouter;
-
-	
-
-	
-	
-
-public:
-	ScoutManager();
-	~ScoutManager(){};
+		// Scout Variables
+		BWAPI::Unit Scouter;
 
 
 
 
-	// Save Scouter pointer
-	void ScouterSaver(BWAPI::Unit);
-
-	// Return a scout unit pointer
-	BWAPI::Unit ScouterPresent();
 
 
-	// Detect the enemy base
-	bool EnemyFirstDetector(bool, BWAPI::TilePosition);
+	public:
+		ScoutManager();
+		~ScoutManager(){};
 
 
 
-	static ScoutManager &Instance();
+
+		// Save Scouter pointer
+		void ScouterSaver(BWAPI::Unit);
+
+		// Return a scout unit pointer
+		BWAPI::Unit ScouterPresent();
 
 
-};
+		// Detect the enemy base
+		bool EnemyFirstDetector(bool, BWAPI::TilePosition);
 
+
+
+		static ScoutManager &Instance();
+
+
+	};
+
+} // end Turk namespace
