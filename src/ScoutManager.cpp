@@ -5,9 +5,8 @@ using namespace Turk;
 
 
 ScoutManager::ScoutManager()
-	:Scouter(nullptr)
+	:m_Scouter(nullptr)
 {
-
 
 }
 
@@ -19,24 +18,15 @@ ScoutManager & ScoutManager::Instance()
 }
 
 
-
-
-
-
-
-// Scout Related Functions
-
 // Save Scouter Pointer
 void ScoutManager::ScouterSaver(BWAPI::Unit ScouterUnit){
-	Scouter = ScouterUnit;
+	m_Scouter = ScouterUnit;
 }
-
-
 
 
 // Return Scouter Pointer
 BWAPI::Unit ScoutManager::ScouterPresent(){
-	return Scouter;
+	return m_Scouter;
 }
 
 
@@ -49,7 +39,7 @@ bool ScoutManager::EnemyFirstDetector(bool Detector, BWAPI::TilePosition Expansi
 
 	if (!BWAPI::Broodwar->isExplored(Expansion) || !BWAPI::Broodwar->isExplored(Right)){
 		//BWAPI::Broodwar->sendText("Hard Way %.2d %.2d ", Expansion.x, Expansion.y);
-		Scouter->move(BWAPI::Position(Expansion));
+		m_Scouter->move(BWAPI::Position(Expansion));
 		return Detector;
 	}
 
@@ -68,7 +58,7 @@ bool ScoutManager::EnemyFirstDetector(bool Detector, BWAPI::TilePosition Expansi
 			// if we haven't explored it yet
 			if (!BWAPI::Broodwar->isExplored(startLocation->getTilePosition())){
 				BWAPI::Position targetPosition = BWAPI::Position(startLocation->getTilePosition());
-				Scouter->move(targetPosition);
+				m_Scouter->move(targetPosition);
 			}
 		}
 	}

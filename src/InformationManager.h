@@ -8,20 +8,13 @@ namespace Turk {
 	class InformationManager
 	{
 
-		// Scout Variables
-		BWAPI::Position EnemyHomeBase;
-
-
-
-
-
 	public:
 		InformationManager();
 		~InformationManager(){};
 
-
-
-
+	private:
+		// Scout Variables
+		BWAPI::Position m_EnemyHomeBase;
 	};
 
 } // end Turk namespace

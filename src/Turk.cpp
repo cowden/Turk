@@ -58,10 +58,6 @@ void TheTurk::onStart()
 	m_analysis_just_finished = true;
 
 
-
-
-
-
 	// Variable Definition
 	m_homePosition = BWAPI::Position(Broodwar->self()->getStartLocation());
 	m_homeTilePosition = Broodwar->self()->getStartLocation();
@@ -75,14 +71,10 @@ void TheTurk::onStart()
 	Broodwar->sendText("Hard Way %.2d %.2d ", m_NextExpansion.x, m_NextExpansion.y);
 
 		
-
 	// Define the location of the first pylon
 	// Broodwar->sendText("Pylon %.2d:%.2d", FirstPylonTilePosition.x, FirstPylonTilePosition.y);
 	//Broodwar->sendText("%s", Broodwar->mapName().c_str());
 	BuildingManager::Instance().MapConnector();
-	
-
-
 
 	// A set of minerals
 	BWTA::BaseLocation* StartingPoint = BWTA::getStartLocation(BWAPI::Broodwar->self());
@@ -122,39 +114,13 @@ void TheTurk::onStart()
 	}
 	MineralSaver(FirstMineralSet);
 
-		
-
-
-
 	// Location of the first pylon
 	m_Campus.x = (m_PylonToChoke * m_homePosition.x + m_BaseToPylon* m_HillPosition.x) / (m_BaseToPylon + m_PylonToChoke);
 	m_Campus.y = (m_PylonToChoke * m_homePosition.y + m_BaseToPylon* m_HillPosition.y) / (m_BaseToPylon + m_PylonToChoke);
-
-
-
-
-
 }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Display the game frame rate as text in the upper left area of the screen
-//Broodwar->drawTextScreen(200, 0,  "FPS: %d", Broodwar->getFPS() );
-//Broodwar->drawTextScreen(200, 20, "Average FPS: %f", Broodwar->getAverageFPS() );
 
 void TheTurk::onFrame(){
 	// Return if the game is a replay or is paused
@@ -177,61 +143,31 @@ void TheTurk::onFrame(){
 	if (Broodwar->getFrameCount() % Broodwar->getLatencyFrames() != 0)
 		return;
 
-	// ------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	// Important System Variables	
 	// Bring the scouter point
 	BWAPI::Unit Scouter = ScoutManager::Instance().ScouterPresent();
-
-
 
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	// Collect all possible units.
 	// A set of workers will not contain a scouter.	
 	ValidUnitCollector(Scouter);
 	
-
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	// Should go to the informationManager
 	// Count the number of probes
 	std::map<std::string, int>	UnitCount;
 	UnitCount = UnitCounter();
 
-	
-	
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	// Should go to WorkerManagement or BaseManagement ?
 	// Generate workers	
 	ProbeMaker(m_MaxWorkerCount);
 			
-	
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	// Work Work Work
 	ProbeWork(m_MaxMineralDist);
 	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	// Build the supply unit
 	Error lastErr = Broodwar->getLastError();	
 	if (BWAPI::Broodwar->self()->supplyUsed() / 2 + 5 > BWAPI::Broodwar->self()->supplyTotal() / 2 ||
@@ -258,19 +194,6 @@ void TheTurk::onFrame(){
 
 
 
-
-
-
-
-	
-
-
-
-	//Broodwar->sendText("Pylon :%.1d", UnitCount["Pylon_Count"]);
-
-
-
-
 	// Build the first GateWay after the first pylon
 	if (m_UnitCount["Pylon_Count"] >= 1 && m_UnitCount["GateWay_Count"] < m_MaxGateWayCount){
 		
@@ -294,10 +217,6 @@ void TheTurk::onFrame(){
 	}
 		
 
-	// Broodwar->sendText("Pylon :%.2d", BasePresent().size());
-
-	
-	
 
 	// This should go to the building or expansion team
 	// Build a Gas and send three probes to there.
@@ -389,13 +308,6 @@ void TheTurk::onFrame(){
 		}
 	}
 
-
-	//
-
-
-	
-	
-
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	// First Detect the enemy base
 	if (!m_EnemyDetection && Scouter){
@@ -426,35 +338,8 @@ void TheTurk::onFrame(){
 		if (Scouter->isUnderAttack()){
 			Scouter->move(m_FirstExpansionPosition);
 		}
-			
-			/*BWTA::Region *MyRegion = BWTA::getRegion(Scouter->getPosition());
-			for (auto &gon : MyRegion->getPolygon()){
-				Broodwar->sendText("Enemy Base Polygon %.1d : %.1d", gon.x, gon.y);
-				
-				Scouter->move(gon);
-				
-
-				
-
-			}*/
 		
 	}
-
-
-	// getNearestBaseLocation
-
-	// BWTA::BaseLocation *Base = BWTA::getNearestBaseLocation(Scouter->getPosition());
-	// HillPosition = BWTA::getNearestChokepoint(BWAPI::Position(Broodwar->self()->getStartLocation()))->getCenter();
-
-	// A set of minerals
-	// BWTA::BaseLocation* StartingPoint = BWTA::getStartLocation(BWAPI::Broodwar->self());
-
-
-
-
-
-
-
 
 
 	// Build the Cybernetics Core
@@ -474,12 +359,10 @@ void TheTurk::onFrame(){
 		BuildingManager::Instance().MrBuilder(ResourceDepot, CitadelOfAdun, BuildingManager::Instance().TechLocationPresent());
 	}
 
-
 	// Build the Nexus
 	if (m_UnitCount["GateWay_Count"] >= 2 && !m_FirstExpansion){
 		BuildingManager::Instance().MrBuilder(ResourceDepot, Nexus, m_NextExpansion);
 	}
-
 
 
 	// Build the Fleet Beacon
@@ -488,15 +371,6 @@ void TheTurk::onFrame(){
 	}
 
 	
-
-
-
-
-
-
-
-
-
 	// $$$$$$$$$$$$$$$$$$$$$$$$$$$ Unit Production $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		// Build a gateway or generate a zealot	
 	for (auto & unit : UnitSetPresent()){
@@ -521,20 +395,6 @@ void TheTurk::onFrame(){
 	}
 
 	
-
-
-
-	
-
-
-
-
-
-
-
-
-
-
 	// $$$$$$$$$$$$$$$$$$$$$$$$$$$ Attack Process $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$	
 	// Determine whether a scouter is in attack mode or searching mode.
 	for (auto & unit : UnitSetPresent()){
@@ -610,44 +470,6 @@ void TheTurk::onFrame(){
 		}
 	}
 
-	
-
-	
-
-
-	
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	// $$$$$$$$$$$$$$$$$     Upgrading $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	// Singularity Upgrading
@@ -659,7 +481,6 @@ void TheTurk::onFrame(){
 	//}
 	
 
-	
 	for (auto & unit : UnitSetPresent()){
 		if (unit->canUpgrade(true) && !unit->isUpgrading()){
 
@@ -680,246 +501,8 @@ void TheTurk::onFrame(){
 		}		
 
 	}
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
-
-
-
-
-
-
-
-
-// !BWAPI::Broodwar->isExplored(startLocation->getTilePosition())
-
-
-
-
-//// Detect the enemy main hatchery
-//if (!EnemyBaseUpdate){
-//	BWAPI::Unit EnemyResourceDepot = nullptr;
-//	for (auto & unit : BWAPI::Broodwar->enemy()->getUnits()){
-//		double closestDist = 100000;
-//		if (unit->getType().isResourceDepot()){
-//			double dist = unit->getDistance(ScouterTarget);
-//			if (dist < closestDist){
-//				EnemyResourceDepot = unit;
-//				closestDist = dist;
-
-//				EnemyHomeBase = EnemyResourceDepot->getPosition();
-//				Broodwar->sendText("CAndidate Enemy Base %.1d : %.1d", EnemyHomeBase.x, EnemyHomeBase.y);
-//			}
-//		}
-//	}
-//	EnemyHomeBase = EnemyResourceDepot->getPosition();
-//	Broodwar->sendText("Final Enemy Base %.1d : %.1d", EnemyHomeBase.x, EnemyHomeBase.y);
-//	EnemyBaseUpdate = true;
-//}			
-
-//BWAPI::Position EnemyPosition = Position(Broodwar->enemy()->getStartLocation());
-//Broodwar->sendText("BWAPI Enemy Base %.1d : %.1d", EnemyPosition.x, EnemyPosition.y);
-
-/*BWTA::BaseLocation * enemyBaseLocation = BWTA::getStartLocation(BWAPI::Broodwar->enemy());
-if (enemyBaseLocation){
-BWAPI::Position TempPosition = enemyBaseLocation->getPosition();
-Broodwar->sendText("BWTA Enemy Base %.1d : %.1d", TempPosition.x, TempPosition.y);
-}*/
-/*
-for (auto & unit : BWAPI::Broodwar->enemy()->getUnits()){
-if (unit->getType().isResourceDepot()){
-BWAPI::Position EnemyPosition = unit->getPosition();
-Broodwar->sendText("%.2d : %.2d", EnemyPosition.x, EnemyPosition.y);
-
-EnemyDetection = true;
-break;
-}
-}
-
-}
-}		*/
-
-
-
-// 
-
-
-
-// BWTA::BaseLocation * enemyBaseLocation = InformationManager::Instance().getMainBaseLocation(BWAPI::Broodwar->enemy());
-
-// BWTA::getStartLocation(BWAPI::Broodwar->enemy())
-
-// BWTA::Region * enemyRegion = enemyBaseLocation->getRegion();
-
-
-
-
-//	 // for each enemy worker
-//	 for (auto & unit : BWAPI::Broodwar->enemy()->getUnits())
-//	 {
-//		 if (unit->getType().isWorker())
-//		 {
-//			 double dist = unit->getDistance(geyser);
-//
-//			 if (dist < 800 && dist > maxDist)
-//			 {
-//				 maxDist = dist;
-//				 enemyWorker = unit;
-//			 }
-//		 }
-//	 }
-//
-//	 return enemyWorker;
-//}
-
-
-
-
-// Broodwar->sendText("Pylon :%.3u", WorkerSet.size());
-
-
-//BWAPI::Position  FirstPylonTilePosition  = mineral->getPosition();
-//Broodwar->sendText("Pylon :%.3f", dist);
-
-
-
-
-
-
-
-
-
-
-
-
-
-//// Iterate through all the units that we own
-//for (auto &u : Broodwar->self()->getUnits())
-//{
-//  // Ignore the unit if it no longer exists
-//  // Make sure to include this block when handling any Unit pointer!
-//  if ( !u->exists() )
-//    continue;
-
-//  // Ignore the unit if it has one of the following status ailments
-//  if ( u->isLockedDown() || u->isMaelstrommed() || u->isStasised() )
-//    continue;
-
-//  // Ignore the unit if it is in one of the following states
-//  if ( u->isLoaded() || !u->isPowered() || u->isStuck() )
-//    continue;
-
-//  // Ignore the unit if it is incomplete or busy constructing
-//  if ( !u->isCompleted() || u->isConstructing() )
-//    continue;
-//
-
-//  // Finally make the unit do some stuff!
-
-
-//  // If the unit is a worker unit
-//  if ( u->getType().isWorker() )
-//  {
-//    // if our worker is idle
-//    if ( u->isIdle() )
-//    {
-//      // Order workers carrying a resource to return them to the center,
-//      // otherwise find a mineral patch to harvest.
-//      if ( u->isCarryingGas() || u->isCarryingMinerals() )
-//      {
-//        u->returnCargo();
-//      }
-//      else if ( !u->getPowerUp() )  // The worker cannot harvest anything if it
-//      {                             // is carrying a powerup such as a flag
-//        // Harvest from the nearest mineral patch or gas refinery
-//        if ( !u->gather( u->getClosestUnit( IsMineralField || IsRefinery )) )
-//        {
-//          // If the call fails, then print the last error message
-//          Broodwar << Broodwar->getLastError() << std::endl;
-//        }
-
-//      } // closure: has no powerup
-//    } // closure: if idle
-
-//  }
-//  else if ( u->getType().isResourceDepot() ) // A resource depot is a Command Center, Nexus, or Hatchery
-//  {
-
-//    // Order the depot to construct more workers! But only when it is idle.
-//    if ( u->isIdle() && !u->train(u->getType().getRace().getWorker()) )
-//    {
-//      // If that fails, draw the error at the location so that you can visibly see what went wrong!
-//      // However, drawing the error once will only appear for a single frame
-//      // so create an event that keeps it on the screen for some frames
-//      Position pos = u->getPosition();
-//      Error lastErr = Broodwar->getLastError();
-//      Broodwar->registerEvent([pos,lastErr](Game*){ Broodwar->drawTextMap(pos, "%c%s", Text::White, lastErr.c_str()); },   // action
-//                              nullptr,    // condition
-//                              Broodwar->getLatencyFrames());  // frames to run
-
-//      // Retrieve the supply provider type in the case that we have run out of supplies
-//      UnitType supplyProviderType = u->getType().getRace().getSupplyProvider();
-//      static int lastChecked = 0;
-
-//      // If we are supply blocked and haven't tried constructing more recently
-//      if (  lastErr == Errors::Insufficient_Supply &&
-//            lastChecked + 400 < Broodwar->getFrameCount() &&
-//            Broodwar->self()->incompleteUnitCount(supplyProviderType) == 0 )
-//      {
-//        lastChecked = Broodwar->getFrameCount();
-
-//        // Retrieve a unit that is capable of constructing the supply needed
-//        Unit supplyBuilder = u->getClosestUnit(  GetType == supplyProviderType.whatBuilds().first &&
-//                                                  (IsIdle || IsGatheringMinerals) &&
-//                                                  IsOwned);
-//        // If a unit was found
-//        if ( supplyBuilder )
-//        {
-//          if ( supplyProviderType.isBuilding() )
-//          {
-//            TilePosition targetBuildLocation = Broodwar->getBuildLocation(supplyProviderType, supplyBuilder->getTilePosition());
-//            if ( targetBuildLocation )
-//            {
-//              // Register an event that draws the target build location
-//              Broodwar->registerEvent([targetBuildLocation,supplyProviderType](Game*)
-//                                      {
-//                                        Broodwar->drawBoxMap( Position(targetBuildLocation),
-//                                                              Position(targetBuildLocation + supplyProviderType.tileSize()),
-//                                                              Colors::Blue);
-//                                      },
-//                                      nullptr,  // condition
-//                                      supplyProviderType.buildTime() + 100 );  // frames to run
-
-//              // Order the builder to construct the supply structure
-//              supplyBuilder->build( supplyProviderType, targetBuildLocation );
-//            }
-//          }
-//          else
-//          {
-//            // Train the supply provider (Overlord) if the provider is not a structure
-//            supplyBuilder->train( supplyProviderType );
-//          }
-//        } // closure: supplyBuilder is valid
-//      } // closure: insufficient supply
-//    } // closure: failed to train idle unit
-
-//  }
-
-//} // closure: unit iterator
 
 
 
@@ -931,8 +514,6 @@ break;
 	m_analysis_just_finished = true;
 	return 0;
 }*/
-
-
 
 
 void TheTurk::drawTerrainData()
@@ -982,10 +563,6 @@ void TheTurk::drawTerrainData()
 		}
 	}
 }
-
-
-
-
 
 
 
@@ -1069,8 +646,7 @@ void TheTurk::onUnitCreate(BWAPI::Unit unit)
 		TilePosition targetBuildLocation = unit->getTilePosition();
 		Broodwar->sendText("%.2d %.2d / Unit: %s", targetBuildLocation.x, targetBuildLocation.y, unit->getType().c_str());
 
-		// int A = unit->getRight() - unit->getLeft();
-		// Broodwar->sendText("%.2d  / Unit: %s", A, unit->getType().c_str());
+	
 		if (unit->getType() == Pylon){
 			BuildingManager::Instance().PylonLocationRemover();
 		}
@@ -1083,17 +659,7 @@ void TheTurk::onUnitCreate(BWAPI::Unit unit)
 
 	}
 
-	//if ( Broodwar->isReplay() )
-	//{
-	//  // if we are in a replay, then we will print out the build order of the structures
-	//  if ( unit->getType().isBuilding() && !unit->getPlayer()->isNeutral() )
-	//  {
-	//    int seconds = Broodwar->getFrameCount()/24;
-	//    int minutes = seconds/60;
-	//    seconds %= 60;
-	//    Broodwar->sendText("%.2d:%.2d: %s creates a %s", minutes, seconds, unit->getPlayer()->getName().c_str(), unit->getType().c_str());
-	//  }
-	//}
+	
 }
 
 void TheTurk::onUnitDestroy(BWAPI::Unit unit)
@@ -1112,20 +678,6 @@ void TheTurk::onUnitDestroy(BWAPI::Unit unit)
 void TheTurk::onUnitMorph(BWAPI::Unit unit)
 {
 	
-	
-	
-
-	//if (Broodwar->isReplay())
-	//{
-	//	// if we are in a replay, then we will print out the build order of the structures
-	//	if (unit->getType().isBuilding() && !unit->getPlayer()->isNeutral())
-	//	{
-	//		int seconds = Broodwar->getFrameCount() / 24;
-	//		int minutes = seconds / 60;
-	//		seconds %= 60;
-	//		Broodwar->sendText("%.2d:%.2d: %s morphs a %s", minutes, seconds, unit->getPlayer()->getName().c_str(), unit->getType().c_str());
-	//	}
-	//}
 }
 
 void TheTurk::onUnitRenegade(BWAPI::Unit unit)
@@ -1141,11 +693,7 @@ void TheTurk::onUnitComplete(BWAPI::Unit unit)
 {
 	if (unit->getType().isBuilding() && !unit->getPlayer()->isNeutral())
 	{
-		// Position pos = unit->getPosition();
-		//int seconds = Broodwar->getFrameCount() / 24;
-		//int minutes = seconds / 60;
-		//seconds %= 60;
-		// Broodwar->sendText("%.2d:%.2d: %s completed a %s", pos, unit->getPlayer()->getName().c_str(), unit->getType().c_str());
+		
 
 		if (unit->getType() == BWAPI::UnitTypes::Protoss_Assimilator)
 		{
@@ -1188,14 +736,6 @@ void TheTurk::onUnitComplete(BWAPI::Unit unit)
 
 
 
-
-
-
-
-
-
-
-
 void TheTurk::onEnd(bool isWinner)
 {
 	// Called when the game ends
@@ -1205,186 +745,6 @@ void TheTurk::onEnd(bool isWinner)
 	}
 }
 
-
-
-
-
-//int d=0;
-//for (auto &mineral : FirstMineralSet){
-//	d = d + 1;
-//	BWAPI::Position targetBuildLocation = mineral->getPosition();
-//	BWAPI::Broodwar->sendText("%.2d %.2d / Unit: %s, %d", targetBuildLocation.x, targetBuildLocation.y, mineral->getType().c_str(), d);
-//}
-
-
-
-//// Very Basic Initiation
-//for (auto &unit : Broodwar->self()->getUnits()){
-//	// A resource depot is a Command Center, Nexus, or Hatchery
-//	if (unit->getType().isResourceDepot()){
-//		// Generate the first worker
-//		unit->train(unit->getType().getRace().getWorker());
-//	}
-//	// If the unit is a worker unit
-//	else if (unit->getType().isWorker()) {
-//		BWAPI::Unit ClosestMineral = nullptr;
-//		double closestDist = 100000;
-
-//		// For the given initial Minerals, find the closest mineral one by one
-//		for (auto &mineral : Minerals){
-//			double dist = unit->getDistance(mineral->getPosition());
-//			if (dist < closestDist){
-//				ClosestMineral = mineral;
-//				closestDist = dist;
-//			}
-//			unit->gather(ClosestMineral);
-//			Minerals.erase(ClosestMineral);
-//		}
-//	}
-//}
-
-
-
-
-
-
-//// Go to work and Generate Probe
-//for (auto &unit : UnitSetPresent()){   //  Broodwar->self()->getUnits()
-//	// If the unit is a worker unit
-//	if (unit->getType().isWorker()) {
-
-
-//		// if our worker is idle
-//		if (unit->isIdle()) {
-//			// Order workers carrying a resource to return them to the center		     
-//			if (unit->isCarryingGas() || unit->isCarryingMinerals()){
-//				unit->returnCargo();
-//			}
-//			// otherwise find a mineral patch to harvest.					
-//			else{
-//				BWAPI::Unit ClosestMineral = nullptr;
-//				double closestDist = 100000;
-
-//				// For the given initial Minerals, find the closest mineral one by one					
-//				for (auto &mineral : FirstMineralSet){
-//					double dist = unit->getDistance(mineral->getPosition());
-//					if (dist < closestDist){
-//						ClosestMineral = mineral;
-//						closestDist = dist;
-//					}
-//				}
-//				unit->gather(ClosestMineral);
-//				FirstMineralSet.erase(ClosestMineral);
-//				MineralSaver(FirstMineralSet);
-//			}
-//		}
-//	}
-//	
-//	else if (unit->getType().isResourceDepot()){
-//		// Order the depot to construct more workers! But only when it is idle.
-//		if (unit->isIdle()){
-//			// Train a worker
-//			unit->train(unit->getType().getRace().getWorker());
-//		}
-//	}
-//}
-
-
-
-
-//// Python Map
-//// 12
-//if (homePosition.y < 500)
-//{
-//	StartClockPosition = 12;
-
-//	
-
-//}
-//// 3
-//else if (homePosition.x > 3000)
-//{
-//	StartClockPosition = 3;
-
-
-//	FirstPylonLocation.x = homeTilePosition.x;
-//	FirstPylonLocation.y = homeTilePosition.y+2;
-
-//}
-//// 6
-//else if (homePosition.y > 3000)
-//{
-//	StartClockPosition = 6;
-//}
-//// 9
-//else if (homePosition.x < 500)
-//{
-//	StartClockPosition = 9;
-
-//}
-
-
-
-
-//if (FirstGateExist && !FirstGasExist){
-
-//	BWAPI::TilePosition closestGeyser = BWAPI::TilePositions::None;
-//	double minGeyserDistanceFromHome = std::numeric_limits<double>::max();		
-
-//	// for each geyser
-//	for (auto & geyser : Broodwar->getStaticGeysers()){
-//		if (geyser->getType() != BWAPI::UnitTypes::Resource_Vespene_Geyser){
-//			continue;
-//		}
-
-//		BWAPI::Position geyserPos = geyser->getInitialPosition();
-//		
-//		// check to see if it's next to one of our depots
-//		bool nearDepot = false;
-//		for (auto & unit : BWAPI::Broodwar->self()->getUnits()){
-//			if (unit->getType().isResourceDepot() && unit->getDistance(geyserPos) < 300){
-//				nearDepot = true;
-//			}
-//		}
-
-//		if (nearDepot){
-//			double homeDistance = geyser->getDistance(homePosition);
-
-//			if (homeDistance < minGeyserDistanceFromHome){
-//				minGeyserDistanceFromHome = homeDistance;
-//				closestGeyser = geyser->getInitialTilePosition();
-//			}
-//		}
-
-
-//	
-//	}
-//}
-
-
-
-
-//// Build the First supply unit	
-//if (BWAPI::Broodwar->self()->supplyUsed() / 2 >= 8 && UnitCount["Pylon_Count"]==0){
-//	static int lastChecked = 0;
-//	// If we are supply blocked and haven't tried constructing more recently
-//	if (lastChecked + 300 < Broodwar->getFrameCount() && Broodwar->self()->incompleteUnitCount(Pylon) == 0){
-//		lastChecked = Broodwar->getFrameCount();
-
-//		// Retrieve a unit that is capable of constructing the supply needed
-//		Unit supplyBuilder = ResourceDepot->getClosestUnit(GetType == Pylon.whatBuilds().first && (IsWorker)); // IsIdle || IsCarryingMinerals
-//		// If a unit was found
-//		if (supplyBuilder){
-//			TilePosition targetBuildLocation = Broodwar->getBuildLocation(Pylon, PylonTilePosition[0], 4); // supplyBuilder->getTilePosition()
-//					
-//			if (targetBuildLocation){
-//				// Order the builder to construct the supply structure	
-//				supplyBuilder->build(Pylon, targetBuildLocation);
-//				Scout = supplyBuilder;
-//			}
-//		}			
-//	}
-//}
 
 // Commander functions
 // Collect all valid units except dead bodies
@@ -1409,8 +769,6 @@ void TheTurk::ValidUnitCollector(BWAPI::Unit ScouterUnit){
 		m_WorkerUnits.erase(ScouterUnit);
 	}
 
-
-
 	// Future unit sets
 	// SetScoutUnits();
 	// SetBaseCombatUnits();
@@ -1425,8 +783,6 @@ BWAPI::Unitset TheTurk::MineralCollector(BWTA::BaseLocation * BasePoint){
 	}
 	return m_MineralSets;
 }
-
-// BWAPI::Broodwar->sendText("%.2d %.2d / Unit: %s", targetBuildLocation.x, targetBuildLocation.y,	mineral->getType().c_str());
 
 
 BWAPI::Unitset TheTurk::MineralPresent(){
@@ -1516,11 +872,7 @@ void TheTurk::ProbeMaker(unsigned MaxWorkerCount){
 	}
 }
 
-/*  Worker Tasks
-1. Get Mineral
-2. If it is too far from a base, come back and work.
-3. Find the unoccupied closest mineral.
-*/
+
 
 void TheTurk::ProbeWork(int MaxMineralDist){
 	for (auto &unit2 : m_WorkerUnits){
@@ -1582,11 +934,6 @@ void TheTurk::ProbeWork(int MaxMineralDist){
 		}
 	}
 }
-
-
-
-
-
 
 
 

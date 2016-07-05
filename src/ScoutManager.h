@@ -6,21 +6,9 @@ namespace Turk {
 	// Commander Class
 	class ScoutManager
 	{
-
-		// Scout Variables
-		BWAPI::Unit Scouter;
-
-
-
-
-
-
 	public:
 		ScoutManager();
 		~ScoutManager(){};
-
-
-
 
 		// Save Scouter pointer
 		void ScouterSaver(BWAPI::Unit);
@@ -28,14 +16,15 @@ namespace Turk {
 		// Return a scout unit pointer
 		BWAPI::Unit ScouterPresent();
 
-
 		// Detect the enemy base
 		bool EnemyFirstDetector(bool, BWAPI::TilePosition);
 
-
-
 		static ScoutManager &Instance();
 
+	private:
+
+		// Scout Variables
+		BWAPI::Unit m_Scouter;
 
 	};
 

@@ -8,35 +8,6 @@ namespace Turk {
 	class BuildingManager
 	{
 
-		// Pylon Location Vector
-		std::vector<BWAPI::TilePosition>	PylonTilePosition;
-
-		// GateWay Location Vector
-		std::vector<BWAPI::TilePosition>	GateTilePosition;
-
-		// Technical buiding location Vector
-		std::vector<BWAPI::TilePosition>	TechBuildingTileLocation;
-
-
-		// Buildings	
-		BWAPI::UnitType Pylon = BWAPI::UnitTypes::Protoss_Pylon;
-		BWAPI::UnitType GateWay = BWAPI::UnitTypes::Protoss_Gateway;
-		BWAPI::UnitType Nexus = BWAPI::UnitTypes::Protoss_Nexus;
-		BWAPI::UnitType Assimilator = BWAPI::UnitTypes::Protoss_Assimilator;
-		BWAPI::UnitType Forge = BWAPI::UnitTypes::Protoss_Forge;
-		BWAPI::UnitType Cybernetics = BWAPI::UnitTypes::Protoss_Cybernetics_Core;
-		BWAPI::UnitType CitadelOfAdun = BWAPI::UnitTypes::Protoss_Citadel_of_Adun;
-		BWAPI::UnitType TemplerArchive = BWAPI::UnitTypes::Protoss_Templar_Archives;
-		BWAPI::UnitType Stargate = BWAPI::UnitTypes::Protoss_Stargate;
-
-		// Units
-		BWAPI::UnitType Zealot = BWAPI::UnitTypes::Protoss_Zealot;
-		BWAPI::UnitType Dragoon = BWAPI::UnitTypes::Protoss_Dragoon;
-		BWAPI::UnitType Corsair = BWAPI::UnitTypes::Protoss_Corsair;
-
-
-
-
 	public:
 		BuildingManager();
 		~BuildingManager(){};
@@ -48,10 +19,6 @@ namespace Turk {
 
 		// Determine the building location depending on the map info
 		void MapConnector();
-
-
-
-
 
 		// $$$$$$$$$    Building Positining        $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		// Determine the location of pylons
@@ -70,9 +37,6 @@ namespace Turk {
 
 		void ChokeDefensePylon();
 
-
-
-
 		// $$$$$$$$$$$$$$$$$$$$$$$$$ Class Variable Handler $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		// Pylon Location Handler
 		BWAPI::TilePosition PylonLocationPresent();
@@ -89,18 +53,41 @@ namespace Turk {
 		void TechLocationSaver(std::vector<BWAPI::TilePosition>);
 		void TechLocationRemover();
 
-
 		BWAPI::TilePosition GetExpansionBase();
-
 
 		// Building Function
 		void MrBuilder(BWAPI::Unit, BWAPI::UnitType, BWAPI::TilePosition);
 
-
-
 		static BuildingManager &Instance();
 
+	private:
+		// Pylon Location Vector
+		std::vector<BWAPI::TilePosition>	m_PylonTilePosition;
 
+		// GateWay Location Vector
+		std::vector<BWAPI::TilePosition>	m_GateTilePosition;
+
+		// Technical buiding location Vector
+		std::vector<BWAPI::TilePosition>	m_TechBuildingTileLocation;
+
+
+		// CSC - Why is this here??
+		// Buildings	
+		BWAPI::UnitType Pylon = BWAPI::UnitTypes::Protoss_Pylon;
+		BWAPI::UnitType GateWay = BWAPI::UnitTypes::Protoss_Gateway;
+		BWAPI::UnitType Nexus = BWAPI::UnitTypes::Protoss_Nexus;
+		BWAPI::UnitType Assimilator = BWAPI::UnitTypes::Protoss_Assimilator;
+		BWAPI::UnitType Forge = BWAPI::UnitTypes::Protoss_Forge;
+		BWAPI::UnitType Cybernetics = BWAPI::UnitTypes::Protoss_Cybernetics_Core;
+		BWAPI::UnitType CitadelOfAdun = BWAPI::UnitTypes::Protoss_Citadel_of_Adun;
+		BWAPI::UnitType TemplerArchive = BWAPI::UnitTypes::Protoss_Templar_Archives;
+		BWAPI::UnitType Stargate = BWAPI::UnitTypes::Protoss_Stargate;
+
+		// Units
+		BWAPI::UnitType Zealot = BWAPI::UnitTypes::Protoss_Zealot;
+		BWAPI::UnitType Dragoon = BWAPI::UnitTypes::Protoss_Dragoon;
+		BWAPI::UnitType Corsair = BWAPI::UnitTypes::Protoss_Corsair;
+	
 	};
 
 } // end namespace Turk

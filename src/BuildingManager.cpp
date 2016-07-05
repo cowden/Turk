@@ -36,10 +36,6 @@ void BuildingManager::MapConnector(){
 }
 
 
-
-// int arr[3];
-
-
 void BuildingManager::PythonBuildingLocation(){
 
 	// Game Information <- This should be moved to the InformationManager.h
@@ -60,12 +56,12 @@ void BuildingManager::PythonBuildingLocation(){
 		// Location of the first pylon		
 		FirstPylonLocation.x = 76;
 		FirstPylonLocation.y = 4;			
-		PylonTilePosition.push_back(FirstPylonLocation);
+		m_PylonTilePosition.push_back(FirstPylonLocation);
 
 		// Location of the Second pylon		
 		SecondPylonLocation.x = 82;
 		SecondPylonLocation.y = 12;
-		PylonTilePosition.push_back(SecondPylonLocation);
+		m_PylonTilePosition.push_back(SecondPylonLocation);
 
 		// Build the gateways left to the first pylon
 		FirstGateWay.x = FirstPylonLocation.x - GateWay.tileWidth() * 2;
@@ -106,12 +102,12 @@ void BuildingManager::PythonBuildingLocation(){
 		// Location of the first pylon		
 		FirstPylonLocation.x = 50;
 		FirstPylonLocation.y = 115;
-		PylonTilePosition.push_back(FirstPylonLocation);
+		m_PylonTilePosition.push_back(FirstPylonLocation);
 		
 		// Location of the second pylon		
 		SecondPylonLocation.x = 38;
 		SecondPylonLocation.y = 107;
-		PylonTilePosition.push_back(SecondPylonLocation);
+		m_PylonTilePosition.push_back(SecondPylonLocation);
 		
 		// Build the gateways right to the first pylon
 		FirstGateWay.x = FirstPylonLocation.x + Pylon.tileWidth();
@@ -151,11 +147,11 @@ void BuildingManager::PythonBuildingLocation(){
 		// Location of the first pylon
 		FirstPylonLocation.x = 15;   // Fix
 		FirstPylonLocation.y = 77;
-		PylonTilePosition.push_back(FirstPylonLocation);
+		m_PylonTilePosition.push_back(FirstPylonLocation);
 
 		SecondPylonLocation.x = 12;   // Fix
 		SecondPylonLocation.y = 89;
-		PylonTilePosition.push_back(SecondPylonLocation);
+		m_PylonTilePosition.push_back(SecondPylonLocation);
 
 		// Build the gateways right to the first pylon
 		FirstGateWay.x = FirstPylonLocation.x + Pylon.tileWidth();
@@ -197,12 +193,12 @@ void BuildingManager::PythonBuildingLocation(){
 		// Location of the first pylon
 		FirstPylonLocation.x = 111;
 		FirstPylonLocation.y = 43;
-		PylonTilePosition.push_back(FirstPylonLocation);
+		m_PylonTilePosition.push_back(FirstPylonLocation);
 
 		// Location of the second pylon
 		SecondPylonLocation.x = 117;
 		SecondPylonLocation.y = 26;
-		PylonTilePosition.push_back(SecondPylonLocation);
+		m_PylonTilePosition.push_back(SecondPylonLocation);
 
 		// Build the gateways left to the first pylon
 		FirstGateWay.x = FirstPylonLocation.x - GateWay.tileWidth() * 2;
@@ -237,9 +233,9 @@ void BuildingManager::PythonBuildingLocation(){
 	}
 
 	
-	std::reverse(PylonTilePosition.begin(), PylonTilePosition.end());
-	std::reverse(GateTilePosition.begin(), GateTilePosition.end());
-	std::reverse(TechBuildingTileLocation.begin(), TechBuildingTileLocation.end());
+	std::reverse(m_PylonTilePosition.begin(), m_PylonTilePosition.end());
+	std::reverse(m_GateTilePosition.begin(), m_GateTilePosition.end());
+	std::reverse(m_TechBuildingTileLocation.begin(), m_TechBuildingTileLocation.end());
 
 }
 
@@ -285,18 +281,9 @@ void BuildingManager::DefensePylonLocation(BWAPI::Unitset FirstMineralSet){
 	anothervector.push_back(LastMineralPosition);
 
 	// 3rd and 4th pylons
-	PylonTilePosition.insert(PylonTilePosition.begin() + 8, anothervector.begin(), anothervector.end());  	
+	m_PylonTilePosition.insert(m_PylonTilePosition.begin() + 8, anothervector.begin(), anothervector.end());  	
 
 }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -304,51 +291,51 @@ void BuildingManager::DefensePylonLocation(BWAPI::Unitset FirstMineralSet){
 // Class Variable Handler
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 BWAPI::TilePosition BuildingManager::PylonLocationPresent(){
-	if (!BWAPI::Broodwar->isBuildable(PylonTilePosition.back(), true)){
-		PylonTilePosition.pop_back();
+	if (!BWAPI::Broodwar->isBuildable(m_PylonTilePosition.back(), true)){
+		m_PylonTilePosition.pop_back();
 	}
-	return PylonTilePosition.back();
+	return m_PylonTilePosition.back();
 }
 
 void BuildingManager::PylonLocationRemover(){
-	PylonTilePosition.pop_back();	
+	m_PylonTilePosition.pop_back();	
 }
 
 void BuildingManager::PylonLocationSaver(std::vector<BWAPI::TilePosition> TempPosition){
-	PylonTilePosition = TempPosition;
+	m_PylonTilePosition = TempPosition;
 }
 
 BWAPI::TilePosition BuildingManager::GateWayLocationPresent(){
-	if (!BWAPI::Broodwar->isBuildable(GateTilePosition.back(), true)){
-		GateTilePosition.pop_back();
+	if (!BWAPI::Broodwar->isBuildable(m_GateTilePosition.back(), true)){
+		m_GateTilePosition.pop_back();
 	}	
-	return GateTilePosition.back();
+	return m_GateTilePosition.back();
 }
 
 void BuildingManager::GateWayLocationSaver(std::vector<BWAPI::TilePosition> TempPosition){
-	GateTilePosition = TempPosition;
+	m_GateTilePosition = TempPosition;
 }
 
 void BuildingManager::GateWayLocationRemover(){
-	GateTilePosition.pop_back();
+	m_GateTilePosition.pop_back();
 }
 
 
 
 BWAPI::TilePosition BuildingManager::TechLocationPresent(){	
-	if (!BWAPI::Broodwar->isBuildable(TechBuildingTileLocation.back(), true)){
-		TechBuildingTileLocation.pop_back();
+	if (!BWAPI::Broodwar->isBuildable(m_TechBuildingTileLocation.back(), true)){
+		m_TechBuildingTileLocation.pop_back();
 	}
-	return TechBuildingTileLocation.back();
+	return m_TechBuildingTileLocation.back();
 }
 
 void BuildingManager::TechLocationSaver(std::vector<BWAPI::TilePosition> TempPosition){
-	TechBuildingTileLocation = TempPosition;
+	m_TechBuildingTileLocation = TempPosition;
 }
 
 
 void BuildingManager::TechLocationRemover(){
-	TechBuildingTileLocation.pop_back();
+	m_TechBuildingTileLocation.pop_back();
 }
 
 
@@ -390,15 +377,6 @@ BWAPI::TilePosition BuildingManager::GetExpansionBase(){
 
 
 
-
-
-
-
-
-
-
-
-
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 // Building Positioning 
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -407,7 +385,7 @@ void BuildingManager::PylonPositioning(BWAPI::TilePosition StartingPoint,int Num
 	for (int a = 1; a < Numbers; a = a + 1){
 		TempTileLocation.x = StartingPoint.x;
 		TempTileLocation.y = StartingPoint.y + a * Pylon.tileHeight();
-		PylonTilePosition.push_back(TempTileLocation);
+		m_PylonTilePosition.push_back(TempTileLocation);
 	}
 }
 
@@ -418,11 +396,11 @@ void BuildingManager::GateWayPositioning(BWAPI::TilePosition StartingPoint, int 
 	for (int a = 0; a < Numbers; a = a + 1){
 		TempTileLocation.x = StartingPoint.x;
 		TempTileLocation.y = StartingPoint.y + a * GateWay.tileHeight();
-		GateTilePosition.push_back(TempTileLocation); // Third Gateway
+		m_GateTilePosition.push_back(TempTileLocation); // Third Gateway
 
 		TempTileLocation.x = StartingPoint.x + GateWay.tileWidth();
 		TempTileLocation.y = StartingPoint.y + a * GateWay.tileHeight();
-		GateTilePosition.push_back(TempTileLocation); // Fourth Gateway
+		m_GateTilePosition.push_back(TempTileLocation); // Fourth Gateway
 	}
 }
 
@@ -434,71 +412,13 @@ void BuildingManager::TechBuildingPositioning(BWAPI::TilePosition StartingPoint,
 		// Location of Cybernetics core
 		TempTileLocation.x = StartingPoint.x;
 		TempTileLocation.y = StartingPoint.y + a * Cybernetics.tileHeight();
-		TechBuildingTileLocation.push_back(TempTileLocation);
+		m_TechBuildingTileLocation.push_back(TempTileLocation);
 	}
 
 }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-// Build Build Build
-// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//void BuildingManager::MrBuilder(BWAPI::Unit HeadQuater, BWAPI::UnitType BuildingTarget, BWAPI::TilePosition WishLocation){
-//		
-//	static int lastChecked = 0;
-//	// If we are supply blocked and haven't tried constructing more recently
-//	if (lastChecked + 200 < BWAPI::Broodwar->getFrameCount() && BWAPI::Broodwar->self()->incompleteUnitCount(BuildingTarget) == 0){
-//		lastChecked = BWAPI::Broodwar->getFrameCount();
-//
-//		// Retrieve a unit that is capable of constructing the supply needed
-//		BWAPI::Unit supplyBuilder = HeadQuater->getClosestUnit(BWAPI::Filter::GetType == BuildingTarget.whatBuilds().first && (BWAPI::Filter::IsIdle || BWAPI::Filter::IsGatheringMinerals));
-//		// If a unit was found
-//		if (supplyBuilder){			
-//			BWAPI::TilePosition targetBuildLocation = BWAPI::Broodwar->getBuildLocation(BuildingTarget, WishLocation, 2);
-//			if (targetBuildLocation){
-//				if (!BWAPI::Broodwar->isExplored(targetBuildLocation)){
-//					supplyBuilder->move(BWAPI::Position(targetBuildLocation));
-//					//supplyBuilder->build(BuildingTarget, targetBuildLocation);
-//				}
-//				else{
-//					// Order the builder to construct the supply structure				
-//					supplyBuilder->build(BuildingTarget, targetBuildLocation);
-//				}
-//			}
-//			else{
-//				BWAPI::TilePosition targetBuildLocation = BWAPI::Broodwar->getBuildLocation(BuildingTarget, supplyBuilder->getTilePosition());
-//				if (targetBuildLocation){
-//					// Order the builder to construct the supply structure				
-//					if (!BWAPI::Broodwar->isExplored(targetBuildLocation)){
-//						supplyBuilder->move(BWAPI::Position(targetBuildLocation));
-//					}
-//					else{
-//						// Order the builder to construct the supply structure				
-//						supplyBuilder->build(BuildingTarget, targetBuildLocation);
-//					}
-//				}
-//			}			
-//		}
-//	}
-//}
-
-// isExplored
 
 void BuildingManager::MrBuilder(BWAPI::Unit HeadQuater, BWAPI::UnitType BuildingTarget, BWAPI::TilePosition WishLocation){
 
