@@ -21,9 +21,6 @@
     <ClCompile Include="..\src\Turk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Commander.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\BuildingManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -36,9 +33,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Turk.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Commander.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\BuildingManager.h">

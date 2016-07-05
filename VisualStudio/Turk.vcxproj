@@ -12,7 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\BuildingManager.cpp" />
-    <ClCompile Include="..\src\Commander.cpp" />
     <ClCompile Include="..\src\Dll.cpp" />
     <ClCompile Include="..\src\InformationManager.cpp" />
     <ClCompile Include="..\src\ScoutManager.cpp" />
@@ -20,7 +19,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BuildingManager.h" />
-    <ClInclude Include="..\src\Commander.h" />
     <ClInclude Include="..\src\InformationManager.h" />
     <ClInclude Include="..\src\ScoutManager.h" />
     <ClInclude Include="..\src\Turk.h" />

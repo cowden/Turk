@@ -1,14 +1,9 @@
 #include "Turk.h"
 #include <iostream>
-#include "Commander.h"
-
-bool analyzed;
-bool analysis_just_finished;
 
 using namespace BWAPI;
 using namespace Filter;
 using namespace Turk;
-
 
 
 void TheTurk::onStart()
@@ -59,8 +54,8 @@ void TheTurk::onStart()
 	// BWTA Map Analysis
 	BWTA::readMap();
 	BWTA::analyze();
-	analyzed = true;
-	analysis_just_finished = true;
+	m_analyzed = true;
+	m_analysis_just_finished = true;
 
 
 
@@ -68,16 +63,16 @@ void TheTurk::onStart()
 
 
 	// Variable Definition
-	homePosition = BWAPI::Position(Broodwar->self()->getStartLocation());
-	homeTilePosition = Broodwar->self()->getStartLocation();
-	HillPosition = BWTA::getNearestChokepoint(BWAPI::Position(Broodwar->self()->getStartLocation()))->getCenter();
-	FirstExpansionPosition = BWTA::getNearestBaseLocation(HillPosition)->getPosition();
+	m_homePosition = BWAPI::Position(Broodwar->self()->getStartLocation());
+	m_homeTilePosition = Broodwar->self()->getStartLocation();
+	m_HillPosition = BWTA::getNearestChokepoint(BWAPI::Position(Broodwar->self()->getStartLocation()))->getCenter();
+	m_FirstExpansionPosition = BWTA::getNearestBaseLocation(m_HillPosition)->getPosition();
 
 	/*NextExpansion = TilePosition(FirstExpansionPosition);
 	Broodwar->sendText("EasyWay %.2d %.2d ", NextExpansion.x, NextExpansion.y);*/
 
-	NextExpansion = BuildingManager::Instance().GetExpansionBase();
-	Broodwar->sendText("Hard Way %.2d %.2d ", NextExpansion.x, NextExpansion.y);
+	m_NextExpansion = BuildingManager::Instance().GetExpansionBase();
+	Broodwar->sendText("Hard Way %.2d %.2d ", m_NextExpansion.x, m_NextExpansion.y);
 
 		
 
@@ -91,7 +86,7 @@ void TheTurk::onStart()
 
 	// A set of minerals
 	BWTA::BaseLocation* StartingPoint = BWTA::getStartLocation(BWAPI::Broodwar->self());
-	BWAPI::Unitset FirstMineralSet = _Commander.MineralCollector(StartingPoint); // 
+	BWAPI::Unitset FirstMineralSet = MineralCollector(StartingPoint); // 
 	
 
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
@@ -125,16 +120,15 @@ void TheTurk::onStart()
 			FirstMineralSet.erase(ClosestMineral);
 		}
 	}
-	_Commander.MineralSaver(FirstMineralSet);
+	MineralSaver(FirstMineralSet);
 
 		
 
 
 
 	// Location of the first pylon
-	
-	Campus.x = (PylonToChoke * homePosition.x + BaseToPylon* HillPosition.x) / (BaseToPylon + PylonToChoke);
-	Campus.y = (PylonToChoke * homePosition.y + BaseToPylon* HillPosition.y) / (BaseToPylon + PylonToChoke);
+	m_Campus.x = (m_PylonToChoke * m_homePosition.x + m_BaseToPylon* m_HillPosition.x) / (m_BaseToPylon + m_PylonToChoke);
+	m_Campus.y = (m_PylonToChoke * m_homePosition.y + m_BaseToPylon* m_HillPosition.y) / (m_BaseToPylon + m_PylonToChoke);
 
 
 
@@ -168,13 +162,13 @@ void TheTurk::onFrame(){
 		return;
 
 	//BWTA draw
-	if (analyzed){
+	if (m_analyzed){
 		drawTerrainData();
 	}
 	
-	if (analysis_just_finished)	{
+	if (m_analysis_just_finished)	{
 		Broodwar << "Finished analyzing map." << std::endl;;
-		analysis_just_finished = false;
+		m_analysis_just_finished = false;
 	}
 
 
@@ -199,26 +193,26 @@ void TheTurk::onFrame(){
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	// Collect all possible units.
 	// A set of workers will not contain a scouter.	
-	_Commander.ValidUnitCollector(Scouter);
+	ValidUnitCollector(Scouter);
 	
 
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	// Should go to the informationManager
 	// Count the number of probes
 	std::map<std::string, int>	UnitCount;
-	UnitCount = _Commander.UnitCounter();
+	UnitCount = UnitCounter();
 
 	
 	
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 	// Should go to WorkerManagement or BaseManagement ?
 	// Generate workers	
-	_Commander.ProbeMaker(MaxWorkerCount);
+	ProbeMaker(m_MaxWorkerCount);
 			
 	
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	// Work Work Work
-	_Commander.ProbeWork(MaxMineralDist);
+	ProbeWork(m_MaxMineralDist);
 	
 
 
@@ -278,7 +272,7 @@ void TheTurk::onFrame(){
 
 
 	// Build the first GateWay after the first pylon
-	if (UnitCount["Pylon_Count"] >= 1 && UnitCount["GateWay_Count"] < MaxGateWayCount){
+	if (m_UnitCount["Pylon_Count"] >= 1 && m_UnitCount["GateWay_Count"] < m_MaxGateWayCount){
 		
 		static int lastChecked = 0;
 		// If we are supply blocked and haven't tried constructing more recently
@@ -300,7 +294,7 @@ void TheTurk::onFrame(){
 	}
 		
 
-	// Broodwar->sendText("Pylon :%.2d", _Commander.BasePresent().size());
+	// Broodwar->sendText("Pylon :%.2d", BasePresent().size());
 
 	
 	
@@ -308,7 +302,7 @@ void TheTurk::onFrame(){
 	// This should go to the building or expansion team
 	// Build a Gas and send three probes to there.
 	if (UnitCount["GateWay_Count"] >= 1){
-		for (auto & unit : _Commander.BasePresent()){
+		for (auto & unit : BasePresent()){
 			
 			BWAPI::Unit GasContainer = unit->getClosestUnit(IsRefinery && IsOwned && IsCompleted,300);
 			// if that unit is a refinery, Check whether a refinery has three workers
@@ -323,26 +317,26 @@ void TheTurk::onFrame(){
 					}
 				}
 
-				if (GasWorkerCount < WorkersPerGas){
+				if (GasWorkerCount < m_WorkersPerGas){
 					for (auto & unit2 : CloseWorkers){
 						// Only send gathering workers to gas mine.
 						if (unit2->isGatheringMinerals() && !unit2->isCarryingMinerals()){
 							unit2->rightClick(GasContainer);
 							GasWorkerCount = GasWorkerCount + 1;
-							if (GasWorkerCount >= WorkersPerGas){
+							if (GasWorkerCount >= m_WorkersPerGas){
 								break;
 							}
 						}
 					}
 				}
 
-				else if (GasWorkerCount > WorkersPerGas){
+				else if (GasWorkerCount > m_WorkersPerGas){
 					for (auto & unit2 : CloseWorkers){
 						// Only send gathering workers to gas mine.
 						if (unit2->isGatheringGas() && !unit2->isCarryingGas()){
 							unit2->gather(unit->getClosestUnit(IsMineralField));
 							GasWorkerCount = GasWorkerCount - 1;
-							if (GasWorkerCount == WorkersPerGas){
+							if (GasWorkerCount == m_WorkersPerGas){
 								break;
 							}
 						}
@@ -404,33 +398,33 @@ void TheTurk::onFrame(){
 
 	// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	// First Detect the enemy base
-	if (!EnemyDetection && Scouter){
-		EnemyDetection = ScoutManager::Instance().EnemyFirstDetector(EnemyDetection, NextExpansion);
-		EnemyHomeBase = Scouter->getTargetPosition();
-		EnemyHillPosition = BWTA::getNearestChokepoint(EnemyHomeBase)->getCenter();
-		EnemyExpansion = BWTA::getNearestBaseLocation(EnemyHillPosition)->getPosition();
+	if (!m_EnemyDetection && Scouter){
+		m_EnemyDetection = ScoutManager::Instance().EnemyFirstDetector(m_EnemyDetection, m_NextExpansion);
+		m_EnemyHomeBase = Scouter->getTargetPosition();
+		m_EnemyHillPosition = BWTA::getNearestChokepoint(m_EnemyHomeBase)->getCenter();
+		m_EnemyExpansion = BWTA::getNearestBaseLocation(m_EnemyHillPosition)->getPosition();
 		
 	}
 	// 
 
 
 	// Detect the location of enemy's main base room
-	if (EnemyDetection && Scouter){
+	if (m_EnemyDetection && Scouter){
 		// BWAPI::Position ScouterTarget = Scouter->getTargetPosition();
 
 		if (Scouter->isIdle()){
-			double dist = Scouter->getDistance(EnemyHomeBase);
+			double dist = Scouter->getDistance(m_EnemyHomeBase);
 
 			if (dist < 10){
-				Scouter->move(EnemyExpansion);
+				Scouter->move(m_EnemyExpansion);
 			}
 			else{
-				Scouter->move(EnemyHomeBase);
+				Scouter->move(m_EnemyHomeBase);
 			}
 		}
 
 		if (Scouter->isUnderAttack()){
-			Scouter->move(FirstExpansionPosition);
+			Scouter->move(m_FirstExpansionPosition);
 		}
 			
 			/*BWTA::Region *MyRegion = BWTA::getRegion(Scouter->getPosition());
@@ -464,7 +458,7 @@ void TheTurk::onFrame(){
 
 
 	// Build the Cybernetics Core
-	if (UnitCount["GateWay_Count"] >= 1 && !FirstCybernetics){
+	if (m_UnitCount["GateWay_Count"] >= 1 && !m_FirstCybernetics){
 		BuildingManager::Instance().MrBuilder(ResourceDepot, Cybernetics, BuildingManager::Instance().TechLocationPresent());
 	}
 
@@ -476,20 +470,20 @@ void TheTurk::onFrame(){
 
 
 	// Build the Citadel of Adun
-	if (FirstCybernetics && !FirstAdun){
+	if (m_FirstCybernetics && !m_FirstAdun){
 		BuildingManager::Instance().MrBuilder(ResourceDepot, CitadelOfAdun, BuildingManager::Instance().TechLocationPresent());
 	}
 
 
 	// Build the Nexus
-	if (UnitCount["GateWay_Count"] >= 2 && !FirstExpansion){
-		BuildingManager::Instance().MrBuilder(ResourceDepot, Nexus, NextExpansion);
+	if (m_UnitCount["GateWay_Count"] >= 2 && !m_FirstExpansion){
+		BuildingManager::Instance().MrBuilder(ResourceDepot, Nexus, m_NextExpansion);
 	}
 
 
 
 	// Build the Fleet Beacon
-	if (UnitCount["StarGate_Count"] >= 1 && !FirstFleetBeacon){
+	if (m_UnitCount["StarGate_Count"] >= 1 && !m_FirstFleetBeacon){
 		BuildingManager::Instance().MrBuilder(ResourceDepot, FleetBeacon, BuildingManager::Instance().TechLocationPresent());
 	}
 
@@ -505,12 +499,12 @@ void TheTurk::onFrame(){
 
 	// $$$$$$$$$$$$$$$$$$$$$$$$$$$ Unit Production $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		// Build a gateway or generate a zealot	
-	for (auto & unit : _Commander.UnitSetPresent()){
+	for (auto & unit : UnitSetPresent()){
 		// We found a gateway, and it is not generating a unit
 		if (unit->isIdle() && unit->getType() == GateWay){
-			unit->rightClick(Campus);
+			unit->rightClick(m_Campus);
 						
-			if (FirstCybernetics && UnitCount["Zealot_Count"] >= UnitCount["Dragoon_Count"]){
+			if (m_FirstCybernetics && m_UnitCount["Zealot_Count"] >= m_UnitCount["Dragoon_Count"]){
 				unit->train(BWAPI::UnitTypes::Protoss_Dragoon);
 			}
 			else{
@@ -519,8 +513,8 @@ void TheTurk::onFrame(){
 		}
 
 		if (unit->isIdle() && unit->getType() == StarGate){
-			unit->rightClick(Campus);
-			if (UnitCount["Corsair_Count"] <= 12){
+			unit->rightClick(m_Campus);
+			if (m_UnitCount["Corsair_Count"] <= 12){
 				unit->train(BWAPI::UnitTypes::Protoss_Corsair);
 			}			
 		}
@@ -543,51 +537,51 @@ void TheTurk::onFrame(){
 
 	// $$$$$$$$$$$$$$$$$$$$$$$$$$$ Attack Process $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$	
 	// Determine whether a scouter is in attack mode or searching mode.
-	for (auto & unit : _Commander.UnitSetPresent()){
+	for (auto & unit : UnitSetPresent()){
 		if (unit->getType() == Corsair){						
 			
 
 			// If it is attacked while it is attacking.
 			if (unit->isAttacking() && unit->isUnderAttack()){
-				unit->move(homePosition);
+				unit->move(m_homePosition);
 			}
 			if (unit->isMoving() && unit->isUnderAttack()){
-				unit->move(homePosition);
+				unit->move(m_homePosition);
 			}
 
 			// Release the stagmation
 			if (unit->isUnderAttack()){
-				unit->move(homePosition);
+				unit->move(m_homePosition);
 			}
 
-			if (CorsairSearchMode){
+			if (m_CorsairSearchMode){
 				for (BWTA::BaseLocation * startLocation : BWTA::getStartLocations()){
 					// if we haven't explored it yet
 					BWAPI::Position targetPosition = BWAPI::Position(startLocation->getTilePosition());
-					if (targetPosition != EnemyHomeBase && targetPosition != homePosition){
+					if (targetPosition != m_EnemyHomeBase && targetPosition != m_homePosition){
 						unit->move(targetPosition);
 					}					
 				}
-				CorsairSearchMode = false;
+				m_CorsairSearchMode = false;
 			}
 
 
 			// If a unit is regenerated and taking a rest, go to the enemy base.
 			if (unit->isIdle()){
-				double dist = unit->getDistance(EnemyHomeBase);
-				double dist2 = unit->getDistance(EnemyExpansion);
+				double dist = unit->getDistance(m_EnemyHomeBase);
+				double dist2 = unit->getDistance(m_EnemyExpansion);
 
 				// I am already in the enemy base
 				if (dist < 10){
-					unit->attack(EnemyExpansion);
+					unit->attack(m_EnemyExpansion);
 				}
 				// I am at enemy's expansion
 				else if (dist2 < 10){
-					CorsairSearchMode = true;
+					m_CorsairSearchMode = true;
 				}
 				else{
 					// I am at home
-					unit->attack(EnemyHomeBase);
+					unit->attack(m_EnemyHomeBase);
 				}
 			}
 							
@@ -606,7 +600,7 @@ void TheTurk::onFrame(){
 					}
 					else if (unit2->getType() == BWAPI::UnitTypes::Zerg_Spore_Colony ||
 						unit2->getType() == BWAPI::UnitTypes::Zerg_Hydralisk){
-						unit->move(homePosition);
+						unit->move(m_homePosition);
 					}	
 				}
 			}
@@ -658,7 +652,7 @@ void TheTurk::onFrame(){
 	// $$$$$$$$$$$$$$$$$     Upgrading $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	// Singularity Upgrading
 	
-	//for (auto & unit : _Commander.UnitSetPresent()){
+	//for (auto & unit : UnitSetPresent()){
 	//	if (unit->getType() == Cybernetics && !unit->isUpgrading()){				
 	//		unit->upgrade(BWAPI::UpgradeTypes::Singularity_Charge);
 	//	}
@@ -666,7 +660,7 @@ void TheTurk::onFrame(){
 	
 
 	
-	for (auto & unit : _Commander.UnitSetPresent()){
+	for (auto & unit : UnitSetPresent()){
 		if (unit->canUpgrade(true) && !unit->isUpgrading()){
 
 			if (unit->getType() == CitadelOfAdun){
@@ -929,26 +923,14 @@ break;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-DWORD WINAPI AnalyzeThread()
+/*DWORD WINAPI AnalyzeThread()
 {
 	BWTA::analyze();
 
-	analyzed = true;
-	analysis_just_finished = true;
+	m_analyzed = true;
+	m_analysis_just_finished = true;
 	return 0;
-}
+}*/
 
 
 
@@ -1069,7 +1051,7 @@ void TheTurk::onUnitHide(BWAPI::Unit unit)
 
 void TheTurk::onUnitCreate(BWAPI::Unit unit)
 {
-	std::map<std::string, int>	UnitCount = _Commander.UnitCounter();
+	std::map<std::string, int>	UnitCount = UnitCounter();
 	BWAPI::Unit Scouter = ScoutManager::Instance().ScouterPresent();
 	if (!Scouter && UnitCount["Pylon_Count"] == 0 && unit->getType() == Pylon){
 		
@@ -1167,35 +1149,35 @@ void TheTurk::onUnitComplete(BWAPI::Unit unit)
 
 		if (unit->getType() == BWAPI::UnitTypes::Protoss_Assimilator)
 		{
-			FirstGasExist = true;
+			m_FirstGasExist = true;
 		}
 		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Cybernetics_Core)
 		{
-			FirstCybernetics = true;
+			m_FirstCybernetics = true;
 		}
 		else if (unit->getType() == BWAPI::UpgradeTypes::Singularity_Charge)
 		{
-			Singularity = true;
+			m_Singularity = true;
 		}
 		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Citadel_of_Adun)
 		{
-			FirstAdun = true;
-			MaxGateWayCount = 2;
+			m_FirstAdun = true;
+			m_MaxGateWayCount = 2;
 		}
 		else if (unit->getType() == BWAPI::UpgradeTypes::Leg_Enhancements)
 		{
-			Leg_Enhancements = true;
+			m_Leg_Enhancements = true;
 			
 		}
 		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Nexus && Broodwar->getFrameCount()>10){
-			FirstExpansion = true;
-			MaxGateWayCount = 8;
-			NextExpansion = BuildingManager::Instance().GetExpansionBase();
+			m_FirstExpansion = true;
+			m_MaxGateWayCount = 8;
+			m_NextExpansion = BuildingManager::Instance().GetExpansionBase();
 		}
 
 		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Fleet_Beacon)
 		{
-			FirstFleetBeacon = true;
+			m_FirstFleetBeacon = true;
 		}
 		
 	}
@@ -1267,7 +1249,7 @@ void TheTurk::onEnd(bool isWinner)
 
 
 //// Go to work and Generate Probe
-//for (auto &unit : _Commander.UnitSetPresent()){   //  Broodwar->self()->getUnits()
+//for (auto &unit : UnitSetPresent()){   //  Broodwar->self()->getUnits()
 //	// If the unit is a worker unit
 //	if (unit->getType().isWorker()) {
 
@@ -1293,7 +1275,7 @@ void TheTurk::onEnd(bool isWinner)
 //				}
 //				unit->gather(ClosestMineral);
 //				FirstMineralSet.erase(ClosestMineral);
-//				_Commander.MineralSaver(FirstMineralSet);
+//				MineralSaver(FirstMineralSet);
 //			}
 //		}
 //	}
@@ -1403,3 +1385,270 @@ void TheTurk::onEnd(bool isWinner)
 //		}			
 //	}
 //}
+
+// Commander functions
+// Collect all valid units except dead bodies
+void TheTurk::ValidUnitCollector(BWAPI::Unit ScouterUnit){
+	m_ValidUnits.clear();
+	m_BaseUnits.clear();
+	m_WorkerUnits.clear();
+
+	for (auto &unit : BWAPI::Broodwar->self()->getUnits()){
+		if (IsValidUnit(unit)){
+			m_ValidUnits.insert(unit);
+
+			if (unit->getType() == BWAPI::UnitTypes::Protoss_Nexus){
+				m_BaseUnits.insert(unit);
+			}
+			else if (unit->getType().isWorker()){
+				m_WorkerUnits.insert(unit);
+			}
+		}
+	}
+	if (ScouterUnit){
+		m_WorkerUnits.erase(ScouterUnit);
+	}
+
+
+
+	// Future unit sets
+	// SetScoutUnits();
+	// SetBaseCombatUnits();
+	// SetFieldCombatUnits();
+}
+
+
+BWAPI::Unitset TheTurk::MineralCollector(BWTA::BaseLocation * BasePoint){
+	//MineralSets.clear();
+	for (auto &mineral : BasePoint->getStaticMinerals()){
+		m_MineralSets.insert(mineral);
+	}
+	return m_MineralSets;
+}
+
+// BWAPI::Broodwar->sendText("%.2d %.2d / Unit: %s", targetBuildLocation.x, targetBuildLocation.y,	mineral->getType().c_str());
+
+
+BWAPI::Unitset TheTurk::MineralPresent(){
+	return m_MineralSets;
+}
+
+
+void TheTurk::MineralSaver(BWAPI::Unitset Mineral){
+	m_MineralSets = Mineral;
+}
+
+
+
+
+void TheTurk::ScoutHander(BWAPI::Unit Scout){
+	m_WorkerUnits.erase(Scout);
+}
+
+// unit represent the point.
+bool TheTurk::IsValidUnit(BWAPI::Unit unit){
+	if (!unit){
+		return false;
+	}
+
+	if (!unit->exists()){
+		return false;
+	}
+
+	// Ignore the unit if it has one of the following status ailments
+	if (unit->isLockedDown() || unit->isMaelstrommed() || unit->isStasised()){
+		return false;
+	}
+
+	// Ignore the unit if it is in one of the following states
+	if (unit->isLoaded() || !unit->isPowered() || unit->isStuck()){
+		return false;
+	}
+
+	// Ignore the unit if it is incomplete or busy constructing
+	if (!unit->isCompleted() || unit->isConstructing()){
+		return false;
+	}
+
+	// Find real units
+	if (unit->isCompleted()
+		&& unit->getHitPoints() > 0
+		&& unit->exists()
+		&& unit->getType() != BWAPI::UnitTypes::Unknown
+		&& unit->getPosition().x != BWAPI::Positions::Unknown.x
+		&& unit->getPosition().y != BWAPI::Positions::Unknown.y){
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+}
+
+
+
+
+
+BWAPI::Unitset TheTurk::UnitSetPresent(){
+	return m_ValidUnits;
+}
+
+
+BWAPI::Unitset TheTurk::BasePresent(){
+	return m_BaseUnits;
+}
+
+
+BWAPI::Unitset TheTurk::WorkerPresent(){
+	return m_WorkerUnits;
+}
+
+
+void TheTurk::ProbeMaker(unsigned MaxWorkerCount){
+
+	for (auto &unit : m_BaseUnits){
+		// Order the depot to construct more workers! But only when it is idle.
+		if (unit->isIdle() && WorkerPresent().size() < MaxWorkerCount){
+			// Train a worker
+			unit->train(unit->getType().getRace().getWorker());
+		}
+	}
+}
+
+/*  Worker Tasks
+1. Get Mineral
+2. If it is too far from a base, come back and work.
+3. Find the unoccupied closest mineral.
+*/
+
+void TheTurk::ProbeWork(int MaxMineralDist){
+	for (auto &unit2 : m_WorkerUnits){
+		// Prepare Basic info: Location of the nearest base and its distance
+		BWAPI::Unit ClosestBase = unit2->getClosestUnit(BWAPI::Filter::IsResourceDepot &&
+			BWAPI::Filter::IsCompleted &&
+			BWAPI::Filter::IsOwned);
+		if (ClosestBase){
+			double DistanceToBase = unit2->getDistance(ClosestBase);
+
+			// if our worker is idle
+			if (unit2->isIdle()) {
+				// Order workers carrying a resource to return them to the center		     
+				if (unit2->isCarryingGas() || unit2->isCarryingMinerals()){
+					unit2->returnCargo();
+				}
+
+				// A worker is newly born.
+				else if (unit2->isCompleted()){
+					BWAPI::Unit ClosestMineral = nullptr;
+					double closestDist = 100000;
+
+					// For the given initial Minerals, find the closest mineral one by one		
+					BWAPI::Unitset FirstMineralSet = MineralPresent();
+					for (auto &mineral : FirstMineralSet){
+						double dist = unit2->getDistance(mineral->getPosition());
+						if (dist < closestDist){
+							ClosestMineral = mineral;
+							closestDist = dist;
+						}
+					}
+					// Is it really closest? It is too far  or Mieral List is emphty !
+					if (closestDist > MaxMineralDist){
+						unit2->gather(ClosestBase->getClosestUnit(BWAPI::Filter::IsMineralField));
+						BWTA::BaseLocation * Base = BWTA::getNearestBaseLocation(ClosestBase->getPosition());
+						FirstMineralSet = MineralCollector(Base);
+					}
+					else{
+						unit2->gather(ClosestMineral);
+						FirstMineralSet.erase(ClosestMineral);
+					}
+					MineralSaver(FirstMineralSet);
+				}
+
+				// otherwise find a mineral patch to harvest.
+				else{
+					unit2->gather(ClosestBase->getClosestUnit(BWAPI::Filter::IsMineralField));
+				}
+			}
+
+			// This code should be modified for future scouting action.
+			// You are working at too far location.
+			else if (unit2->isGatheringMinerals() || unit2->isGatheringGas()){
+				if (DistanceToBase > MaxMineralDist){
+					// Go back to your friends.
+					unit2->gather(ClosestBase->getClosestUnit(BWAPI::Filter::IsMineralField));
+				}
+			}
+		}
+	}
+}
+
+
+
+
+
+
+
+
+std::map<std::string, int> TheTurk::UnitCounter(){
+
+	int Pylon_Count = 0;
+	int GateWay_Count = 0;
+	int StarGate_Count = 0;
+	int Nexus_Count = 0;
+	int Probe_Count = 0;
+	int Zealot_Count = 0;
+	int Dragoon_Count = 0;
+	int Corsair_Count = 0;
+
+
+	for (auto & unit : m_ValidUnits){
+		// If the unit is a worker unit
+		if (unit->getType().isWorker())
+		{
+			Probe_Count = Probe_Count + 1;
+		}
+		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Zealot)
+		{
+			Zealot_Count = Zealot_Count + 1;
+		}
+		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Dragoon)
+		{
+			Dragoon_Count = Dragoon_Count + 1;
+		}
+		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Corsair)
+		{
+			Corsair_Count = Corsair_Count + 1;
+		}
+		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Pylon)
+		{
+			Pylon_Count = Pylon_Count + 1;
+		}
+		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Gateway)
+		{
+			GateWay_Count = GateWay_Count + 1;
+		}
+		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Stargate){
+			StarGate_Count = StarGate_Count + 1;
+		}
+		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Nexus)
+		{
+			Nexus_Count = Nexus_Count + 1;
+		}
+	}
+
+	m_UnitCount["Probe_Count"] = Probe_Count;
+	m_UnitCount["Zealot_Count"] = Zealot_Count;
+	m_UnitCount["Dragoon_Count"] = Dragoon_Count;
+	m_UnitCount["Corsair_Count"] = Corsair_Count;
+
+	m_UnitCount["Pylon_Count"] = Pylon_Count;
+	m_UnitCount["GateWay_Count"] = GateWay_Count;
+	m_UnitCount["StarGate_Count"] = StarGate_Count;
+	m_UnitCount["Nexus_Count"] = Nexus_Count;
+
+
+
+	return m_UnitCount;
+
+}
