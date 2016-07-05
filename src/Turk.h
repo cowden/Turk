@@ -56,18 +56,18 @@ private:
 	std::map<std::string, int>	m_UnitCount;
 
 	// Unit Collector
-	void ValidUnitCollector(BWAPI::Unit);
-	bool IsValidUnit(BWAPI::Unit);
+	void ValidUnitCollector(const BWAPI::Unit &);
+	bool IsValidUnit(const BWAPI::Unit &);
 
-	BWAPI::Unitset MineralCollector(BWTA::BaseLocation * StartingPoint);
-	BWAPI::Unitset MineralPresent();
-	BWAPI::Unitset UnitSetPresent();
-	BWAPI::Unitset BasePresent();
-	BWAPI::Unitset WorkerPresent();
+	const BWAPI::Unitset & MineralCollector(const BWTA::BaseLocation * StartingPoint);
+	const BWAPI::Unitset & MineralPresent();
+	const BWAPI::Unitset & UnitSetPresent();
+	const BWAPI::Unitset & BasePresent();
+	const BWAPI::Unitset & WorkerPresent();
 
 
 	// Save the locations of minerals around our bases
-	void MineralSaver(BWAPI::Unitset);
+	void MineralSaver(const BWAPI::Unitset &);
 
 	// A resource depot is a Command Center, Nexus, or Hatchery
 	// A resource depot will generate workers up to the maximum number of workers
@@ -77,10 +77,10 @@ private:
 	void ProbeWork(int);
 
 	// Scouter managenet
-	void ScoutHander(BWAPI::Unit Scout);
+	void ScoutHander(const BWAPI::Unit & Scout);
 
 	// 
-	std::map<std::string, int> UnitCounter();
+	const std::map<std::string, int> & UnitCounter();
 	// end of commander section
 
 	// Check the Build Order Miles Stone

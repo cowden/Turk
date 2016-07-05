@@ -22,41 +22,41 @@ namespace Turk {
 
 		// $$$$$$$$$    Building Positining        $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		// Determine the location of pylons
-		void PylonPositioning(BWAPI::TilePosition, int);
+		void PylonPositioning(const BWAPI::TilePosition &, int);
 
 		// Determine the location of gateways
-		void GateWayPositioning(BWAPI::TilePosition, int);
+		void GateWayPositioning(const BWAPI::TilePosition &, int);
 
 		// Determine the location of technical building
-		void TechBuildingPositioning(BWAPI::TilePosition, int);
+		void TechBuildingPositioning(const BWAPI::TilePosition &, int);
 
 
 		// $$$$$$$$ Special Pylon Buliding Locations     $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		// Build pylons at both ends of minerals
-		void DefensePylonLocation(BWAPI::Unitset);
+		void DefensePylonLocation(const BWAPI::Unitset &);
 
 		void ChokeDefensePylon();
 
 		// $$$$$$$$$$$$$$$$$$$$$$$$$ Class Variable Handler $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		// Pylon Location Handler
-		BWAPI::TilePosition PylonLocationPresent();
-		void PylonLocationSaver(std::vector<BWAPI::TilePosition>);
+		const BWAPI::TilePosition & PylonLocationPresent();
+		void PylonLocationSaver(const std::vector<BWAPI::TilePosition> &);
 		void PylonLocationRemover();
 
 		// GateWay Location Handler
-		BWAPI::TilePosition GateWayLocationPresent();
-		void GateWayLocationSaver(std::vector<BWAPI::TilePosition>);
+		const BWAPI::TilePosition & GateWayLocationPresent();
+		void GateWayLocationSaver(const std::vector<BWAPI::TilePosition> &);
 		void GateWayLocationRemover();
 
 		// Tech Building Locations
-		BWAPI::TilePosition TechLocationPresent();
-		void TechLocationSaver(std::vector<BWAPI::TilePosition>);
+		const BWAPI::TilePosition & TechLocationPresent();
+		void TechLocationSaver(const std::vector<BWAPI::TilePosition> &);
 		void TechLocationRemover();
 
-		BWAPI::TilePosition GetExpansionBase();
+		const BWAPI::TilePosition & GetExpansionBase();
 
 		// Building Function
-		void MrBuilder(BWAPI::Unit, BWAPI::UnitType, BWAPI::TilePosition);
+		void MrBuilder(const BWAPI::Unit &, const BWAPI::UnitType &, const BWAPI::TilePosition &);
 
 		static BuildingManager &Instance();
 

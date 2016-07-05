@@ -19,19 +19,19 @@ ScoutManager & ScoutManager::Instance()
 
 
 // Save Scouter Pointer
-void ScoutManager::ScouterSaver(BWAPI::Unit ScouterUnit){
+void ScoutManager::ScouterSaver(const BWAPI::Unit & ScouterUnit){
 	m_Scouter = ScouterUnit;
 }
 
 
 // Return Scouter Pointer
-BWAPI::Unit ScoutManager::ScouterPresent(){
+const BWAPI::Unit & ScoutManager::ScouterPresent(){
 	return m_Scouter;
 }
 
 
 
-bool ScoutManager::EnemyFirstDetector(bool Detector, BWAPI::TilePosition Expansion){
+bool ScoutManager::EnemyFirstDetector(bool Detector, const BWAPI::TilePosition & Expansion){
 	
 	BWAPI::TilePosition Right;
 	Right.x = Expansion.x + 4;

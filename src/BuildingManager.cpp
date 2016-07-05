@@ -245,7 +245,7 @@ void BuildingManager::ChokeDefensePylon(){
 }
 
 
-void BuildingManager::DefensePylonLocation(BWAPI::Unitset FirstMineralSet){
+void BuildingManager::DefensePylonLocation(const BWAPI::Unitset & FirstMineralSet){
 	
 	// Build pylon close to the minerals
 	BWAPI::Unit ClosestMineral = nullptr;
@@ -290,7 +290,7 @@ void BuildingManager::DefensePylonLocation(BWAPI::Unitset FirstMineralSet){
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 // Class Variable Handler
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-BWAPI::TilePosition BuildingManager::PylonLocationPresent(){
+const BWAPI::TilePosition & BuildingManager::PylonLocationPresent(){
 	if (!BWAPI::Broodwar->isBuildable(m_PylonTilePosition.back(), true)){
 		m_PylonTilePosition.pop_back();
 	}
@@ -301,18 +301,18 @@ void BuildingManager::PylonLocationRemover(){
 	m_PylonTilePosition.pop_back();	
 }
 
-void BuildingManager::PylonLocationSaver(std::vector<BWAPI::TilePosition> TempPosition){
+void BuildingManager::PylonLocationSaver(const std::vector<BWAPI::TilePosition> & TempPosition){
 	m_PylonTilePosition = TempPosition;
 }
 
-BWAPI::TilePosition BuildingManager::GateWayLocationPresent(){
+const BWAPI::TilePosition & BuildingManager::GateWayLocationPresent(){
 	if (!BWAPI::Broodwar->isBuildable(m_GateTilePosition.back(), true)){
 		m_GateTilePosition.pop_back();
 	}	
 	return m_GateTilePosition.back();
 }
 
-void BuildingManager::GateWayLocationSaver(std::vector<BWAPI::TilePosition> TempPosition){
+void BuildingManager::GateWayLocationSaver(const std::vector<BWAPI::TilePosition> & TempPosition){
 	m_GateTilePosition = TempPosition;
 }
 
@@ -322,14 +322,14 @@ void BuildingManager::GateWayLocationRemover(){
 
 
 
-BWAPI::TilePosition BuildingManager::TechLocationPresent(){	
+const BWAPI::TilePosition & BuildingManager::TechLocationPresent(){	
 	if (!BWAPI::Broodwar->isBuildable(m_TechBuildingTileLocation.back(), true)){
 		m_TechBuildingTileLocation.pop_back();
 	}
 	return m_TechBuildingTileLocation.back();
 }
 
-void BuildingManager::TechLocationSaver(std::vector<BWAPI::TilePosition> TempPosition){
+void BuildingManager::TechLocationSaver(const std::vector<BWAPI::TilePosition> & TempPosition){
 	m_TechBuildingTileLocation = TempPosition;
 }
 
@@ -340,7 +340,7 @@ void BuildingManager::TechLocationRemover(){
 
 
 
-BWAPI::TilePosition BuildingManager::GetExpansionBase(){
+const BWAPI::TilePosition & BuildingManager::GetExpansionBase(){
 
 	BWAPI::TilePosition NexusLocation;
 	
@@ -380,7 +380,7 @@ BWAPI::TilePosition BuildingManager::GetExpansionBase(){
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 // Building Positioning 
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-void BuildingManager::PylonPositioning(BWAPI::TilePosition StartingPoint,int Numbers){		
+void BuildingManager::PylonPositioning(const BWAPI::TilePosition & StartingPoint,int Numbers){		
 	BWAPI::TilePosition TempTileLocation;		
 	for (int a = 1; a < Numbers; a = a + 1){
 		TempTileLocation.x = StartingPoint.x;
@@ -390,7 +390,7 @@ void BuildingManager::PylonPositioning(BWAPI::TilePosition StartingPoint,int Num
 }
 
 
-void BuildingManager::GateWayPositioning(BWAPI::TilePosition StartingPoint, int Numbers){	
+void BuildingManager::GateWayPositioning(const BWAPI::TilePosition & StartingPoint, int Numbers){	
 	BWAPI::TilePosition TempTileLocation;
 	
 	for (int a = 0; a < Numbers; a = a + 1){
@@ -405,7 +405,7 @@ void BuildingManager::GateWayPositioning(BWAPI::TilePosition StartingPoint, int 
 }
 
 
-void BuildingManager::TechBuildingPositioning(BWAPI::TilePosition StartingPoint,int Numbers){
+void BuildingManager::TechBuildingPositioning(const BWAPI::TilePosition & StartingPoint,int Numbers){
 	BWAPI::TilePosition TempTileLocation;
 
 	for (int a = 0; a < Numbers; a = a + 1){
@@ -420,7 +420,7 @@ void BuildingManager::TechBuildingPositioning(BWAPI::TilePosition StartingPoint,
 
 
 
-void BuildingManager::MrBuilder(BWAPI::Unit HeadQuater, BWAPI::UnitType BuildingTarget, BWAPI::TilePosition WishLocation){
+void BuildingManager::MrBuilder(const BWAPI::Unit & HeadQuater, const BWAPI::UnitType & BuildingTarget, const BWAPI::TilePosition & WishLocation){
 
 	static int lastChecked = 0;
 	// If we are supply blocked and haven't tried constructing more recently

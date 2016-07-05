@@ -11,13 +11,13 @@ namespace Turk {
 		~ScoutManager(){};
 
 		// Save Scouter pointer
-		void ScouterSaver(BWAPI::Unit);
+		void ScouterSaver(const BWAPI::Unit &);
 
 		// Return a scout unit pointer
-		BWAPI::Unit ScouterPresent();
+		const BWAPI::Unit & ScouterPresent();
 
 		// Detect the enemy base
-		bool EnemyFirstDetector(bool, BWAPI::TilePosition);
+		bool EnemyFirstDetector(bool,const BWAPI::TilePosition &);
 
 		static ScoutManager &Instance();
 

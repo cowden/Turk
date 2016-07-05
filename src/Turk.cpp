@@ -748,7 +748,7 @@ void TheTurk::onEnd(bool isWinner)
 
 // Commander functions
 // Collect all valid units except dead bodies
-void TheTurk::ValidUnitCollector(BWAPI::Unit ScouterUnit){
+void TheTurk::ValidUnitCollector(const BWAPI::Unit & ScouterUnit){
 	m_ValidUnits.clear();
 	m_BaseUnits.clear();
 	m_WorkerUnits.clear();
@@ -776,7 +776,7 @@ void TheTurk::ValidUnitCollector(BWAPI::Unit ScouterUnit){
 }
 
 
-BWAPI::Unitset TheTurk::MineralCollector(BWTA::BaseLocation * BasePoint){
+const BWAPI::Unitset & TheTurk::MineralCollector(const BWTA::BaseLocation * BasePoint){
 	//MineralSets.clear();
 	for (auto &mineral : BasePoint->getStaticMinerals()){
 		m_MineralSets.insert(mineral);
@@ -785,24 +785,23 @@ BWAPI::Unitset TheTurk::MineralCollector(BWTA::BaseLocation * BasePoint){
 }
 
 
-BWAPI::Unitset TheTurk::MineralPresent(){
+const BWAPI::Unitset & TheTurk::MineralPresent(){
 	return m_MineralSets;
 }
 
 
-void TheTurk::MineralSaver(BWAPI::Unitset Mineral){
+void TheTurk::MineralSaver(const BWAPI::Unitset & Mineral){
 	m_MineralSets = Mineral;
 }
 
 
 
-
-void TheTurk::ScoutHander(BWAPI::Unit Scout){
+void TheTurk::ScoutHander(const BWAPI::Unit & Scout){
 	m_WorkerUnits.erase(Scout);
 }
 
 // unit represent the point.
-bool TheTurk::IsValidUnit(BWAPI::Unit unit){
+bool TheTurk::IsValidUnit(const BWAPI::Unit & unit){
 	if (!unit){
 		return false;
 	}
@@ -846,17 +845,17 @@ bool TheTurk::IsValidUnit(BWAPI::Unit unit){
 
 
 
-BWAPI::Unitset TheTurk::UnitSetPresent(){
+const BWAPI::Unitset & TheTurk::UnitSetPresent(){
 	return m_ValidUnits;
 }
 
 
-BWAPI::Unitset TheTurk::BasePresent(){
+const BWAPI::Unitset & TheTurk::BasePresent(){
 	return m_BaseUnits;
 }
 
 
-BWAPI::Unitset TheTurk::WorkerPresent(){
+const BWAPI::Unitset & TheTurk::WorkerPresent(){
 	return m_WorkerUnits;
 }
 
@@ -937,7 +936,7 @@ void TheTurk::ProbeWork(int MaxMineralDist){
 
 
 
-std::map<std::string, int> TheTurk::UnitCounter(){
+const std::map<std::string, int> & TheTurk::UnitCounter(){
 
 	int Pylon_Count = 0;
 	int GateWay_Count = 0;
