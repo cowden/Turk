@@ -1,0 +1,21 @@
+﻿Build started 7/6/2016 1:46:53 AM.
+     1>Project "C:\Users\Duehee\Dropbox\StarComp\Turk\VisualStudio\Turk.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\src /IC:\Users\Duehee\Dropbox\StarComp\BWTAlib_2.2\include /IC:\Users\Duehee\Dropbox\StarComp\BWAPI\include /Zi /nologo /W3 /WX- /sdl- /MP /O2 /Oi /Oy- /GL /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"C:\Users\Duehee\Dropbox\StarComp\Turk\VisualStudio\\Release\Turk\\" /Fd"C:\Users\Duehee\Dropbox\StarComp\Turk\VisualStudio\\Release\Turk\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\src\BuildingManager.cpp
+         BuildingManager.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Duehee\Dropbox\StarComp\Turk\VisualStudio\\..\bin\Turk.dll" /INCREMENTAL:NO /NOLOGO C:\Users\Duehee\Dropbox\StarComp\BWAPI/lib/BWAPI.lib C:\Users\Duehee\Dropbox\StarComp\BWTAlib_2.2/lib/BWTA.lib "C:\Users\Duehee\Dropbox\StarComp\BWTAlib_2.2/lib/libboost_system-vc120-mt-1_56.lib" "C:\Users\Duehee\Dropbox\StarComp\BWTAlib_2.2/lib/libboost_thread-vc120-mt-1_56.lib" "C:\Users\Duehee\Dropbox\StarComp\BWTAlib_2.2/lib/libCGAL-vc120-mt-4.4.lib" "C:\Users\Duehee\Dropbox\StarComp\BWTAlib_2.2/lib/libgmp-10.lib" "C:\Users\Duehee\Dropbox\StarComp\BWTAlib_2.2/lib/libmpfr-4.lib" "C:\Users\Duehee\Dropbox\StarComp\BWTAlib_2.2/lib/libboost_filesystem-vc120-mt-1_56.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Duehee\Dropbox\StarComp\Turk\VisualStudio\\..\bin\Turk.pdb" /MAP /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /MACHINE:X86 /SAFESEH /DLL C:\Users\Duehee\Dropbox\StarComp\Turk\VisualStudio\\Release\Turk\BuildingManager.obj
+         C:\Users\Duehee\Dropbox\StarComp\Turk\VisualStudio\\Release\Turk\Commander.obj
+         C:\Users\Duehee\Dropbox\StarComp\Turk\VisualStudio\\Release\Turk\Dll.obj
+         C:\Users\Duehee\Dropbox\StarComp\Turk\VisualStudio\\Release\Turk\InformationManager.obj
+         C:\Users\Duehee\Dropbox\StarComp\Turk\VisualStudio\\Release\Turk\ScoutManager.obj
+         C:\Users\Duehee\Dropbox\StarComp\Turk\VisualStudio\\Release\Turk\Turk.obj
+            Creating library C:\Users\Duehee\Dropbox\StarComp\Turk\VisualStudio\\..\bin\Turk.lib and object C:\Users\Duehee\Dropbox\StarComp\Turk\VisualStudio\\..\bin\Turk.exp
+         Generating code
+         Finished generating code
+         Turk.vcxproj -> C:\Users\Duehee\Dropbox\StarComp\Turk\VisualStudio\\..\bin\Turk.dll
+     1>Done Building Project "C:\Users\Duehee\Dropbox\StarComp\Turk\VisualStudio\Turk.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:11.49

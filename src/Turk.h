@@ -23,7 +23,9 @@ class TheTurk : public BWAPI::AIModule
 	bool FirstExpansion = false;
 	bool FirstGasExist = false;
 	bool FirstCybernetics = false;
+	bool FirstForge = false;
 	bool FirstAdun = false;
+	bool FirstTemplerArchive = false;
 	bool FirstFleetBeacon = false;
 
 
@@ -34,7 +36,7 @@ class TheTurk : public BWAPI::AIModule
 
 
 	// Scouting Information
-	bool EnemyDetection = false;
+	bool EnemyDetection = false;	
 	bool CorsairSearchMode = false;
 
 
@@ -96,12 +98,13 @@ class TheTurk : public BWAPI::AIModule
 	BWAPI::Position FirstExpansionPosition;
 	BWAPI::Position Campus;
 	BWAPI::Position HillPosition;
+	BWAPI::Position HillPosition2;
 	BWAPI::TilePosition NextExpansion;
 	
 	// Enemy Building Position
-	BWAPI::Position EnemyHomeBase;
-	BWAPI::Position EnemyHillPosition;
-	BWAPI::Position EnemyExpansion;
+	BWAPI::Position EnemyHomeBase = BWAPI::Positions::None;
+	BWAPI::Position EnemyHillPosition = BWAPI::Positions::None;
+	BWAPI::Position EnemyExpansion = BWAPI::Positions::None;
 
 
 	// $$$$$$$$$$$$$$$$$$$$

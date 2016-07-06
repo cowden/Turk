@@ -8,6 +8,8 @@ namespace Turk {
 	class BuildingManager
 	{
 
+		BWAPI::Unit MrBuilder;
+
 		// Pylon Location Vector
 		std::vector<BWAPI::TilePosition>	PylonTilePosition;
 
@@ -16,6 +18,9 @@ namespace Turk {
 
 		// Technical buiding location Vector
 		std::vector<BWAPI::TilePosition>	TechBuildingTileLocation;
+
+		// Expansion Site
+		std::vector<BWAPI::TilePosition>	ExpansionLocation;
 
 
 		// Buildings	
@@ -76,6 +81,7 @@ namespace Turk {
 		// $$$$$$$$$$$$$$$$$$$$$$$$$ Class Variable Handler $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		// Pylon Location Handler
 		BWAPI::TilePosition PylonLocationPresent();
+		std::vector<BWAPI::TilePosition> PylonSetPresent();
 		void PylonLocationSaver(std::vector<BWAPI::TilePosition>);
 		void PylonLocationRemover();
 
@@ -90,12 +96,12 @@ namespace Turk {
 		void TechLocationRemover();
 
 
-		BWAPI::TilePosition GetExpansionBase();
+		void GetExpansionBase(BWAPI::TilePosition, BWAPI::TilePosition);
 
 
 		// Building Function
-		void MrBuilder(BWAPI::Unit, BWAPI::UnitType, BWAPI::TilePosition);
-
+		void BuildingFunction(BWAPI::Unit, BWAPI::UnitType);
+		void MrBuilderRemover();
 
 
 		static BuildingManager &Instance();

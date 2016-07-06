@@ -35,6 +35,9 @@ namespace Turk {
 		void ValidUnitCollector(BWAPI::Unit);
 		bool IsValidUnit(BWAPI::Unit);
 
+
+		std::map<std::string, int> UnitCounterPresenter();
+
 		BWAPI::Unitset MineralCollector(BWTA::BaseLocation * StartingPoint);
 		BWAPI::Unitset MineralPresent();
 		BWAPI::Unitset UnitSetPresent();
@@ -55,10 +58,7 @@ namespace Turk {
 
 		// Scouter managenet
 		void ScoutHander(BWAPI::Unit Scout);
-
-		// 
-		std::map<std::string, int> Commander::UnitCounter();
-
+		
 		static Commander &Instance();
 
 

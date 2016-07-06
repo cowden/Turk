@@ -28,6 +28,16 @@ Commander & Commander::Instance()
 
 // Collect all valid units except dead bodies
 void Commander::ValidUnitCollector(BWAPI::Unit ScouterUnit){
+
+	int Pylon_Count = 0;
+	int GateWay_Count = 0;
+	int StarGate_Count = 0;
+	int Nexus_Count = 0;
+	int Probe_Count = 0;
+	int Zealot_Count = 0;
+	int Dragoon_Count = 0;
+	int Corsair_Count = 0;
+
 	_ValidUnits.clear();
 	_BaseUnits.clear();
 	_WorkerUnits.clear();
@@ -36,25 +46,70 @@ void Commander::ValidUnitCollector(BWAPI::Unit ScouterUnit){
 		if (IsValidUnit(unit)){
 			_ValidUnits.insert(unit);
 
-			if (unit->getType()==BWAPI::UnitTypes::Protoss_Nexus){
+			if (unit->getType() == BWAPI::UnitTypes::Protoss_Nexus){
 				_BaseUnits.insert(unit);
+
+				Nexus_Count = Nexus_Count + 1;
 			}
 			else if (unit->getType().isWorker()){
 				_WorkerUnits.insert(unit);
+
+				Probe_Count = Probe_Count + 1;
+			}
+
+			// Unit Counts
+			if (unit->getType() == BWAPI::UnitTypes::Protoss_Zealot)
+			{
+				Zealot_Count = Zealot_Count + 1;
+			}
+			else if (unit->getType() == BWAPI::UnitTypes::Protoss_Dragoon)
+			{
+				Dragoon_Count = Dragoon_Count + 1;
+			}
+			else if (unit->getType() == BWAPI::UnitTypes::Protoss_Corsair)
+			{
+				Corsair_Count = Corsair_Count + 1;
+			}
+			else if (unit->getType() == BWAPI::UnitTypes::Protoss_Pylon)
+			{
+				Pylon_Count = Pylon_Count + 1;
+			}
+			else if (unit->getType() == BWAPI::UnitTypes::Protoss_Gateway)
+			{
+				GateWay_Count = GateWay_Count + 1;
+			}
+			else if (unit->getType() == BWAPI::UnitTypes::Protoss_Stargate){
+				StarGate_Count = StarGate_Count + 1;
 			}
 		}
 	}
 	if (ScouterUnit){
 		_WorkerUnits.erase(ScouterUnit);
 	}
-	
 
+	UnitCount["Probe_Count"] = Probe_Count;
+	UnitCount["Zealot_Count"] = Zealot_Count;
+	UnitCount["Dragoon_Count"] = Dragoon_Count;
+	UnitCount["Corsair_Count"] = Corsair_Count;
+
+	UnitCount["Pylon_Count"] = Pylon_Count;
+	UnitCount["GateWay_Count"] = GateWay_Count;
+	UnitCount["StarGate_Count"] = StarGate_Count;
+	UnitCount["Nexus_Count"] = Nexus_Count;
 
 	// Future unit sets
 	// SetScoutUnits();
 	// SetBaseCombatUnits();
 	// SetFieldCombatUnits();
 }
+
+
+
+std::map<std::string, int> Commander::UnitCounterPresenter(){
+	return UnitCount;
+}
+
+
 
 
 BWAPI::Unitset Commander::MineralCollector(BWTA::BaseLocation * BasePoint){
@@ -220,76 +275,6 @@ void Commander::ProbeWork(int MaxMineralDist){
 			}
 		}
 	}
-}
-
-
-
-
-
-
-
-
-std::map<std::string, int> Commander::UnitCounter(){
-
-	int Pylon_Count = 0;
-	int GateWay_Count = 0;
-	int StarGate_Count = 0;
-	int Nexus_Count = 0;
-	int Probe_Count = 0;
-	int Zealot_Count = 0;
-	int Dragoon_Count = 0;
-	int Corsair_Count = 0;
-
-
-	for (auto & unit : _ValidUnits){
-		// If the unit is a worker unit
-		if (unit->getType().isWorker())
-		{
-			Probe_Count = Probe_Count + 1;
-		}
-		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Zealot)
-		{
-			Zealot_Count = Zealot_Count + 1;
-		}
-		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Dragoon)
-		{
-			Dragoon_Count = Dragoon_Count + 1;
-		}
-		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Corsair)
-		{
-			Corsair_Count = Corsair_Count + 1;
-		}
-		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Pylon)
-		{
-			Pylon_Count = Pylon_Count + 1;
-		}
-		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Gateway)
-		{
-			GateWay_Count = GateWay_Count + 1;
-		}
-		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Stargate){
-			StarGate_Count = StarGate_Count + 1;
-		}
-		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Nexus)
-		{
-			Nexus_Count = Nexus_Count + 1;
-		}
-	}
-
-	UnitCount["Probe_Count"] = Probe_Count;
-	UnitCount["Zealot_Count"] = Zealot_Count;
-	UnitCount["Dragoon_Count"] = Dragoon_Count;
-	UnitCount["Corsair_Count"] = Corsair_Count;
-	
-	UnitCount["Pylon_Count"] = Pylon_Count;
-	UnitCount["GateWay_Count"] = GateWay_Count;
-	UnitCount["StarGate_Count"] = StarGate_Count;
-	UnitCount["Nexus_Count"] = Nexus_Count;
-
-
-
-	return UnitCount;
-
 }
 
 
