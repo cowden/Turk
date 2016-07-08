@@ -40,23 +40,29 @@ namespace Turk {
 		// $$$$$$$$$$$$$$$$$$$$$$$$$ Class Variable Handler $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		// Pylon Location Handler
 		const BWAPI::TilePosition & PylonLocationPresent();
+		const std::vector<BWAPI::TilePosition> & PylonSetPresent();
 		void PylonLocationSaver(const std::vector<BWAPI::TilePosition> &);
 		void PylonLocationRemover();
 
 		// GateWay Location Handler
-		const BWAPI::TilePosition & GateWayLocationPresent();
+		const std::vector<BWAPI::TilePosition> & GateWayLocationPresent();
 		void GateWayLocationSaver(const std::vector<BWAPI::TilePosition> &);
 		void GateWayLocationRemover();
 
 		// Tech Building Locations
 		const BWAPI::TilePosition & TechLocationPresent();
+		const std::vector<BWAPI::TilePosition> & TechSetPresent();
 		void TechLocationSaver(const std::vector<BWAPI::TilePosition> &);
 		void TechLocationRemover();
 
-		const BWAPI::TilePosition & GetExpansionBase();
+		const std::vector<BWAPI::TilePosition> & NexusSetPresent();
+		void NexusLocationRemover();
+
+		void GetExpansionBase(BWAPI::TilePosition EnemyTilePosition, BWAPI::TilePosition HomeTilePositio);
 
 		// Building Function
-		void MrBuilder(const BWAPI::Unit &, const BWAPI::UnitType &, const BWAPI::TilePosition &);
+		void BuildingFunction(const BWAPI::Unit &, const BWAPI::UnitType &);
+		void MrBuilderRemover();
 
 		static BuildingManager &Instance();
 
@@ -69,6 +75,9 @@ namespace Turk {
 
 		// Technical buiding location Vector
 		std::vector<BWAPI::TilePosition>	m_TechBuildingTileLocation;
+
+		// Expansion Site
+		std::vector<BWAPI::TilePosition> m_ExpansionLocation;
 
 
 		// CSC - Why is this here??
@@ -87,6 +96,8 @@ namespace Turk {
 		BWAPI::UnitType Zealot = BWAPI::UnitTypes::Protoss_Zealot;
 		BWAPI::UnitType Dragoon = BWAPI::UnitTypes::Protoss_Dragoon;
 		BWAPI::UnitType Corsair = BWAPI::UnitTypes::Protoss_Corsair;
+
+		BWAPI::Unit MrBuilder;
 	
 	};
 

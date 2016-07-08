@@ -37,7 +37,7 @@ public:
 	virtual void onUnitComplete(BWAPI::Unit unit);
 	void drawTerrainData();
 	// Everything below this line is safe to modify.
-
+	
 private:
 
 	// map analysis
@@ -58,6 +58,7 @@ private:
 	// Unit Collector
 	void ValidUnitCollector(const BWAPI::Unit &);
 	bool IsValidUnit(const BWAPI::Unit &);
+	const std::map<std::string, int> & UnitCounterPresenter();
 
 	const BWAPI::Unitset & MineralCollector(const BWTA::BaseLocation * StartingPoint);
 	const BWAPI::Unitset & MineralPresent();
@@ -87,7 +88,9 @@ private:
 	bool m_FirstExpansion = false;
 	bool m_FirstGasExist = false;
 	bool m_FirstCybernetics = false;
+	bool m_FirstForge = false;
 	bool m_FirstAdun = false;
+	bool m_FirstTemplarArchive = false;
 	bool m_FirstFleetBeacon = false;
 
 
@@ -144,6 +147,7 @@ private:
 	BWAPI::Position m_FirstExpansionPosition;
 	BWAPI::Position m_Campus;
 	BWAPI::Position m_HillPosition;
+	BWAPI::Position m_HillPosition2;
 	BWAPI::TilePosition m_NextExpansion;
 	
 	// Enemy Building Position
