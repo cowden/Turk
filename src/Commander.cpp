@@ -37,6 +37,8 @@ void Commander::ValidUnitCollector(BWAPI::Unit ScouterUnit){
 	int Zealot_Count = 0;
 	int Dragoon_Count = 0;
 	int Corsair_Count = 0;
+	int HighTempler_Count = 0;
+
 
 	_ValidUnits.clear();
 	_BaseUnits.clear();
@@ -81,6 +83,9 @@ void Commander::ValidUnitCollector(BWAPI::Unit ScouterUnit){
 			else if (unit->getType() == BWAPI::UnitTypes::Protoss_Stargate){
 				StarGate_Count = StarGate_Count + 1;
 			}
+			else if (unit->getType() == BWAPI::UnitTypes::Protoss_High_Templar){
+				HighTempler_Count = HighTempler_Count + 1;
+			}
 		}
 	}
 	if (ScouterUnit){
@@ -91,6 +96,7 @@ void Commander::ValidUnitCollector(BWAPI::Unit ScouterUnit){
 	UnitCount["Zealot_Count"] = Zealot_Count;
 	UnitCount["Dragoon_Count"] = Dragoon_Count;
 	UnitCount["Corsair_Count"] = Corsair_Count;
+	UnitCount["HighTempler_Count"] = HighTempler_Count;
 
 	UnitCount["Pylon_Count"] = Pylon_Count;
 	UnitCount["GateWay_Count"] = GateWay_Count;

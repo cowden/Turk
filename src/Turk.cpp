@@ -15,7 +15,7 @@ void TheTurk::onStart()
 {
 	// Hello World!
 	// Broodwar->sendText("Hello world!");
-	Broodwar->setLocalSpeed(5);
+	Broodwar->setLocalSpeed(20);
 
 
 	// Print the map name.
@@ -325,11 +325,11 @@ void TheTurk::onFrame(){
 
 
 
-	// Expansion Plans --> Might be moved to the ExpansionManager.
-	// Build the Nexus
-	//if (UnitCount["GateWay_Count"] == 1 || UnitCount["GateWay_Count"] == 8 && UnitCount["Nexus_Count"] <= 3){  // First Triger & Overall Game Land Trigger
-	//	BuildingManager::Instance().GetExpansionBase(TilePosition(EnemyHomeBase), homeTilePosition);
-	//}
+	 // Expansion Plans --> Might be moved to the ExpansionManager.	 
+	 if (UnitCount["GateWay_Count"] == 1 && BWAPI::Broodwar->self()->minerals() > 400){  // First Triger & Overall Game Land Trigger
+		//BuildingManager::Instance().GetExpansionBase(TilePosition(EnemyHomeBase), homeTilePosition);
+		BuildingManager::Instance().BuildingFunction(ResourceDepot, Nexus);
+	}
 
 
 
@@ -507,14 +507,20 @@ void TheTurk::onFrame(){
 			if (FirstCybernetics && UnitCount["Zealot_Count"] >= UnitCount["Dragoon_Count"]){
 				unit->train(BWAPI::UnitTypes::Protoss_Dragoon);
 			}
+			else if (UnitCount["HighTempler_Count"] < 10){
+				unit->train(BWAPI::UnitTypes::Protoss_High_Templar);
+			}
 			else{
 				unit->train(BWAPI::UnitTypes::Protoss_Zealot);
 			}
+
+			
+
 		}
 
 		if (unit->isIdle() && unit->getType() == StarGate){
 			unit->rightClick(Campus);
-			if (UnitCount["Corsair_Count"] <= 3){
+			if (UnitCount["Corsair_Count"] <= 12){
 				unit->train(BWAPI::UnitTypes::Protoss_Corsair);
 			}			
 		}
@@ -540,31 +546,26 @@ void TheTurk::onFrame(){
 	for (auto & unit : _Commander.UnitSetPresent()){
 		if (unit->getType() == Corsair){						
 			
-
-			// If it is attacked while it is attacking.
-			if (unit->isAttacking() && unit->isUnderAttack()){
-				unit->move(homePosition);
-			}
-			if (unit->isMoving() && unit->isUnderAttack()){
-				unit->move(homePosition);
-			}
-
 			// Release the stagmation
 			if (unit->isUnderAttack()){
 				unit->move(homePosition);
 			}
+			
 
+		
 			if (CorsairSearchMode){
 				for (BWTA::BaseLocation * startLocation : BWTA::getStartLocations()){
 					// if we haven't explored it yet
 					BWAPI::Position targetPosition = BWAPI::Position(startLocation->getTilePosition());
-					if (targetPosition != EnemyHomeBase && targetPosition != homePosition){
-						unit->move(targetPosition);
+					double dist = unit->getDistance(targetPosition);
+					if (targetPosition != EnemyHomeBase && dist > 10 ){
+						unit->move(targetPosition,true);
 					}					
 				}
 				CorsairSearchMode = false;
 			}
 
+			
 
 			// If a unit is regenerated and taking a rest, go to the enemy base.
 			if (unit->isIdle()){
@@ -589,8 +590,15 @@ void TheTurk::onFrame(){
 			if (unit->isMoving()){
 				for (auto & unit2 : BWAPI::Broodwar->enemy()->getUnits()){
 					if (unit2->getType().isFlyer() && unit->exists()){
-						if (unit->isInWeaponRange(unit2)){
+						if (unit->isInWeaponRange(unit2) && !unit->isUnderAttack()){
 							unit->attack(unit2);
+							break;
+						}
+						else if (unit2->getType() == BWAPI::UnitTypes::Zerg_Spore_Colony || unit2->getType() == BWAPI::UnitTypes::Zerg_Hydralisk){
+							unit->move(homePosition);
+						}
+						else if (unit->isUnderAttack()){
+							unit->move(homePosition);
 							break;
 						}
 						else{
@@ -598,15 +606,8 @@ void TheTurk::onFrame(){
 							break;
 						}
 					}
-					else if (unit2->getType() == BWAPI::UnitTypes::Zerg_Spore_Colony ||
-						unit2->getType() == BWAPI::UnitTypes::Zerg_Hydralisk){
-						unit->move(homePosition);
-					}	
 				}
 			}
-			
-	
-
 		}
 	}
 
@@ -672,13 +673,13 @@ void TheTurk::onFrame(){
 			}
 
 			if (unit->getType() == Forge){
-				unit->upgrade(BWAPI::UpgradeTypes::Protoss_Ground_Armor);
-			}
-			if (unit->getType() == Forge){
-				unit->upgrade(BWAPI::UpgradeTypes::Protoss_Ground_Weapons);
-			}
-			if (unit->getType() == Forge){
+				unit->upgrade(BWAPI::UpgradeTypes::Protoss_Ground_Weapons);			
 				unit->upgrade(BWAPI::UpgradeTypes::Protoss_Plasma_Shields);
+				unit->upgrade(BWAPI::UpgradeTypes::Protoss_Ground_Armor);				
+			}
+			if (unit->getType() == TemplerArchive){
+				unit->research(BWAPI::TechTypes::Psionic_Storm);
+				unit->upgrade(BWAPI::UpgradeTypes::Khaydarin_Amulet);
 			}
 
 
@@ -1092,21 +1093,61 @@ void TheTurk::onUnitCreate(BWAPI::Unit unit)
 
 	// When the building is innitiated, realease the MrBuilder and Building locations.
 	if (unit->getType().isBuilding()){
+
+		// Print the Target Building
 		TilePosition targetBuildLocation = unit->getTilePosition();
 		Broodwar->sendText("%.2d %.2d / Unit: %s", targetBuildLocation.x, targetBuildLocation.y, unit->getType().c_str());
 
 		// Realease the MrBuilder
 		BuildingManager::Instance().MrBuilderRemover();
 
+
+		std::vector<BWAPI::TilePosition>	TilePositionOfBuilding;
+		TilePosition ScheduledLocation = BWAPI::TilePositions::None;
+		
+
 		if (unit->getType() == Pylon){
-			BuildingManager::Instance().PylonLocationRemover();
+			TilePositionOfBuilding = BuildingManager::Instance().PylonSetPresent();		
+
+			if (!TilePositionOfBuilding.empty()){
+				ScheduledLocation = TilePositionOfBuilding.back();
+				if (ScheduledLocation = targetBuildLocation){
+					BuildingManager::Instance().PylonLocationRemover();
+				}
+			}
 		}
 		else if ( (unit->getType() == GateWay) || (unit->getType() == StarGate) ){
-			BuildingManager::Instance().GateWayLocationRemover();
+			TilePositionOfBuilding = BuildingManager::Instance().PylonSetPresent();
+
+			if (!TilePositionOfBuilding.empty()){
+				ScheduledLocation = TilePositionOfBuilding.back();
+				if (ScheduledLocation = targetBuildLocation){
+					BuildingManager::Instance().GateWayLocationRemover();
+				}
+			}
 		}
 		else if (unit->getType().tileWidth() == 3 && unit->getType().tileHeight() == 2){
-			BuildingManager::Instance().TechLocationRemover();			
+			TilePositionOfBuilding = BuildingManager::Instance().TechSetPresent();
+
+			if (!TilePositionOfBuilding.empty()){
+				ScheduledLocation = TilePositionOfBuilding.back();
+				if (ScheduledLocation = targetBuildLocation){		
+					BuildingManager::Instance().TechLocationRemover();
+				}
+			}
 		}
+		else if (unit->getType() == Nexus){
+			TilePositionOfBuilding = BuildingManager::Instance().NexusSetPresent();
+
+			if (!TilePositionOfBuilding.empty()){
+				ScheduledLocation = TilePositionOfBuilding.back();
+				if (ScheduledLocation = targetBuildLocation){
+					BuildingManager::Instance().NexusLocationRemover();
+				}
+			}
+		}
+
+		
 
 	}
 }
@@ -1166,6 +1207,10 @@ void TheTurk::onUnitComplete(BWAPI::Unit unit)
 		//seconds %= 60;
 		// Broodwar->sendText("%.2d:%.2d: %s completed a %s", pos, unit->getPlayer()->getName().c_str(), unit->getType().c_str());
 
+
+		std::map<std::string, int>	UnitCount;
+		UnitCount = _Commander.UnitCounterPresenter();
+
 		if (unit->getType() == BWAPI::UnitTypes::Protoss_Assimilator)
 		{
 			FirstGasExist = true;
@@ -1174,12 +1219,10 @@ void TheTurk::onUnitComplete(BWAPI::Unit unit)
 		{
 			FirstCybernetics = true;
 		}
-		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Forge)
-		{
+		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Forge){
 			FirstForge = true;
 		}
-		else if (unit->getType() == BWAPI::UpgradeTypes::Singularity_Charge)
-		{
+		else if (unit->getType() == BWAPI::UpgradeTypes::Singularity_Charge){
 			Singularity = true;
 		}
 		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Citadel_of_Adun){
@@ -1189,28 +1232,27 @@ void TheTurk::onUnitComplete(BWAPI::Unit unit)
 		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Templar_Archives){
 			FirstTemplerArchive = true;			
 		}
-		else if (unit->getType() == BWAPI::UpgradeTypes::Leg_Enhancements)
-		{
+		else if (unit->getType() == BWAPI::UpgradeTypes::Leg_Enhancements){
 			Leg_Enhancements = true;
 			
 		}
-		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Nexus && Broodwar->getFrameCount()>10){
+		else if (unit->getType() == BWAPI::UnitTypes::Protoss_Nexus && UnitCount["Nexus_Count"]==2){
 
-			MaxGateWayCount = 8;
+			MaxGateWayCount = 5;
 			
 			// Build More Pylons
-			//std::vector<BWAPI::TilePosition>	PylonTilePosition = BuildingManager::Instance().PylonSetPresent();
-			//
-			//PylonTilePosition.push_back(BWAPI::Broodwar->getBuildLocation(Pylon, TilePosition(HillPosition2), 6));
-			//PylonTilePosition.push_back(BWAPI::Broodwar->getBuildLocation(Pylon, TilePosition(HillPosition2), 6));
-			//PylonTilePosition.push_back(BWAPI::Broodwar->getBuildLocation(Pylon, TilePosition(HillPosition2), 6));
-			//			
-			//PylonTilePosition.push_back(BWAPI::Broodwar->getBuildLocation(Pylon, unit->getTilePosition(), 6));
-			//PylonTilePosition.push_back(BWAPI::Broodwar->getBuildLocation(Pylon, unit->getTilePosition(), 6));
-			//PylonTilePosition.push_back(BWAPI::Broodwar->getBuildLocation(Pylon, unit->getTilePosition(), 6));
-			//
-			//			
-			//BuildingManager::Instance().PylonLocationSaver(PylonTilePosition);
+			std::vector<BWAPI::TilePosition>	PylonTilePosition = BuildingManager::Instance().PylonSetPresent();
+			
+			PylonTilePosition.push_back(BWAPI::Broodwar->getBuildLocation(Pylon, TilePosition(HillPosition2), 12));
+			PylonTilePosition.push_back(BWAPI::Broodwar->getBuildLocation(Pylon, TilePosition(HillPosition2), 12));
+			PylonTilePosition.push_back(BWAPI::Broodwar->getBuildLocation(Pylon, TilePosition(HillPosition2), 12));
+						
+			PylonTilePosition.push_back(BWAPI::Broodwar->getBuildLocation(Pylon, unit->getTilePosition(), 12));
+			PylonTilePosition.push_back(BWAPI::Broodwar->getBuildLocation(Pylon, unit->getTilePosition(), 12));
+			PylonTilePosition.push_back(BWAPI::Broodwar->getBuildLocation(Pylon, unit->getTilePosition(), 12));
+			
+						
+			BuildingManager::Instance().PylonLocationSaver(PylonTilePosition);
 
 			
 			// Set the New ChokeLines

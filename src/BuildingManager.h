@@ -87,13 +87,19 @@ namespace Turk {
 
 		// GateWay Location Handler
 		BWAPI::TilePosition GateWayLocationPresent();
+		std::vector<BWAPI::TilePosition> GateWaySetPresent();
 		void GateWayLocationSaver(std::vector<BWAPI::TilePosition>);
 		void GateWayLocationRemover();
 
 		// Tech Building Locations
 		BWAPI::TilePosition TechLocationPresent();
+		std::vector<BWAPI::TilePosition> TechSetPresent();
 		void TechLocationSaver(std::vector<BWAPI::TilePosition>);
 		void TechLocationRemover();
+
+
+		std::vector<BWAPI::TilePosition> NexusSetPresent();
+		void NexusLocationRemover();
 
 
 		void GetExpansionBase(BWAPI::TilePosition, BWAPI::TilePosition);

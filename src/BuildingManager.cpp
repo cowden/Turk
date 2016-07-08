@@ -59,7 +59,7 @@ void BuildingManager::PythonBuildingLocation(){
 
 		// Location of the first pylon		
 		FirstPylonLocation.x = 74;
-		FirstPylonLocation.y = 2;			
+		FirstPylonLocation.y = 4;			
 		PylonTilePosition.push_back(FirstPylonLocation);
 
 		TempTileLocation.x = FirstPylonLocation.x + Pylon.tileWidth();
@@ -67,8 +67,8 @@ void BuildingManager::PythonBuildingLocation(){
 		PylonTilePosition.push_back(TempTileLocation);
 
 		// Location of the Second pylon		
-		SecondPylonLocation.x = 84;
-		SecondPylonLocation.y = 12;
+		SecondPylonLocation.x = 86;
+		SecondPylonLocation.y = 14;
 		PylonTilePosition.push_back(SecondPylonLocation);
 
 		TempTileLocation.x = SecondPylonLocation.x + Pylon.tileWidth();
@@ -76,8 +76,8 @@ void BuildingManager::PythonBuildingLocation(){
 		PylonTilePosition.push_back(TempTileLocation);
 
 		// Build the gateways left to the first pylon
-		FirstGateWay.x = FirstPylonLocation.x - GateWay.tileWidth() - 1;
-		FirstGateWay.y = FirstPylonLocation.y;
+		FirstGateWay.x = FirstPylonLocation.x - GateWay.tileWidth();
+		FirstGateWay.y = FirstPylonLocation.y - GateWay.tileHeight();
 						
 		// Build the upgrading points
 		FirstTech.x = FirstPylonLocation.x + 2 * Pylon.tileWidth();
@@ -85,13 +85,13 @@ void BuildingManager::PythonBuildingLocation(){
 			
 		// Update Building Positions
 		BuildingManager::PylonPositioning(FirstPylonLocation,6);
-		BuildingManager::GateWayPositioning(FirstGateWay,4);
+		BuildingManager::GateWayPositioning(FirstGateWay,6);
 		BuildingManager::TechBuildingPositioning(FirstTech,5);
 
 
 
 		// Build the gateways left to the first pylon
-		FirstGateWay.x = SecondPylonLocation.x - GateWay.tileWidth() - 1;
+		FirstGateWay.x = SecondPylonLocation.x - GateWay.tileWidth();
 		FirstGateWay.y = SecondPylonLocation.y;
 
 		// Build the upgrading pointsx
@@ -100,7 +100,7 @@ void BuildingManager::PythonBuildingLocation(){
 
 		// Update Building Positions
 		BuildingManager::PylonPositioning(SecondPylonLocation, 4);
-		BuildingManager::GateWayPositioning(FirstGateWay,3);
+		BuildingManager::GateWayPositioning(FirstGateWay,2);
 		BuildingManager::TechBuildingPositioning(FirstTech,4);
 
 
@@ -113,7 +113,7 @@ void BuildingManager::PythonBuildingLocation(){
 
 		// Location of the first pylon		
 		FirstPylonLocation.x = 49;
-		FirstPylonLocation.y = 110;
+		FirstPylonLocation.y = 114;
 		PylonTilePosition.push_back(FirstPylonLocation);
 		
 		TempTileLocation.x = FirstPylonLocation.x + Pylon.tileWidth();
@@ -131,8 +131,8 @@ void BuildingManager::PythonBuildingLocation(){
 		PylonTilePosition.push_back(TempTileLocation);
 		
 		// Build the gateways right to the first pylon
-		FirstGateWay.x = FirstPylonLocation.x + 2* Pylon.tileWidth()+1;
-		FirstGateWay.y = FirstPylonLocation.y;
+		FirstGateWay.x = FirstPylonLocation.x + 2* Pylon.tileWidth();
+		FirstGateWay.y = FirstPylonLocation.y - GateWay.tileHeight();;
 				
 		// Determine locations of gateways.
 		// Build the upgrading points
@@ -147,7 +147,7 @@ void BuildingManager::PythonBuildingLocation(){
 
 		
 		// Build the gateways right to the first pylon
-		FirstGateWay.x = SecondPylonLocation.x + 2 * Pylon.tileWidth() + 1;
+		FirstGateWay.x = SecondPylonLocation.x + 2 * Pylon.tileWidth() ;
 		FirstGateWay.y = SecondPylonLocation.y;
 
 		// Determine locations of gateways.
@@ -166,8 +166,8 @@ void BuildingManager::PythonBuildingLocation(){
 	else if ((abs(homePosition.x - HillPosition.x) < abs(homePosition.y - HillPosition.y)) && (homePosition.y - HillPosition.y > 0)){
 		// Probably 9		
 		// Location of the first pylon
-		FirstPylonLocation.x = 18;   // Fix
-		FirstPylonLocation.y = 73;
+		FirstPylonLocation.x = 16;   // Fix
+		FirstPylonLocation.y = 77;
 		PylonTilePosition.push_back(FirstPylonLocation);
 
 		TempTileLocation.x = FirstPylonLocation.x + Pylon.tileWidth();
@@ -184,8 +184,8 @@ void BuildingManager::PythonBuildingLocation(){
 
 		// Build the gateways right to the first pylon
 		// Build the gateways left to the first pylon		
-		FirstGateWay.x = FirstPylonLocation.x - GateWay.tileWidth() - 1;
-		FirstGateWay.y = FirstPylonLocation.y;
+		FirstGateWay.x = FirstPylonLocation.x - GateWay.tileWidth() ;
+		FirstGateWay.y = FirstPylonLocation.y - GateWay.tileHeight();
 
 		// Build the upgrading points
 		FirstTech.x = FirstPylonLocation.x + 2 * Pylon.tileWidth();
@@ -200,7 +200,7 @@ void BuildingManager::PythonBuildingLocation(){
 
 
 		// Build the gateways right to the first pylon
-		FirstGateWay.x = SecondPylonLocation.x - GateWay.tileWidth() - 1;
+		FirstGateWay.x = SecondPylonLocation.x - GateWay.tileWidth();
 		FirstGateWay.y = SecondPylonLocation.y;
 
 		// Build the upgrading pointsx
@@ -237,8 +237,8 @@ void BuildingManager::PythonBuildingLocation(){
 		PylonTilePosition.push_back(TempTileLocation);
 
 		// Build the gateways left to the first pylon		
-		FirstGateWay.x = FirstPylonLocation.x - GateWay.tileWidth() - 1;
-		FirstGateWay.y = FirstPylonLocation.y;
+		FirstGateWay.x = FirstPylonLocation.x - GateWay.tileWidth();
+		FirstGateWay.y = FirstPylonLocation.y - GateWay.tileHeight();
 
 		// Build the upgrading points
 		FirstTech.x = FirstPylonLocation.x + 2 * Pylon.tileWidth() ;
@@ -254,7 +254,7 @@ void BuildingManager::PythonBuildingLocation(){
 		
 
 		// Build the gateways left to the first pylon
-		FirstGateWay.x = SecondPylonLocation.x - GateWay.tileWidth() - 1;
+		FirstGateWay.x = SecondPylonLocation.x - GateWay.tileWidth();
 		FirstGateWay.y = SecondPylonLocation.y;
 
 		// Build the upgrading pointsx
@@ -336,19 +336,12 @@ void BuildingManager::DefensePylonLocation(BWAPI::Unitset FirstMineralSet){
 // Class Variable Handler
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 BWAPI::TilePosition BuildingManager::PylonLocationPresent(){
-	if (!BWAPI::Broodwar->canBuildHere(PylonTilePosition.back(), Pylon)){
-		//BWAPI::Broodwar->sendText("I cannot build a pylon here");
-		PylonTilePosition.pop_back();
-	}
 	return PylonTilePosition.back();
 }
 
 std::vector<BWAPI::TilePosition> BuildingManager::PylonSetPresent(){
 	return PylonTilePosition;
 }
-
-
-
 
 void BuildingManager::PylonLocationRemover(){
 	PylonTilePosition.pop_back();	
@@ -358,11 +351,16 @@ void BuildingManager::PylonLocationSaver(std::vector<BWAPI::TilePosition> TempPo
 	PylonTilePosition = TempPosition;
 }
 
-BWAPI::TilePosition BuildingManager::GateWayLocationPresent(){
-	if (!BWAPI::Broodwar->isBuildable(GateTilePosition.back(), true)){
-		GateTilePosition.pop_back();
-	}	
+
+
+
+
+BWAPI::TilePosition BuildingManager::GateWayLocationPresent(){	
 	return GateTilePosition.back();
+}
+
+std::vector<BWAPI::TilePosition> BuildingManager::GateWaySetPresent(){
+	return GateTilePosition;
 }
 
 void BuildingManager::GateWayLocationSaver(std::vector<BWAPI::TilePosition> TempPosition){
@@ -375,12 +373,18 @@ void BuildingManager::GateWayLocationRemover(){
 
 
 
-BWAPI::TilePosition BuildingManager::TechLocationPresent(){	
-	if (!BWAPI::Broodwar->isBuildable(TechBuildingTileLocation.back(), true)){
-		TechBuildingTileLocation.pop_back();
-	}
+
+
+
+
+BWAPI::TilePosition BuildingManager::TechLocationPresent(){		
 	return TechBuildingTileLocation.back();
 }
+
+std::vector<BWAPI::TilePosition> BuildingManager::TechSetPresent(){
+	return TechBuildingTileLocation;
+}
+
 
 void BuildingManager::TechLocationSaver(std::vector<BWAPI::TilePosition> TempPosition){
 	TechBuildingTileLocation = TempPosition;
@@ -390,6 +394,10 @@ void BuildingManager::TechLocationSaver(std::vector<BWAPI::TilePosition> TempPos
 void BuildingManager::TechLocationRemover(){
 	TechBuildingTileLocation.pop_back();
 }
+
+
+
+
 
 
 
@@ -435,6 +443,15 @@ void BuildingManager::GetExpansionBase(BWAPI::TilePosition EnemyTilePosition, BW
 
 
 
+std::vector<BWAPI::TilePosition> BuildingManager::NexusSetPresent(){
+	return ExpansionLocation;
+}
+
+
+void BuildingManager::NexusLocationRemover(){
+	ExpansionLocation.pop_back();
+}
+
 
 
 
@@ -450,11 +467,12 @@ void BuildingManager::PylonPositioning(BWAPI::TilePosition StartingPoint,int Num
 		TempTileLocation.x = StartingPoint.x;
 		TempTileLocation.y = StartingPoint.y + a * Pylon.tileHeight();
 		PylonTilePosition.push_back(TempTileLocation);
+	}
 
-		TempTileLocation.x = StartingPoint.x  + Pylon.tileWidth();
-		TempTileLocation.y = StartingPoint.y  + a * Pylon.tileHeight();
+	for (int a = 1; a < Numbers; a = a + 1){
+		TempTileLocation.x = StartingPoint.x + Pylon.tileWidth();
+		TempTileLocation.y = StartingPoint.y + a * Pylon.tileHeight();
 		PylonTilePosition.push_back(TempTileLocation);
-
 	}
 }
 
@@ -465,8 +483,7 @@ void BuildingManager::GateWayPositioning(BWAPI::TilePosition StartingPoint, int 
 	for (int a = 0; a < Numbers; a = a + 1){
 		TempTileLocation.x = StartingPoint.x;
 		TempTileLocation.y = StartingPoint.y + a * (GateWay.tileHeight());
-		GateTilePosition.push_back(TempTileLocation); // Third Gateway
-
+		GateTilePosition.push_back(TempTileLocation);
 	}
 }
 
@@ -480,7 +497,6 @@ void BuildingManager::TechBuildingPositioning(BWAPI::TilePosition StartingPoint,
 		TempTileLocation.y = StartingPoint.y + a * (Cybernetics.tileHeight());
 		TechBuildingTileLocation.push_back(TempTileLocation);
 	}
-
 }
 
 
@@ -568,7 +584,7 @@ void BuildingManager::BuildingFunction(BWAPI::Unit HeadQuater, BWAPI::UnitType B
 			Position = GateTilePosition;
 		}
 		else if (BuildingTarget == Nexus){
-			ExpansionLocation;		
+			Position = ExpansionLocation;
 		}
 		else{			
 			Position = TechBuildingTileLocation;
@@ -598,15 +614,13 @@ void BuildingManager::BuildingFunction(BWAPI::Unit HeadQuater, BWAPI::UnitType B
 		// Or we can build it here !!!
 		else{
 			targetBuildLocation = Position.back(); // BWAPI::Broodwar->getBuildLocation(BuildingTarget, Position.back(), 4); //  
+			//BWAPI::Broodwar->sendText("Location vector %.2d : %.2d", targetBuildLocation.x, targetBuildLocation.y);
 			// In worst case
 			if (!targetBuildLocation){
 				targetBuildLocation = BWAPI::Broodwar->getBuildLocation(BuildingTarget, HeadQuater->getTilePosition(), 32);
 			}
 		}
 	
-		
-		
-
 
 		// If a builder and location are secured
 		if (MrBuilder && targetBuildLocation){
