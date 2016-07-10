@@ -2,6 +2,7 @@
 
 #include "BuildingManager.h"
 #include "ScoutManager.h"
+#include "HUD.h"
 #include "Common.h"
 
 
@@ -39,6 +40,9 @@ public:
 	// Everything below this line is safe to modify.
 	
 private:
+
+	// Heads Up Display & Visualization
+	HUD hud;
 
 	// map analysis
 	bool m_analyzed;
