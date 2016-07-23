@@ -1,22 +1,38 @@
 #include "Turk.h"
 #include <iostream>
+#include <fstream>
 
 using namespace BWAPI;
 using namespace Filter;
 using namespace Turk;
 
+// Define static member data
+const char * TheTurk::m_name = "TheTurk";
+Logger * Logger::m_ptr = 0;
+
+//
+// default constructor
+TheTurk::TheTurk() {
+	m_log = Turk::Logger::instance();
+	m_log->newLog("C:\\Users\\me\\Desktop\\proj\\StarCraft\\Turk\\logs\\TurkTest");
+}
 
 void TheTurk::onStart()
 {
 	// Hello World!
-	// Broodwar->sendText("Hello world!");
+	//Broodwar->sendText("Hello world!");
 	Broodwar->setLocalSpeed(20);
 
+	char msg[500];
+	sprintf(msg, ">>>> Starting New Game <<<<");
+	m_log->log(m_name, msg);
 
 	// Print the map name.
 	// BWAPI returns std::string when retrieving a string, don't forget to add .c_str() when printing!
 	Broodwar << "The map is " << Broodwar->mapName() << "!" << std::endl;
-
+	sprintf(msg, "map: %s", Broodwar->mapFileName());
+	m_log->log(m_name, msg);
+	
 	// Enable the UserInput flag, which allows us to control the bot and type messages.
 	Broodwar->enableFlag(Flag::UserInput);
 
@@ -31,14 +47,18 @@ void TheTurk::onStart()
 	if (Broodwar->isReplay()){
 		// Announce the players in the replay
 		Broodwar << "The following players are in this replay:" << std::endl;
+		m_log->log(m_name, "Players in this replay:");
 
 		// Iterate all the players in the game using a std:: iterator
 		Playerset players = Broodwar->getPlayers();
 		for (auto p : players)
 		{
 			// Only print the player if they are not an observer
-			if (!p->isObserver())
+			if (!p->isObserver()) {
 				Broodwar << p->getName() << ", playing as " << p->getRace() << std::endl;
+				sprintf(msg, "%s, playing as %s", p->getName(), p->getRace().c_str());
+				m_log->log(m_name, msg);
+			}
 		}
 
 	}
@@ -46,8 +66,11 @@ void TheTurk::onStart()
 	{
 		// Retrieve you and your enemy's races. enemy() will just return the first enemy.
 		// If you wish to deal with multiple enemies then you must use enemies().
-		if (Broodwar->enemy()) // First make sure there is an enemy
+		if (Broodwar->enemy()) { // First make sure there is an enemy
 			Broodwar << "The matchup is " << Broodwar->self()->getRace() << " vs " << Broodwar->enemy()->getRace() << std::endl;
+			sprintf(msg, "Matchup: %s vs %s", Broodwar->self()->getRace().c_str(), Broodwar->enemy()->getRace().c_str());
+			m_log->log(m_name, msg);
+		}
 	}
 
 
@@ -154,7 +177,7 @@ void TheTurk::onFrame(){
 	}
 
 	// draw the HUD
-	hud.drawInterface();
+	m_hud.drawInterface();
 
 	// Prevent spamming by only running our onFrame once every number of latency frames.
 	// Latency frames are the number of frames before commands are processed.

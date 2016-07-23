@@ -1,6 +1,7 @@
 
 #include "HUD.h"
 
+
 using namespace Turk;
 using namespace BWAPI;
 
@@ -11,6 +12,10 @@ HUD & HUD::Instance(){
 }
 
 void HUD::drawInterface(){
+
+
+	// training queue
+	std::vector < std::pair<BWAPI::UnitType, int> > trainingQueue;
 
 	// draw unit information
 	for (auto unit : BWAPI::Broodwar->getAllUnits()){
@@ -38,12 +43,25 @@ void HUD::drawInterface(){
 			BWAPI::Broodwar->drawBoxMap(BWAPI::Position(left, top - 14), BWAPI::Position(left + (int)((right - left)*sh), top - 10), BWAPI::Colors::Blue, true);
 		}
 
-
-		// draw the frame count
-		BWAPI::Broodwar->drawTextScreen(10, 10, "Frame: %d",BWAPI::Broodwar->getFrameCount());
-
+		// fill the training queue
+		if (unit->getRemainingTrainTime() > 0) {
+			trainingQueue.push_back(std::pair<BWAPI::UnitType, int>(ut, unit->getRemainingTrainTime()));
+		}
 
 	}
+
+	// draw the frame count
+	BWAPI::Broodwar->drawTextScreen(10, 10, "Frame: %d", BWAPI::Broodwar->getFrameCount());
+
+	// draw the train queue
+	int x = 14;
+	for (const auto & p : trainingQueue){
+		x += 4;
+		BWAPI::Broodwar->drawTextScreen(10, 10 + x, "%d: %d",p.first.getID(), p.second);
+	}
+
+	trainingQueue.clear();
+
 
 }
 

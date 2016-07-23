@@ -24,6 +24,7 @@
     <ClInclude Include="..\src\InformationManager.h" />
     <ClInclude Include="..\src\ScoutManager.h" />
     <ClInclude Include="..\src\Turk.h" />
+    <ClInclude Include="..\tools\Logger.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9EF367EB-3001-4A26-96C6-4431787A830B}</ProjectGuid>
@@ -90,8 +91,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>..\src;$(BWTA_DIR)\include;$(BWAPI_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;..\tools;$(BWTA_DIR)\include;$(BWAPI_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

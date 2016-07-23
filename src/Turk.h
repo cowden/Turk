@@ -3,6 +3,7 @@
 #include "BuildingManager.h"
 #include "ScoutManager.h"
 #include "HUD.h"
+#include "Logger.h"
 #include "Common.h"
 
 
@@ -17,6 +18,8 @@ class TheTurk : public BWAPI::AIModule
 {
 
 public:
+
+	TheTurk();
 
 	// Virtual functions for callbacks, leave these as they are.
 	virtual void onStart();
@@ -42,7 +45,10 @@ public:
 private:
 
 	// Heads Up Display & Visualization
-	HUD hud;
+	HUD m_hud;
+
+	// Logger
+	Logger * m_log;
 
 	// map analysis
 	bool m_analyzed;
@@ -170,6 +176,10 @@ private:
 	// CSC - Why??
 	BWAPI::Unit ResourceDepot = nullptr;
 
+	// name of the class
+	static const char * m_name;
+
 };  // end TheTurk class declaration
+
 
 } // end Turk namespace
