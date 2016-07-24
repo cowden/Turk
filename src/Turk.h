@@ -6,6 +6,8 @@
 #include "Logger.h"
 #include "Common.h"
 
+#include "sqlite3.h"
+
 
 
 DWORD WINAPI AnalyzeThread();

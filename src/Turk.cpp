@@ -13,12 +13,66 @@ Logger * Logger::m_ptr = 0;
 //
 // default constructor
 TheTurk::TheTurk() {
+
 	m_log = Turk::Logger::instance();
 	m_log->newLog("C:\\Users\\me\\Desktop\\proj\\StarCraft\\Turk\\logs\\TurkTest");
+
+	//DB connection
+	m_log->log(m_name, "Connecting to DB");
+	sqlite3 *db;
+	int rc = sqlite3_open("C:\\Users\\me\\Desktop\\proj\\StarCraft\\Turk\\TurkConfiguration.sqlite", &db);
+
+	char msg[500];
+	sprintf(msg, "Opened sqlite3 connection: %d", rc);
+	m_log->log(m_name, msg);
+
+	char **results = NULL;
+	char * err;
+	int rows, columns;
+
+	m_log->log(m_name, "Get LogDir");
+	rc = sqlite3_get_table(db, "SELECT * FROM config WHERE key = 'LogDir';", &results, &rows, &columns, &err);
+	std::string logDir(results[0]);
+
+	sprintf(msg, "%d: %s", rc, err);
+	m_log->log(m_name, msg);
+
+	sprintf(msg, "rows: %d columns: %d", rows, columns);
+	m_log->log(m_name, msg);
+		
+
+	// put results in log file
+	for (int i = 0; i != rows; i++){
+		for (int j = 0; j != columns; j++) {
+			m_log->log(m_name, results[(i*columns)+j]);
+		}
+	}
+
+	sqlite3_free_table(results);
+
+	m_log->log(m_name, "Get BaseName");
+	sqlite3_get_table(db, "SELECT value FROM config WHERE key = 'LogBase'", &results, &rows, &columns, &err);
+	std::string baseName(results[0]);
+
+	// put results in log file
+	for (int i = 0; i != rows; i++){
+		for (int j = 0; j != columns; j++) {
+			m_log->log(m_name, results[(i*columns)+j]);
+		}
+	}
+
+	m_log->log(m_name, logDir.c_str());
+	m_log->log(m_name, baseName.c_str());
+
+	sqlite3_free_table(results);
+
+	sqlite3_close(db);
+
 }
 
 void TheTurk::onStart()
 {
+
 	// Hello World!
 	//Broodwar->sendText("Hello world!");
 	Broodwar->setLocalSpeed(20);
@@ -35,6 +89,8 @@ void TheTurk::onStart()
 	
 	// Enable the UserInput flag, which allows us to control the bot and type messages.
 	Broodwar->enableFlag(Flag::UserInput);
+
+	
 
 	// Uncomment the following line and the bot will know about everything through the fog of war (cheat).
 	//Broodwar->enableFlag(Flag::CompleteMapInformation);
@@ -174,7 +230,10 @@ void TheTurk::onFrame(){
 	if (m_analysis_just_finished)	{
 		Broodwar << "Finished analyzing map." << std::endl;;
 		m_analysis_just_finished = false;
+
+		
 	}
+
 
 	// draw the HUD
 	m_hud.drawInterface();

@@ -17,6 +17,7 @@
     <ClCompile Include="..\src\InformationManager.cpp" />
     <ClCompile Include="..\src\ScoutManager.cpp" />
     <ClCompile Include="..\src\Turk.cpp" />
+    <ClCompile Include="..\tools\sqlite3.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BuildingManager.h" />
@@ -25,6 +26,7 @@
     <ClInclude Include="..\src\ScoutManager.h" />
     <ClInclude Include="..\src\Turk.h" />
     <ClInclude Include="..\tools\Logger.h" />
+    <ClInclude Include="..\tools\sqlite3.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9EF367EB-3001-4A26-96C6-4431787A830B}</ProjectGuid>

@@ -54,6 +54,9 @@ namespace Turk {
 		inline void newLog() {
 			std::string ts = getTimeStamp();
 			std::string name = m_baseName + "_" + ts + ".txt";
+
+			if (m_file.is_open()) m_file.close();
+
 			m_file = std::fstream(name, std::fstream::out);
 			m_file << "Starting log file " << ts << std::endl;
 		}
@@ -79,7 +82,7 @@ namespace Turk {
 			time_t now;
 			time(&now);
 			char buf[250] = { '\0' };
-			strftime(buf, sizeof(buf), "%Y%m%d-%I%M%S", localtime(&now));
+			strftime(buf, sizeof(buf), "%Y%m%d-%H%M%S", localtime(&now));
 			return std::string(buf);
 		}
 
