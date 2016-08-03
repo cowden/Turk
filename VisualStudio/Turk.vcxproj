@@ -25,6 +25,7 @@
     <ClInclude Include="..\src\InformationManager.h" />
     <ClInclude Include="..\src\ScoutManager.h" />
     <ClInclude Include="..\src\Turk.h" />
+    <ClInclude Include="..\tools\ConfigDB.h" />
     <ClInclude Include="..\tools\Logger.h" />
     <ClInclude Include="..\tools\sqlite3.h" />
   </ItemGroup>

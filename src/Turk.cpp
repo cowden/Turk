@@ -9,64 +9,43 @@ using namespace Turk;
 // Define static member data
 const char * TheTurk::m_name = "TheTurk";
 Logger * Logger::m_ptr = 0;
+ConfigDB * ConfigDB::m_ptr = 0;
 
 //
 // default constructor
 TheTurk::TheTurk() {
 
+	char * tdir = std::getenv("TURKDIR");
+	std::string baseDir(tdir);
+	std::string logDir("\\logs\\TurkTest");
+	std::string configName("\\TurkConfiguration.sqlite");
+
+	// connect to logger
 	m_log = Turk::Logger::instance();
-	m_log->newLog("C:\\Users\\me\\Desktop\\proj\\StarCraft\\Turk\\logs\\TurkTest");
+	m_log->newLog(std::string(baseDir+logDir).c_str());
 
 	//DB connection
 	m_log->log(m_name, "Connecting to DB");
-	sqlite3 *db;
-	int rc = sqlite3_open("C:\\Users\\me\\Desktop\\proj\\StarCraft\\Turk\\TurkConfiguration.sqlite", &db);
+	//sqlite3 *db;
+	//int rc = sqlite3_open(std::string(baseDir + configName).c_str(),&db);
+	m_db = Turk::ConfigDB::instance();
 
 	char msg[500];
-	sprintf(msg, "Opened sqlite3 connection: %d", rc);
+	sprintf(msg, "Opened sqlite3 connection");
 	m_log->log(m_name, msg);
-
-	char **results = NULL;
-	char * err;
-	int rows, columns;
 
 	m_log->log(m_name, "Get LogDir");
-	rc = sqlite3_get_table(db, "SELECT * FROM config WHERE key = 'LogDir';", &results, &rows, &columns, &err);
-	std::string logDir(results[0]);
-
-	sprintf(msg, "%d: %s", rc, err);
-	m_log->log(m_name, msg);
-
-	sprintf(msg, "rows: %d columns: %d", rows, columns);
-	m_log->log(m_name, msg);
-		
-
-	// put results in log file
-	for (int i = 0; i != rows; i++){
-		for (int j = 0; j != columns; j++) {
-			m_log->log(m_name, results[(i*columns)+j]);
-		}
+	std::vector<std::string> res = m_db->query("SELECT value FROM config WHERE key = 'LogDir';");
+	for (auto r : res) {
+		m_log->log(m_name, r.c_str());
 	}
-
-	sqlite3_free_table(results);
 
 	m_log->log(m_name, "Get BaseName");
-	sqlite3_get_table(db, "SELECT value FROM config WHERE key = 'LogBase'", &results, &rows, &columns, &err);
-	std::string baseName(results[0]);
-
-	// put results in log file
-	for (int i = 0; i != rows; i++){
-		for (int j = 0; j != columns; j++) {
-			m_log->log(m_name, results[(i*columns)+j]);
-		}
+	res = m_db->query("SELECT value FROM config WHERE key = 'LogBase';");
+	for (auto r : res) {
+		m_log->log(m_name, r.c_str());
 	}
-
-	m_log->log(m_name, logDir.c_str());
-	m_log->log(m_name, baseName.c_str());
-
-	sqlite3_free_table(results);
-
-	sqlite3_close(db);
+	
 
 }
 

@@ -4,6 +4,7 @@
 #include "ScoutManager.h"
 #include "HUD.h"
 #include "Logger.h"
+#include "ConfigDB.h"
 #include "Common.h"
 
 #include "sqlite3.h"
@@ -51,6 +52,9 @@ private:
 
 	// Logger
 	Logger * m_log;
+
+	// Sqlite3 configuration database connection
+	ConfigDB * m_db;
 
 	// map analysis
 	bool m_analyzed;
