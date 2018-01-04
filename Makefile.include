@@ -1,0 +1,15 @@
+
+TOOLDIR := tools
+OBJDIR := bin
+
+BINS := $(OBJDIR)/terrain
+
+
+INCDIR := $(TOOLDIR)
+
+TOOL_OBJS := $(TOOLDIR)/artie.o $(TOOLDIR)/libppm.o
+
+
+DBG := -g
+OPT := -Og
+CXX := g++ $(DBG) $(OPT)
