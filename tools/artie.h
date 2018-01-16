@@ -11,6 +11,7 @@
 
 #include <map>
 #include <vector>
+#include <cmath>
 
 
 namespace Turk {
@@ -27,6 +28,22 @@ struct color {
 };
 
 color gen_random_color();
+
+
+struct point {
+
+  point(): x(-1),y(-1) { }
+  point(const int px, const int py): x(px),y(py) { }
+
+  point operator+(const point &pt) const { return point(x+pt.x,y+pt.y); }
+  point operator-(const point &pt) const { return point(x-pt.x,y-pt.y); }
+
+  int length() const { return sqrt(x*x+y*y); }
+  
+  int x;
+  int y;
+
+};
 
 class ARTIE {
 public:
@@ -100,6 +117,7 @@ private:
 
   virtual void refine_distance_map();
 
+
   /**
   * determine choke point candidates by water level decomposition.
   */
@@ -159,6 +177,44 @@ private:
   */
   void ff_fill_area(const unsigned index, const unsigned counter, unsigned * map, const unsigned * exclude );
 
+  /**
+  * distance (like flood fill) fill the area accessible from a given
+  * point.  Fill a map of distance to each accessible tile.
+  * Set the index and distance to the nearest obstacle.
+  */
+  void dist_fill_area(const unsigned index);
+  
+
+
+  /**
+  * decompose index to x,y coordinates
+  */
+  point decomposeIndex(const unsigned index) { return point(index % m_width, index / m_width); }
+
+  /**
+  * re-compose index from x,y coordinates
+  */
+  unsigned composeIndex(const point & pt) { return pt.y*m_width+pt.x; }
+  
+  unsigned composeIndex(const unsigned x, const unsigned y) { return y*m_width+x;}
+
+  /** 
+  * list allowable directions
+  */
+  static const unsigned m_nNeighbs = 4U;
+  static const point m_neighbors[m_nNeighbs];
+
+  /**
+  * check if the point is a valid point (i.e. in range of the map size.)
+  */
+  bool isValidPoint(const point & pt) { 
+    bool test = composeIndex(pt) < m_mapsize && pt.x < m_width && pt.y < m_height;
+
+    return test;
+  }
+
+
+
 
   // private members
   // map parameters
@@ -176,9 +232,14 @@ private:
   bool * m_walkable;
   unsigned m_nWalkable;
 
+  // distance graph
+  // lookup table of tile to tile distances
+  std::vector<std::vector<unsigned> > m_dgraph;
+
   // distance map
   // distance to nearest obstacle
   unsigned * m_dmap;
+  std::vector<unsigned> m_nnobj;
   
   // reverse distance map
   // map depth (distance) to set of indices in map tiles
@@ -197,6 +258,7 @@ private:
   std::vector<unsigned> tmp;
   
 };
+
 
 }
 #endif

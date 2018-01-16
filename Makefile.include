@@ -12,4 +12,4 @@ TOOL_OBJS := $(TOOLDIR)/artie.o $(TOOLDIR)/libppm.o
 
 DBG := -g
 OPT := -Og
-CXX := g++ $(DBG) $(OPT)
+CXX := g++ $(DBG) $(OPT) -std=c++11

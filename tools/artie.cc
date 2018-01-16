@@ -9,6 +9,8 @@
 
 using namespace Turk;
 
+const point Turk::ARTIE::m_neighbors[m_nNeighbs] = {point(-1,0), point(1,0), point(0,-1), point(0,1)};
+
 color Turk::gen_random_color() {
   // generate a random character from /dev/urandom
   char col[3];
@@ -37,8 +39,8 @@ void ARTIE::load_map(const unsigned * map, const unsigned width, const unsigned 
 void ARTIE::analyze_map() { 
   clean_map();
   obstacle_flood_fill();
-  build_distance_map();
-  //refine_distance_map();
+  //build_distance_map();
+  refine_distance_map();
   water_level_decomposition();
 }
 
@@ -253,98 +255,27 @@ void ARTIE::build_distance_map() {
 
 void ARTIE::refine_distance_map() {
 
-  // build distance map
+  std::cout << "Refine Distance Map" << std::endl;
+
+  // allocate memory for distance map
   if ( m_dmap ) delete m_dmap;
   m_dmap = new unsigned[m_mapsize];
-  for (unsigned i = 0; i != m_mapsize; i++) m_dmap[i] = 0U;
+  for ( unsigned i=0; i != m_mapsize; i++ ) m_dmap[i] = 0U;
+
+  m_nnobj.resize(m_mapsize);
+  m_dgraph.resize(m_mapsize);
+  for ( unsigned i=0; i != m_mapsize; i++ ) 
+    m_dgraph[i].resize(m_mapsize);
 
 
-  for (unsigned y = 0; y != m_height; y++) {
-    for (unsigned x = 0; x != m_width; x++) {
-      if (!m_walkable[y*m_width + x]) {
-        m_dmap[y*m_width + x] = 0;
-        continue;
-      }
+  //  cycle over each point
+  for ( unsigned i=0; i != m_mapsize; i++ ) {
+    // continue of this is an obstacle
+    if ( m_obstacles[i] ) continue;
 
-      int dist = 1;
-      bool depthnotfound = true;
-      unsigned wallcount = 0U;
-      double  depth_threshold = 0U;
-      bool isFirstWall = true;
-
-      while (depthnotfound) {
-
-        bool foundwall =  false;
-
-        // top edge
-        if (y >= dist) {
-          for (int i = -dist; i <= dist; i++) {
-            if ( x + i > m_width ) continue;
-            unsigned index = (y - dist)*m_width + x + i;
-            if (index >= m_mapsize) continue;
-
-            if (!m_walkable[index]) {
-              foundwall = true;
-              wallcount++;
-            }
-          }
-        }
-
-        // bottom edge
-        if (y + dist < m_width) {
-          for (int i = -dist; i <= dist; i++) {
-            if ( x + i > m_width ) continue;
-            unsigned index = (y + dist)*m_width + x + i;
-            if (index >= m_mapsize) continue;
-
-            if (!m_walkable[index]) {
-              foundwall = true;
-              wallcount++;
-            }
-          }
-        }
-
-        // left edge
-        if (x >= dist) {
-          for (int i = -dist + 1; i < dist; i++) {
-            if ( y + i > m_height ) continue;
-            unsigned index = (y + i)*m_width + x - dist;
-            if (index >= m_mapsize)continue;
-
-            if (!m_walkable[index]) {
-              foundwall = true;
-              wallcount++;
-            }
-          }
-        }
-
-        //right edge
-        if (x + dist < m_width) {
-          for (int i = -dist + 1; i < dist; i++) {
-            if ( y + i > m_height ) continue;
-            unsigned index = (y + i)*m_width + x + dist;
-            if (index >= m_mapsize) continue;
-        
-            if (!m_walkable[index]) {
-              foundwall = true;
-              wallcount++;
-            }
-          }
-        }
-
-        if ( foundwall ) {
-          if ( isFirstWall ) {
-            isFirstWall = false;
-            depth_threshold = ((double)m_mapsize - (double)dist)/28. + 1.;
-          } else if ( wallcount >= depth_threshold ) {
-            m_dmap[y*m_width + x] = log2(dist)+1;
-            depthnotfound = false; 
-          }
-        }
-
-        dist++;
-      }
-    }
+    // distance fill the area
+    dist_fill_area(i);
+ 
   }
 
 
@@ -360,6 +291,8 @@ void ARTIE::refine_distance_map() {
   }
 
 }
+
+
 
 void ARTIE::water_level_decomposition() { 
 
@@ -614,6 +547,74 @@ void ARTIE::ff_fill_area(const unsigned index, const unsigned counter, unsigned 
     ql += add;
 
   }
+
+}
+
+
+void ARTIE::dist_fill_area(const unsigned index) {
+
+  // preliminary checks on the condition of the index
+  // and traversability of the tile
+
+  const point origin = decomposeIndex(index);
+
+  // start the queue
+  std::vector<point> queue(m_mapsize);
+  unsigned loc = 0;
+  unsigned ql = 1;
+  queue[0] = decomposeIndex(index);
+
+  // checks to first obstacle encountered
+  bool isFirstObstacle = true;
+
+
+  // keep going until the queue is empty
+  while ( ql > 0 ) {
+    // decrement the queue length
+    ql--;
+
+    unsigned add = 0;
+
+    const point & cur_point = queue[loc];
+
+    // cycle over potential neighbors
+    for ( unsigned j=0; j != m_nNeighbs; j++ ) {
+      point neighb = cur_point + m_neighbors[j];
+      
+
+      if ( isValidPoint(neighb) ) {
+        // calculate the distance to the point
+        unsigned dist = (neighb-origin).length();
+
+        unsigned nindex = composeIndex(neighb);
+  
+
+        // if its the first obstacle record distnace and index
+        if ( isFirstObstacle && m_obstacles[nindex] ) {
+          isFirstObstacle = false;
+          m_dmap[index] = dist;
+          m_nnobj[index] = nindex;
+          break;
+        } else if ( !m_obstacles[nindex] && !m_dgraph[index][nindex] ) {
+          // add point to the queue
+          add++;
+          queue[loc+add] = neighb;
+         // m_dgraph[index][nindex] = dist;
+        }
+
+      }
+
+    } 
+
+    
+    // progress the location
+    loc++;
+
+    // extend the queue length
+    ql += add;
+  }
+
+  
 
 }
 
