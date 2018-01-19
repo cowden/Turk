@@ -30,6 +30,11 @@ struct color {
 color gen_random_color();
 
 
+/**
+* point - 
+* helper struct to contain x,y coordinates and 
+* perform necessary vector algebra.
+*/
 struct point {
 
   point(): x(-1),y(-1) { }
@@ -37,8 +42,27 @@ struct point {
 
   point operator+(const point &pt) const { return point(x+pt.x,y+pt.y); }
   point operator-(const point &pt) const { return point(x-pt.x,y-pt.y); }
+  
+  /**
+  * dot product
+  */
+  int operator*(const point &pt) const { return x*pt.x+y*pt.y; }
 
+  /**
+  * scale the point
+  */
+  point operator*(unsigned s) const { return point(s*x,s*y); }
+
+
+  /**
+  * Return the Euclidean norm of the vector.
+  */
   int length() const { return sqrt(x*x+y*y); }
+
+  /**
+  * Return the L1 norm (sum of components) of the vector.
+  */
+  int l1length() const { return abs(x)+abs(y); }
   
   int x;
   int y;
@@ -183,6 +207,11 @@ private:
   * Set the index and distance to the nearest obstacle.
   */
   void dist_fill_area(const unsigned index);
+
+  /**
+  * Find the L1 distance to the nearest obstacle from a given point.
+  */
+  void dist_nearest_obstacle(const unsigned index); 
   
 
 
@@ -231,10 +260,6 @@ private:
   // a boolean of whether a tile is traversable
   bool * m_walkable;
   unsigned m_nWalkable;
-
-  // distance graph
-  // lookup table of tile to tile distances
-  std::vector<std::vector<unsigned> > m_dgraph;
 
   // distance map
   // distance to nearest obstacle

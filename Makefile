@@ -11,13 +11,15 @@ include Makefile.include
 
 DEPENDS := $(OBJDIR)/terrain.d
 
-.PHONY: all clean
+.PHONY: all clean doc
 
 all: $(BINS)
 
-
 clean:
 	rm $(TOOL_OBJS) $(BINS) $(OBJDIR)/*.o $(OBJDIR)/*.d
+
+doc:
+	doxygen Turk.doxy
 
 
 $(TOOL_OBJS): %.o: %.cc

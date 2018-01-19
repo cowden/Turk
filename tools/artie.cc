@@ -263,9 +263,6 @@ void ARTIE::refine_distance_map() {
   for ( unsigned i=0; i != m_mapsize; i++ ) m_dmap[i] = 0U;
 
   m_nnobj.resize(m_mapsize);
-  m_dgraph.resize(m_mapsize);
-  for ( unsigned i=0; i != m_mapsize; i++ ) 
-    m_dgraph[i].resize(m_mapsize);
 
 
   //  cycle over each point
@@ -274,7 +271,8 @@ void ARTIE::refine_distance_map() {
     if ( m_obstacles[i] ) continue;
 
     // distance fill the area
-    dist_fill_area(i);
+    //dist_fill_area(i);
+    dist_nearest_obstacle(i);
  
   }
 
@@ -567,6 +565,10 @@ void ARTIE::dist_fill_area(const unsigned index) {
   // checks to first obstacle encountered
   bool isFirstObstacle = true;
 
+  // add a mask to keep the queue efficiently filled
+  std::vector<bool> mask(m_mapsize);
+  std::vector<int> qdist(m_mapsize);
+
 
   // keep going until the queue is empty
   while ( ql > 0 ) {
@@ -584,7 +586,7 @@ void ARTIE::dist_fill_area(const unsigned index) {
 
       if ( isValidPoint(neighb) ) {
         // calculate the distance to the point
-        unsigned dist = (neighb-origin).length();
+        unsigned dist = (neighb-origin).l1length();
 
         unsigned nindex = composeIndex(neighb);
   
@@ -595,11 +597,12 @@ void ARTIE::dist_fill_area(const unsigned index) {
           m_dmap[index] = dist;
           m_nnobj[index] = nindex;
           break;
-        } else if ( !m_obstacles[nindex] && !m_dgraph[index][nindex] ) {
+        } else if ( !m_obstacles[nindex] && !mask[nindex] ) {
           // add point to the queue
           add++;
-          queue[loc+add] = neighb;
-         // m_dgraph[index][nindex] = dist;
+          queue[loc+ql+add] = neighb;
+          qdist[loc+ql+add] = dist;
+          mask[nindex] = true;
         }
 
       }
@@ -615,6 +618,85 @@ void ARTIE::dist_fill_area(const unsigned index) {
   }
 
   
+
+}
+
+
+
+
+void ARTIE::dist_nearest_obstacle(const unsigned index) {
+
+  // preliminary checks on the condition of the index
+  
+  const point origin = decomposeIndex(index);
+
+  // 
+  bool foundObstacle = false;
+
+  unsigned dist = 1;
+
+  while ( !foundObstacle ) {
+
+    // top left diag
+    point start1 = origin + m_neighbors[0]*dist;
+    point start2 = origin + m_neighbors[1]*dist;
+    point start3 = origin + m_neighbors[2]*dist;
+    point start4 = origin + m_neighbors[3]*dist;
+
+    for ( unsigned i=0; i != dist; i++ ) {
+
+      const point pt1 = start1 + point(i,-i);
+      const unsigned nindex1 = composeIndex(pt1);
+      const point pt2 = start2 + point(-i,i);
+      const unsigned nindex2 = composeIndex(pt2);
+      const point pt3 = start3 + point(i,i);
+      const unsigned nindex3 = composeIndex(pt3);
+      const point pt4 = start4 + point(-i,-i);
+      const unsigned nindex4 = composeIndex(pt4);
+
+
+      if ( isValidPoint(pt1) && m_obstacles[nindex1] ) {
+        foundObstacle = true;
+        assert((pt1-origin).l1length() == dist);
+        m_dmap[index] = dist;
+        m_nnobj[index] = nindex1;
+        //return;
+      }
+
+      if ( isValidPoint(pt2) && m_obstacles[nindex2] ) {
+        foundObstacle = true;
+        assert((pt2-origin).l1length() == dist);
+        m_dmap[index] = dist;
+        m_nnobj[index] = nindex2;
+        //return;
+      }
+
+      if ( isValidPoint(pt3) && m_obstacles[nindex3] ) {
+        foundObstacle = true;
+        assert((pt3-origin).l1length() == dist);
+        m_dmap[index] = dist;
+        m_nnobj[index] = nindex3;
+        //return;
+      }
+
+      if ( isValidPoint(pt4) && m_obstacles[nindex4] ) {
+        foundObstacle = true;
+        assert((pt4-origin).l1length() == dist);
+        m_dmap[index] = dist;
+        m_nnobj[index] = nindex4;
+        //return;
+      }
+
+      if ( foundObstacle ) {
+        const unsigned dd = dist;
+        return;
+      }
+
+    } 
+
+    dist++;
+    
+  }
 
 }
 
