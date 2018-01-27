@@ -39,8 +39,7 @@ void ARTIE::load_map(const unsigned * map, const unsigned width, const unsigned 
 void ARTIE::analyze_map() { 
   clean_map();
   obstacle_flood_fill();
-  //build_distance_map();
-  refine_distance_map();
+  build_distance_map();
   water_level_decomposition();
 }
 
@@ -153,107 +152,8 @@ void ARTIE::dump_categorical_map(const char * name, const unsigned * map, const 
 
 }
 
-void ARTIE::build_distance_map() { 
 
-  // build distance map
-  if ( m_dmap ) delete m_dmap;
-  m_dmap = new unsigned[m_mapsize];
-  for (unsigned i = 0; i != m_mapsize; i++) m_dmap[i] = 0U;
-
-
-
-  for (unsigned y = 0; y != m_height; y++) {
-    for (unsigned x = 0; x != m_width; x++) {
-      if (!m_walkable[y*m_width + x]) {
-        m_dmap[y*m_width + x] = 0;
-        continue;
-      }
-
-      int dist = 1;
-      bool foundwall = false;
-      while (!foundwall) {
-        //foundwall = true;
-
-        // top edge
-        if (y >= dist) {
-          for (int i = -dist; i <= dist; i++) {
-            if ( x + i > m_width ) continue;
-            unsigned index = (y - dist)*m_width + x + i;
-            if (index >= m_mapsize) continue;
-
-            if (!m_walkable[index]) {
-              m_dmap[y*m_width + x] = dist;
-              foundwall = true;
-              break;
-            }
-          }
-        }
-
-        // bottom edge
-        if (y + dist < m_width) {
-          for (int i = -dist; i <= dist; i++) {
-            if ( x + i > m_width ) continue;
-            unsigned index = (y + dist)*m_width + x + i;
-            if (index >= m_mapsize) continue;
-
-            if (!m_walkable[index]) {
-              m_dmap[y*m_width + x] = dist;
-              foundwall = true;
-              break;
-            }
-          }
-        }
-
-        // left edge
-        if (x >= dist) {
-          for (int i = -dist + 1; i < dist; i++) {
-            if ( y + i > m_height ) continue;
-            unsigned index = (y + i)*m_width + x - dist;
-            if (index >= m_mapsize)continue;
-
-            if (!m_walkable[index]) {
-              m_dmap[y*m_width + x] = dist;
-              foundwall = true;
-              break;
-            }
-          }
-        }
-
-        //right edge
-        if (x + dist < m_width) {
-          for (int i = -dist + 1; i < dist; i++) {
-            if ( y + i > m_height ) continue;
-            unsigned index = (y + i)*m_width + x + dist;
-            if (index >= m_mapsize) continue;
-        
-            if (!m_walkable[index]) {
-              m_dmap[y*m_width + x] = dist;
-              foundwall = true;
-              break;
-            }
-          }
-        }
-
-        dist++;
-      }
-    }
-  }
-
-
-  // build the reverse map of distance to a set of tiles
-  unsigned max_dist = 0U;
-  for (unsigned i = 0; i != m_mapsize; i++) {
-    assert((m_obstacles[i] > 0 && !m_walkable[i]) ^ (m_obstacles[i] == 0 && m_walkable[i]));
-    if (m_obstacles[i] > 0) continue;
-    if (m_dmap[i] > max_dist)
-    max_dist = m_dmap[i];
-		
-    m_rdmap[m_dmap[i]].push_back(i);
-  }
-
-}
-
-void ARTIE::refine_distance_map() {
+void ARTIE::build_distance_map() {
 
   std::cout << "Refine Distance Map" << std::endl;
 
@@ -272,7 +172,8 @@ void ARTIE::refine_distance_map() {
 
     // distance fill the area
     //dist_fill_area(i);
-    dist_nearest_obstacle(i);
+    //dist_nearest_obstacle_l1(i);
+    dist_nearest_obstacle_l2(i);
  
   }
 
@@ -624,7 +525,7 @@ void ARTIE::dist_fill_area(const unsigned index) {
 
 
 
-void ARTIE::dist_nearest_obstacle(const unsigned index) {
+void ARTIE::dist_nearest_obstacle_l1(const unsigned index) {
 
   // preliminary checks on the condition of the index
   
@@ -688,7 +589,6 @@ void ARTIE::dist_nearest_obstacle(const unsigned index) {
       }
 
       if ( foundObstacle ) {
-        const unsigned dd = dist;
         return;
       }
 
@@ -696,6 +596,48 @@ void ARTIE::dist_nearest_obstacle(const unsigned index) {
 
     dist++;
     
+  }
+
+}
+
+
+void ARTIE::dist_nearest_obstacle_l2(const unsigned index) {
+
+  const point origin = decomposeIndex(index);
+
+  bool foundObstacle = false;
+
+  unsigned dist = 1;
+
+  while ( !foundObstacle ) {
+
+    // start dist pixels away to the left
+    // scan across and check top and bottom curves
+    const unsigned range = 2*dist + 1;
+    const point start = origin + m_neighbors[0]*dist;
+    for ( unsigned i=0; i != range; i++ ) {
+      const unsigned x = start.x+i;
+      const point upper(x,start.y-sqrt(dist*dist-x*x));
+      const point lower(x,start.y+sqrt(dist*dist-x*x));
+
+      if ( isValidPoint(upper) && m_obstacles[composeIndex(upper)] ) {
+	foundObstacle = true;
+	assert((upper-origin).length() == dist);
+	m_dmap[index] = dist;
+	m_nnobj[index] = composeIndex(upper);
+      } else if ( isValidPoint(lower) && m_obstacles[composeIndex(lower)] ) {
+	foundObstacle = true;
+	assert((lower-origin).length() == dist);
+	m_dmap[index] = dist;
+	m_nnobj[index] = composeIndex(lower);
+      }
+
+      if ( foundObstacle ) {
+	return;
+      }
+    }
+
+    dist++;    
   }
 
 }

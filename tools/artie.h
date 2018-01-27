@@ -139,8 +139,6 @@ private:
   */
   virtual void build_distance_map();
 
-  virtual void refine_distance_map();
-
 
   /**
   * determine choke point candidates by water level decomposition.
@@ -211,7 +209,12 @@ private:
   /**
   * Find the L1 distance to the nearest obstacle from a given point.
   */
-  void dist_nearest_obstacle(const unsigned index); 
+  void dist_nearest_obstacle_l1(const unsigned index); 
+  
+  /**
+  * Find the Euclidean distance to the nearest obstacle from a given point. (L2 distance).
+  */
+  void dist_nearest_obstacle_l2(const unsigned index);
   
 
 
