@@ -41,6 +41,7 @@ void ARTIE::analyze_map() {
   obstacle_flood_fill();
   //build_distance_map();
   refine_distance_map();
+  mat();
   water_level_decomposition();
 }
 
@@ -83,6 +84,11 @@ void ARTIE::dump_data(const char * base_name) {
   sprintf(output,"%s_walkable_areas.ppm",base_name);
   std::cout << "Dumping walkable areas map: " << output << std::endl;
   dump_categorical_map(output,&tmp[0],m_width,m_height);
+
+  // dump the MAT map
+  sprintf(output,"%s_mat.ppm",base_name);
+  std::cout << "Dumping MAT map: " << output << std::endl;
+  dump_categorical_map(output,&m_mat[0],m_width,m_height);
 
 }
 
@@ -701,3 +707,50 @@ void ARTIE::dist_nearest_obstacle(const unsigned index) {
 }
 
 
+void  ARTIE::mat() {
+  
+  // initialize the mat image
+  m_mat.reserve(m_mapsize);
+
+  // scan the depth map and flag minima
+  for ( unsigned i=0; i != m_mapsize; i++ ) {
+    // construct the point
+    const point pt = decomposeIndex(i);
+
+    // check depth of neighbors (up, down, left, right)
+    const point left = pt + m_neighbors[0];
+    const point right = pt + m_neighbors[1];
+    const point up = pt + m_neighbors[2];
+    const point down = pt + m_neighbors[3];
+    const point up_right = up + m_neighbors[1];
+    const point up_left = up + m_neighbors[0];
+    const point down_right = down + m_neighbors[1];
+    const point down_left = down + m_neighbors[0];
+
+    if ( isValidPoint(left) && isValidPoint(right) 
+      && m_dmap[i] > m_dmap[composeIndex(left)]
+      && m_dmap[i] > m_dmap[composeIndex(right)]
+    ) {
+      m_mat[i] = true;
+    } else if ( isValidPoint(up) && isValidPoint(down)
+      && m_dmap[i] > m_dmap[composeIndex(up)]
+      && m_dmap[i] > m_dmap[composeIndex(down)]
+    ) {
+      m_mat[i] = true;
+    } else if ( isValidPoint(up_right) && isValidPoint(down_left)
+      && m_dmap[i] > m_dmap[composeIndex(up_right)]
+      && m_dmap[i] > m_dmap[composeIndex(down_left)]
+    ) {
+      m_mat[i] = true;
+    } else if ( isValidPoint(up_left) && isValidPoint(down_right)
+      && m_dmap[i] > m_dmap[composeIndex(up_left)]
+      && m_dmap[i] > m_dmap[composeIndex(down_right)]
+    ) {
+      m_mat[i] = true;
+    }
+
+    
+  }
+  // prune the resulting image
+
+}

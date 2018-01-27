@@ -141,6 +141,11 @@ private:
 
   virtual void refine_distance_map();
 
+  /**
+  * Apply the medial axis transformation
+  */
+  virtual void mat();
+
 
   /**
   * determine choke point candidates by water level decomposition.
@@ -269,6 +274,9 @@ private:
   // reverse distance map
   // map depth (distance) to set of indices in map tiles
   std::map<unsigned,std::vector<unsigned> > m_rdmap;
+
+  // image containing the medial axis transformation
+  std::vector<unsigned> m_mat;
 
   // water level region map
   // region label at each tile of the map
