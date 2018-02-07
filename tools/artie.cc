@@ -11,6 +11,11 @@ using namespace Turk;
 
 const point Turk::ARTIE::m_neighbors[m_nNeighbs] = {point(-1,0), point(1,0), point(0,-1), point(0,1)};
 
+const point Turk::ARTIE::m_segment[m_segsize] = {
+  point(-1,1), point(0,1), point(1,1)
+  ,point(-1,0), point(1,0)
+  ,point(-1,-1), point(0,-1), point(1,-1) };
+
 color Turk::gen_random_color() {
   // generate a random character from /dev/urandom
   char col[3];
@@ -651,6 +656,10 @@ void  ARTIE::mat() {
 
     
   }
+
+  // filter the mat
+  mat_filter();
+
   // prune the resulting image
 
 }
@@ -698,4 +707,98 @@ void ARTIE::dist_nearest_obstacle_l2(const unsigned index) {
 
 }
 
+void ARTIE::mat_filter() {
+
+  // filter north-to-south
+  for ( unsigned i=0; i != m_width; i++ ) {
+    for ( unsigned j=0; j != m_height; j++ ) {
+      const unsigned index = j*m_width+i;
+      if ( m_mat[index] ) {
+        // construct the segment
+        unsigned segment[9] = {0};
+
+        const point p = decomposeIndex(index);
+
+        for ( unsigned k=0; k != m_segsize; k++ ) {
+          const point nn = p + m_segment[k];
+          if ( isValidPoint(nn) ) segment[(1+m_segment[k].y)*3+1+m_segment[k].x] = m_mat[composeIndex(nn)];
+ 
+        }
+
+        const bool safe = mat_is_safe(segment);
+        const bool end = mat_is_end(segment);
+
+        if ( safe && !end ) m_mat[index] = 0;
+
+      }
+    }
+  }
+
+
+
+  // filter east-to-west
+  for ( unsigned j=0; j != m_height; j++ ) {
+    for ( unsigned i=0; i != m_width; i++ ) {
+      const unsigned index = j*m_width+i;
+      if ( m_mat[index] ) {
+
+        // construct the segment
+        unsigned segment[9] = {0};
+
+        const point p = decomposeIndex(index);
+
+        for ( unsigned k=0; k != m_segsize; k++ ) {
+          const point nn = p + m_segment[k];
+          if ( isValidPoint(nn) ) segment[(1+m_segment[k].y)*3+1+m_segment[k].x] = m_mat[composeIndex(nn)];
+
+        }
+
+        const bool safe = mat_is_safe(segment);
+        const bool end = mat_is_end(segment);
+
+        if ( safe && !end ) m_mat[index] = 0; 
+
+      }
+    }
+  }
+  
+  
+
+}
+
+
+bool ARTIE::mat_is_safe(const unsigned segment[] ) {
+
+  if ( segment[0] > 0 && !segment[1] && !segment[3] ) {
+    return false;
+  } else if ( segment[2] && !segment[1] && !segment[5] ) {
+    return false;
+  } else if ( segment[8] && !segment[5] && !segment[7] ) {
+    return false;
+  } else if ( segment[6] && !segment[7] && !segment[3] ) {
+    return false;
+  } else if ( segment[3] && segment[5] && !segment[1] && !segment[7] ) {
+    return false;
+  } else if ( !segment[3] && !segment[5] && segment[1] && segment[7] ) {
+    return false;
+  }
+
+  return true;
+
+}
+
+
+bool ARTIE::mat_is_end(const unsigned segment[] ) {
+
+  unsigned sum = 0;
+
+  for ( unsigned i=0; i != 3; i++ ) {
+    for ( unsigned j=0; j != 3; j++ ) {
+      if ( i == 1 && j == 1 ) continue;
+      sum += segment[i*3+j];
+    }
+  }
+
+  return sum >= 5;
+}
 

@@ -220,7 +220,26 @@ private:
   * Find the Euclidean distance to the nearest obstacle from a given point. (L2 distance).
   */
   void dist_nearest_obstacle_l2(const unsigned index);
+ 
+
+  /**
+  * Filter the mat image to remove safe non-end point pixels.
+  * The result should approach a single width medial axis.
+  */
+  void mat_filter();
+
+  /**
+  * Return true/false if the MAT point is safe to remove.  
+  * Safe points do not create disjoint MAT segments if removed.
+  * The input is an 3x3 image segment of the current MAT.
+  */
+  bool mat_is_safe(const unsigned []);
   
+  /**
+  * Return true/false if the MAT point is an end point.
+  * The input is a 3x3 image segment of the current MAT.
+  */
+  bool mat_is_end(const unsigned []); 
 
 
   /**
@@ -240,6 +259,8 @@ private:
   */
   static const unsigned m_nNeighbs = 4U;
   static const point m_neighbors[m_nNeighbs];
+  static const unsigned m_segsize = 8U;
+  static const point m_segment[m_segsize];
 
   /**
   * check if the point is a valid point (i.e. in range of the map size.)
