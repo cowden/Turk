@@ -376,9 +376,9 @@ void ARTIE::clean_map() {
   std::cout << "Walkable Area: " << walkable_sum << " area sum: " << area_sum << std::endl;
 
   // clean up walkable map
-  /*for ( unsigned i=0; i != m_mapsize; i++ ) {
-    if ( tmp[i] && areas[tmp[i]-1] < 100 ) m_walkable[i] = false;
-  }*/
+  for ( unsigned i=0; i != m_mapsize; i++ ) {
+    if ( tmp[i] && areas[tmp[i]-1] < 1000 ) m_walkable[i] = false;
+  }
 
 }
 
@@ -685,12 +685,12 @@ void ARTIE::dist_nearest_obstacle_l2(const unsigned index) {
       const point upper(x,start.y-sqrt(dist*dist-delta*delta));
       const point lower(x,start.y+sqrt(dist*dist-delta*delta));
 
-      if ( isValidPoint(upper) && m_obstacles[composeIndex(upper)] ) {
+      if ( !isValidPoint(upper) || m_obstacles[composeIndex(upper)] ) {
 	foundObstacle = true;
 	//assert((upper-origin).length() == dist);
 	m_dmap[index] = dist;
 	m_nnobj[index] = composeIndex(upper);
-      } else if ( isValidPoint(lower) && m_obstacles[composeIndex(lower)] ) {
+      } else if ( !isValidPoint(lower) || m_obstacles[composeIndex(lower)] ) {
 	foundObstacle = true;
 	//assert((lower-origin).length() == dist);
 	m_dmap[index] = dist;
