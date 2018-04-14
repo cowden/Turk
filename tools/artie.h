@@ -12,6 +12,7 @@
 #include <map>
 #include <vector>
 #include <cmath>
+#include <fstream>
 
 
 namespace Turk {
@@ -119,6 +120,12 @@ public:
   * assign a random color for each unique category
   */
   virtual void dump_categorical_map(const char * name, const unsigned *map, const unsigned width, const unsigned height);
+
+  /**
+  * dump a csv file 
+  */
+  virtual void dump_points(const char * name, const point * points, const unsigned len);
+  template<class T> void dump_points(const char * name, const std::vector<std::pair<T,T> > & points);
 
 
   /**
@@ -272,6 +279,11 @@ private:
   }
 
 
+  /**
+  * Scan the distance map and identify critical points
+  */
+  void find_critical_points();
+
 
 
   // private members
@@ -313,9 +325,24 @@ private:
   unsigned m_nGatePoints;  
 
   std::vector<unsigned> tmp;
+
+  // critical points
+  std::vector<point> m_critical_points;
+  std::vector<std::pair<double,double> > m_critical_mins;
   
 };
 
+template<class T> void ARTIE::dump_points(const char *name, const std::vector<std::pair<T,T> > & points) {
+
+  std::ofstream out(name);
+  out << "x,y" << std::endl;
+  const unsigned len = points.size();
+  for ( unsigned i=0; i != len; i++ )
+    out << points[i].first << "," << points[i].second << std::endl;
+
+  out.close();
+
+}
 
 }
 #endif

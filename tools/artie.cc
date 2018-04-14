@@ -7,6 +7,8 @@
 
 #include<sys/random.h>
 
+#include "polyartie.h"
+
 using namespace Turk;
 
 const point Turk::ARTIE::m_neighbors[m_nNeighbs] = {point(-1,0), point(1,0), point(0,-1), point(0,1)};
@@ -47,6 +49,7 @@ void ARTIE::analyze_map() {
   build_distance_map();
   mat();
   water_level_decomposition();
+  find_critical_points();
 }
 
 
@@ -93,6 +96,14 @@ void ARTIE::dump_data(const char * base_name) {
   sprintf(output,"%s_mat.ppm",base_name);
   std::cout << "Dumping MAT map: " << output << std::endl;
   dump_categorical_map(output,&m_mat[0],m_width,m_height);
+
+  // dump the critical points
+  sprintf(output,"%s_critical_points.csv",base_name);
+  dump_points(output,&m_critical_points[0],m_critical_points.size());
+
+  // dump minima
+  sprintf(output,"%s_critical_minima.csv",base_name);
+  dump_points<double>(output,m_critical_mins);
 
 }
 
@@ -160,6 +171,17 @@ void ARTIE::dump_categorical_map(const char * name, const unsigned * map, const 
     fputc(col.blue,file);
   }
   
+
+}
+
+void ARTIE::dump_points(const char *name, const point * points, const unsigned len) {
+
+  std::ofstream out(name);
+  out << "x,y" << std::endl;
+  for ( unsigned i=0; i != len; i++ )
+    out << points[i].x << "," << points[i].y << std::endl;
+
+  out.close();
 
 }
 
@@ -802,3 +824,58 @@ bool ARTIE::mat_is_end(const unsigned segment[] ) {
   return sum >= 5;
 }
 
+
+void ARTIE::find_critical_points() {
+
+  // scan window
+  std::vector<double> window(25);
+  std::vector<double> x(25),y(25 );
+
+  // fill x,y values
+  for ( int i=-2; i != 3; i++ ) {
+    for ( int j=-2; j != 3; j++ ) {
+      x[(i+2)*5+j+2] = j;
+      y[(i+2)*5+j+2] = i;
+    }
+  }
+
+  // collection critical point locations
+  std::vector<point> critical_points;
+ 
+  // scan the image (ignore the edges, at least for now)
+  const unsigned scan_width = m_width-2;
+  const unsigned scan_height = m_height-2;
+  for ( int i=2; i != scan_height; i++ ) {
+    for ( int j=2; j != scan_width; j++ ) {
+
+      // check if the central point is walkable
+      if ( !m_walkable[i*m_width+j] ) continue;
+
+      // fill window
+      for ( int k=-2; k != 3; k++ ) {
+        for ( int l=-2; l != 3; l++ ) {
+          window[(k+2)*5+l+2] = m_dmap[(i+k)*(int)m_width+j+l];
+        }
+      }
+
+      // fit the polynomial 
+      polyartie fitter(x,y,window);
+      
+      // add point to list
+      if ( fitter.isMinima() ) {
+        critical_points.push_back(point(j,i));
+
+        const std::pair<double,double> & min = fitter.getMinima();
+        m_critical_mins.push_back(min);
+
+      }
+
+
+    }
+  }
+
+  m_critical_points = critical_points;
+
+  // cluster critical points
+
+}

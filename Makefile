@@ -23,9 +23,9 @@ doc:
 
 
 $(TOOL_OBJS): %.o: %.cc
-	$(CXX) -MMD -c -o $@ $<
+	$(CXX) -MMD -c -o $@ $<  -llapack
 
 $(OBJDIR)/terrain: standalone/terrain.cc $(TOOL_OBJS)
-	$(CXX) -MMD -I $(INCDIR) -o $@ $^
+	$(CXX) -MMD -I $(INCDIR) -o $@ $^ -llapack
 
 -include $(DEPENDS) 
