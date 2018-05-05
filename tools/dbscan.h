@@ -22,6 +22,7 @@ public:
   virtual void fit(const double * data,const unsigned n_features, const unsigned n_obs);
 
 
+
   // ---------
   // accessor methods
 
@@ -33,9 +34,18 @@ public:
  
 private:
 
+  /**
+  * Find neighbors with in given range of a point.
+  */
+  virtual unsigned rangeSearch(int * workspace, const double * data, const unsigned n_features, const unsigned n_obs);
+
   std::vector<int> labels_;
+
+  double eps_;
 
 };
 
 } // end Turk namespace
+
+
 #endif

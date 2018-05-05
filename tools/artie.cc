@@ -8,6 +8,7 @@
 #include<sys/random.h>
 
 #include "polyartie.h"
+#include "dbscan.h"
 
 using namespace Turk;
 
@@ -877,5 +878,6 @@ void ARTIE::find_critical_points() {
   m_critical_points = critical_points;
 
   // cluster critical points
+  dbscan db;
 
 }

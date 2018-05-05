@@ -8,7 +8,8 @@ BINS := $(OBJDIR)/terrain
 INCDIR := $(TOOLDIR)
 
 TOOL_OBJS := $(TOOLDIR)/artie.o $(TOOLDIR)/libppm.o \
-   $(TOOLDIR)/polyartie.o $(TOOLDIR)/linear_model.o
+   $(TOOLDIR)/polyartie.o $(TOOLDIR)/linear_model.o \
+   $(TOOLDIR)/dbscan.o $(TOOLDIR)/kdtree.o
 
 
 DBG := -g
