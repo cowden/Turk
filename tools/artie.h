@@ -127,6 +127,11 @@ public:
   virtual void dump_points(const char * name, const point * points, const unsigned len);
   template<class T> void dump_points(const char * name, const std::vector<std::pair<T,T> > & points);
 
+  /**
+  * dump a csv file
+  */
+  template<class T> void dump_csv(const char * name, const T * data, const unsigned n_features, const unsigned n_obs);
+
 
   /**
   * Return the distance map
@@ -329,6 +334,9 @@ private:
   // critical points
   std::vector<point> m_critical_points;
   std::vector<std::pair<double,double> > m_critical_mins;
+  std::vector<double> m_critical_clus;
+  std::vector<int> m_clu_labels;
+  
   
 };
 
@@ -342,6 +350,20 @@ template<class T> void ARTIE::dump_points(const char *name, const std::vector<st
 
   out.close();
 
+}
+
+template<class T> void ARTIE::dump_csv(const char *name, const T * data, const unsigned n_features, const unsigned n_obs ) {
+
+  std::ofstream out(name);
+  for ( unsigned i=0; i != n_obs; i++ ) {
+    for ( unsigned j=0; j != n_features; j++ ) {
+      out << data[i*n_features+j];
+      if ( j != n_features-1 ) out << ", ";
+    }
+    out << std::endl;
+  }
+
+  out.close();
 }
 
 }

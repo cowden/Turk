@@ -4,6 +4,7 @@
 #include <cassert>
 #include <iostream>
 #include <cmath>
+#include <algorithm>
 
 #include<sys/random.h>
 
@@ -105,6 +106,14 @@ void ARTIE::dump_data(const char * base_name) {
   // dump minima
   sprintf(output,"%s_critical_minima.csv",base_name);
   dump_points<double>(output,m_critical_mins);
+
+  // dump clusters
+  sprintf(output,"%s_clusters.csv",base_name);
+  dump_csv<double>(output,&m_critical_clus[0],2,m_critical_clus.size()/2);
+
+  // dump labels
+  sprintf(output,"%s_cluster_labels.csv",base_name);
+  dump_csv<int>(output,&m_clu_labels[0],1,m_clu_labels.size());
 
 }
 
@@ -877,7 +886,51 @@ void ARTIE::find_critical_points() {
 
   m_critical_points = critical_points;
 
+  const unsigned n_pts = critical_points.size();
+  double * data = new double[2*n_pts];
+  for ( unsigned i=0; i != n_pts; i++ ) {
+    const point pt = critical_points[i];
+    data[i*2] = pt.x;
+    data[i*2+1] = pt.y;
+  } 
+
   // cluster critical points
   dbscan db;
+  db.fit(data,2,n_pts);
+  const std::vector<int> labels = db.getLabels();
+  m_clu_labels = labels;
+ 
+  
+
+  // collect cluster points and find centroids
+  const unsigned nclus = *std::max_element(labels.begin(),labels.end()) + 1;
+  std::vector<std::vector<unsigned> > clu_map(nclus);
+  std::vector<double> centers(2*nclus);
+  for ( unsigned i=0; i != n_pts; i++ ) {
+    const int lab = labels[i];
+    if ( lab >= 0 ) { 
+      clu_map[lab].push_back(i);
+      centers[lab*2] += data[i*2];
+      centers[lab*2+1] += data[i*2+1];
+    }
+  }
+
+  for ( unsigned i=0; i != nclus; i++ ) {
+    const double N = clu_map[i].size();
+    centers[i*2] /= N;
+    centers[i*2+1] /= N;
+  }
+
+  // copy to cluster storage
+  m_critical_clus.resize(2*nclus);
+  for ( unsigned i=0; i != nclus; i++ ) {
+    m_critical_clus[i*2] = centers[i*2];
+    m_critical_clus[i*2+1] = centers[i*2+1];
+  }
+  m_critical_clus[0] = 0.;
+  m_critical_clus[1] = 0.;
+
+
+  delete [] data;
 
 }

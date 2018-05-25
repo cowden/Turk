@@ -42,6 +42,8 @@ public:
 
   kdpoint & operator=(const kdpoint &pt) 
     {
+      dim_ = pt.dim_;
+      x_.resize(dim_);
       for ( unsigned i=0; i != dim_; i++ ) x_[i] = pt.x_[i];
       return *this;
     }
@@ -55,9 +57,12 @@ public:
 
   double dist(const kdpoint &p) const {
     double dd = 0.;
-    for ( unsigned j=0; j != dim_; j++ ) dd += SQR(x_[j]-p.x_[j]);
+    //for ( unsigned j=0; j != dim_; j++ ) dd += SQR(x_[j]-p.x_[j]);
+    for ( unsigned j=0; j != dim_; j++ ) dd += (x_[j]-p.x_[j])*(x_[j]-p.x_[j]);
     return sqrt(dd);
   }
+
+  void set_data(const unsigned dim, const double data) { x_[dim] = data; }
 
 
   const unsigned dim() const { return dim_; }
@@ -135,6 +140,11 @@ class kdtree {
 public:
 
   /**
+  * default "do nothing" constructor
+  */
+  kdtree() { }
+
+  /**
   * construct the kdtree
   */
   kdtree(const double * data, const unsigned n_features, const unsigned n_obs);
@@ -142,11 +152,13 @@ public:
   /**
   * Return the  nearest neighbors to a point.
   */
+  //int nnsearch();
 
 
   /**
   * Return the points with in a given radius of the supplied location.
   */
+  int ballsearch(const kdpoint & pt, double r, unsigned * list, unsigned limit);
 
 private:
 

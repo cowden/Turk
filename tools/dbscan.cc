@@ -4,7 +4,6 @@
 
 #include <cassert>
 
-#include "kdtree.h"
 
 using namespace Turk;
 
@@ -12,8 +11,11 @@ using namespace Turk;
 void dbscan::fit(const double * data, const unsigned n_features, const unsigned n_obs) {
 
   // workspace to store neighbors
-  std::vector<int> neighbs(n_obs);
+  std::vector<unsigned> neighbs(n_obs);
   std::vector<int> queue(n_obs*n_obs);
+
+  // construct the kdtree
+  kdt_ = kdtree(data,n_features,n_obs);
 
   // cluster labels:
   // -1 = unlabeled
@@ -34,11 +36,11 @@ void dbscan::fit(const double * data, const unsigned n_features, const unsigned 
     if ( labels_[i] != -1 ) continue;
 
     // find neighbors
-    const unsigned N = rangeSearch(&neighbs[0],data,n_features,n_obs);
+    const unsigned N = rangeSearch(i,&neighbs[0],data,n_features,n_obs);
     
 
     // density check => label as noise and continue
-    if ( N < eps_ ) {
+    if ( N < min_samples_ ) {
       labels_[i] = 0;
       continue;
     }
@@ -62,20 +64,20 @@ void dbscan::fit(const double * data, const unsigned n_features, const unsigned 
       // take one out of the queue
       ql--;
 
-      const unsigned index = neighbs[loc];
+      const unsigned index = queue[loc++];
 
       // change noise to border point
-      if ( labels_[index] == 0 ) labels_[index] = cluster_label;
+      if ( labels_[index] <= 0 ) labels_[index] = cluster_label;
 
       // if previously processes, continue
       if ( labels_[index] > 0 ) continue;
 
       // collect neighbors
-      const unsigned n = rangeSearch(&neighbs[0],data,n_features,n_obs);
+      const unsigned n = rangeSearch(index,&neighbs[0],data,n_features,n_obs);
 
 
       // check density, if above add new points to queue
-      if ( n < eps_ ) {
+      if ( n < min_samples_ ) {
         for ( unsigned j=0; j != n; j++ ) 
           queue[ql+j] = neighbs[j];
         ql += n;
@@ -89,9 +91,13 @@ void dbscan::fit(const double * data, const unsigned n_features, const unsigned 
 
 
 
-unsigned dbscan::rangeSearch(int * workspace, const double * data, const unsigned n_features, const unsigned n_obs) {
+unsigned dbscan::rangeSearch(unsigned index, unsigned * workspace, const double * data, unsigned n_features, const unsigned n_obs) {
 
-  kdtree kdt(data,n_features,n_obs);
+  
+  kdpoint pt(n_features,&data[index*n_features]); 
+  
+  const unsigned nn = kdt_.ballsearch(pt,eps_,workspace,nnmax_);
+  //const unsigned nn = 0;
 
-  return 0;
+  return nn;
 }

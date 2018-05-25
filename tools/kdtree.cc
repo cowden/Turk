@@ -29,6 +29,7 @@ kdtree::kdtree(const double * data, const unsigned n_features, const unsigned n_
   int nboxes = 2*n_obs - (m >> 1);
   if ( m < nboxes ) nboxes = m;
   nboxes--;
+  nboxes = 1e4;
   boxes_ = std::vector<kdbox>(nboxes);
 
   // copy the data into a contiguous array
@@ -37,6 +38,11 @@ kdtree::kdtree(const double * data, const unsigned n_features, const unsigned n_
     for ( unsigned k=0; k != n_obs; k++ ) 
       coords[kk*n_obs+k] = data[k*n_features+kk];
   }
+
+  // copy data as kdpoint vector
+  points_.resize(n_obs);
+  for ( unsigned kk=0; kk != n_obs; kk++ )
+    points_[kk] = kdpoint(n_features,&data[kk*n_features]);
 
 
   // initialize the root box and put it on the task list for subdivision
@@ -62,7 +68,8 @@ kdtree::kdtree(const double * data, const unsigned n_features, const unsigned n_
     cp = &coords[tdim*n_obs];
     np = pthi - ptlo + 1;
     kk = (np-1)/2;
-    (void) selecti(kk,hp,np,cp);
+    if ( np ) {
+      (void) selecti(kk,hp,np,cp);
     high = boxes_[tmom].high();
     lo = boxes_[tmom].low();
     high[tdim] = lo[tdim] = coords[tdim*n_obs + hp[kk]];
@@ -77,6 +84,7 @@ kdtree::kdtree(const double * data, const unsigned n_features, const unsigned n_
     if ( np - kk > 0 ) {
       taskmom[++nowtask] = jbox;
       taskdim[nowtask] = (tdim+1) % dim_;
+    }
     }
   }
 
@@ -125,3 +133,50 @@ int kdtree::selecti(unsigned k, unsigned * indices, unsigned n, double * pts) {
 
 
 
+
+int kdtree::ballsearch(const kdpoint & pt, double r, unsigned * list, unsigned limit ) {
+
+  // find the smallest box  that contains the ball
+  unsigned nb = 0;
+  unsigned jdim = 0;
+
+  while(boxes_[nb].dau1()) {
+
+    unsigned nbold = nb;
+    int d1 = boxes_[nb].dau1();
+    int d2 = boxes_[nb].dau2();
+
+    const double x = pt.data()[jdim];
+    if ( x + r <= boxes_[d1].high().data()[jdim] ) nb = d1;
+    else if ( x - r >= boxes_[d2].low().data()[jdim] ) nb = d2;
+    
+    jdim = ++jdim % dim_;
+
+    if ( nb == nbold ) break;
+
+  }
+  
+  // now traverse the tree below the starting box only as needed
+  unsigned ntask = 1;
+  unsigned task[50];
+  int nret = 0;
+
+  task[1] = nb;
+  while ( ntask ) {
+    unsigned k = task[ntask--];
+    if ( boxes_[k].dist(pt) > r ) continue;
+    if ( boxes_[k].dau1() ) {
+      task[++ntask] = boxes_[k].dau1();
+      task[++ntask] = boxes_[k].dau2();
+    } else {
+      for ( unsigned i=boxes_[k].ptlo(); i <= boxes_[k].pthi(); i++ ) {
+        if ( points_[index_[i]].dist(pt) <= r && nret < limit ) 
+          list[nret++] = index_[i];
+        if ( nret == limit ) return limit;
+      }
+    }
+  }
+   
+  return nret; 
+
+}
