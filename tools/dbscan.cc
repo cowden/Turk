@@ -56,28 +56,25 @@ void dbscan::fit(const double * data, const unsigned n_features, const unsigned 
       queue[j] = neighbs[j];
 
     // process seed points
-    unsigned loc = 0;
     unsigned ql = N; // length of the queue
 
     while ( ql > 0 ) {
 
       // take one out of the queue
-      ql--;
-
-      const unsigned index = queue[loc++];
-
-      // change noise to border point
-      if ( labels_[index] <= 0 ) labels_[index] = cluster_label;
+      const unsigned index = queue[--ql];
 
       // if previously processes, continue
       if ( labels_[index] > 0 ) continue;
+
+      // change noise to border point
+      if ( labels_[index] <= 0 ) labels_[index] = cluster_label;
 
       // collect neighbors
       const unsigned n = rangeSearch(index,&neighbs[0],data,n_features,n_obs);
 
 
       // check density, if above add new points to queue
-      if ( n < min_samples_ ) {
+      if ( n > min_samples_ ) {
         for ( unsigned j=0; j != n; j++ ) 
           queue[ql+j] = neighbs[j];
         ql += n;
