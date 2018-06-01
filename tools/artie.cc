@@ -10,6 +10,7 @@
 
 #include "polyartie.h"
 #include "dbscan.h"
+#include "queue.h"
 
 using namespace Turk;
 
@@ -52,6 +53,7 @@ void ARTIE::analyze_map() {
   mat();
   water_level_decomposition();
   find_critical_points();
+  triangulate();
 }
 
 
@@ -114,6 +116,14 @@ void ARTIE::dump_data(const char * base_name) {
   // dump labels
   sprintf(output,"%s_cluster_labels.csv",base_name);
   dump_csv<int>(output,&m_clu_labels[0],1,m_clu_labels.size());
+
+  // dump regions
+  sprintf(output,"%s_map_regions.ppm",base_name);
+  dump_categorical_map(output,&m_region_map[0],m_width,m_height);
+ 
+  // dump map graph
+  sprintf(output,"%s_map_graph.csv",base_name);
+  dump_csv<unsigned>(output,&m_map_graph[0],m_n_nuclei,m_n_nuclei); 
 
 }
 
@@ -934,3 +944,109 @@ void ARTIE::find_critical_points() {
   delete [] data;
 
 }
+
+
+void ARTIE::triangulate() {
+
+  // determine nucleation points
+  m_n_nuclei = m_critical_clus.size()/2;
+
+  // create queues for each nucleation point
+  std::vector<cycle_queue> queues(m_n_nuclei);
+
+  // create region labeled map
+  m_region_map.resize(m_width*m_height); 
+  for ( unsigned i=0; i != m_mapsize; i++ )
+    m_region_map[i] = 0;
+  
+  // create graph matrix
+  m_map_graph.resize(m_n_nuclei*m_n_nuclei);
+  for ( unsigned i=0; i != m_n_nuclei*m_n_nuclei; i++ )
+    m_map_graph[i] = 0;
+
+  std::vector<point> center_points(m_n_nuclei);
+
+  // initialize the queues
+  unsigned ntasks = m_n_nuclei - 1;
+  for ( unsigned i=1; i != m_n_nuclei; i++ ) {
+    queues[i].push(composeIndex(m_critical_clus[2*i],m_critical_clus[2*i+1]));
+    queues[i].init_cycle();
+
+    center_points[i] = point(m_critical_clus[2*i],m_critical_clus[2*i+1]); 
+  }
+
+  unsigned round = 0;
+
+  // while items in queues
+  while ( ntasks ) {
+    //if ( round++ > 10 ) break;
+
+    // for each nucleus, cycle queue  
+    for ( unsigned i=1; i != m_n_nuclei; i++ ) {
+      int index = queues[i].cycle_pop();
+      while ( index >= 0 ) {
+
+        // label index with cluster label
+        if ( m_region_map[index] == 0 ) {
+          m_region_map[index] = i;
+          // add neighbors to queue
+          const point pt = decomposeIndex(index);
+          const point & cpt = center_points[i];
+          const int radius = (pt - cpt).length() + 1;
+
+          const point npt = pt + point(0,1);
+          if ( isValidPoint(npt) && m_walkable[composeIndex(npt)] && (npt - cpt).length() <= radius ) 
+            queues[i].push(composeIndex(npt));
+
+          const point nept = npt + point(1,0);
+          if ( isValidPoint(nept) && m_walkable[composeIndex(nept)] && (nept - cpt).length() <= radius)
+            queues[i].push(composeIndex(nept));
+
+          const point ept = pt + point(1,0);
+          if ( isValidPoint(ept) && m_walkable[composeIndex(ept)] && (ept - cpt).length() <= radius)
+            queues[i].push(composeIndex(ept));
+
+          const point sept = ept + point(0,-1);
+          if ( isValidPoint(sept) && m_walkable[composeIndex(sept)] && (sept - cpt).length() <= radius)
+            queues[i].push(composeIndex(sept));
+
+          const point spt = pt + point(0,-1);
+          if ( isValidPoint(spt) && m_walkable[composeIndex(spt)] && (spt - cpt).length() <= radius)
+            queues[i].push(composeIndex(spt));
+
+          const point swpt = spt + point(-1,0);
+          if ( isValidPoint(swpt) && m_walkable[composeIndex(swpt)] && (swpt - cpt).length() <= radius)
+            queues[i].push(composeIndex(swpt));
+
+          const point wpt = pt + point(-1,0);
+          if ( isValidPoint(wpt) && m_walkable[composeIndex(wpt)] && (wpt - cpt).length() <= radius)
+            queues[i].push(composeIndex(wpt));
+
+          const point nwpt = wpt + point(0,1);
+          if ( isValidPoint(nwpt) && m_walkable[composeIndex(nwpt)] && (nwpt - cpt).length() <= radius)
+            queues[i].push(composeIndex(nwpt));
+         
+
+        } else if ( m_region_map[index] != i ) {
+          const unsigned lab = m_region_map[index];
+          // add link to graph matrix
+          m_map_graph[i*m_n_nuclei+lab] = 1;
+          m_map_graph[lab*m_n_nuclei+i] = 1;
+        }
+
+        index = queues[i].cycle_pop();
+      }
+    } 
+   
+    ntasks = 0; 
+    for ( unsigned i=1; i != m_n_nuclei; i++ ) {
+      const int n = queues[i].ntask();
+      ntasks += n > 0 ? n : 0;
+    }
+
+  }
+
+}
+
+
+

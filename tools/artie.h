@@ -173,6 +173,15 @@ private:
   virtual void clean_map();
 
   /**
+  * Like flood fill, but start the fill from a set of starting points.  This 
+  * process is similar to crystal nucleation.  The algorithm works by starting
+  * a fill queue for each nucleation point.
+  * When two regions intersect the nuclei are linked.  In the absence of obstacles, 
+  * this method results in a Delauney triangulation.
+  */
+  virtual void triangulate();
+
+  /**
   * flood fill an area
   * recursively.
   */
@@ -336,6 +345,12 @@ private:
   std::vector<std::pair<double,double> > m_critical_mins;
   std::vector<double> m_critical_clus;
   std::vector<int> m_clu_labels;
+
+
+  // map regions and connection graph
+  unsigned m_n_nuclei;
+  std::vector<unsigned> m_region_map;
+  std::vector<unsigned> m_map_graph;
   
   
 };
