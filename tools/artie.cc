@@ -932,14 +932,15 @@ void ARTIE::find_critical_points() {
   }
 
   // copy to cluster storage
-  m_critical_clus.resize(2*nclus);
+  m_critical_clus.push_back(0.);
+  m_critical_clus.push_back(0.);
   for ( unsigned i=0; i != nclus; i++ ) {
-    m_critical_clus[i*2] = centers[i*2];
-    m_critical_clus[i*2+1] = centers[i*2+1];
+    const point pt(centers[i*2],centers[i*2+1]);
+    if ( isValidPoint(pt) && m_dmap[composeIndex(pt)] > 2 ) {
+      m_critical_clus.push_back(pt.x);
+      m_critical_clus.push_back(pt.y);
+    }
   }
-  m_critical_clus[0] = 0.;
-  m_critical_clus[1] = 0.;
-
 
   delete [] data;
 
