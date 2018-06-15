@@ -15,7 +15,6 @@
 #include <array>
 
 #include <BWAPI.h>
-#include <BWTA.h>
 #include <windows.h>
 
 

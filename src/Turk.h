@@ -1,7 +1,6 @@
 #pragma once
 
-#include "BuildingManager.h"
-#include "ScoutManager.h"
+
 #include "HUD.h"
 #include "Logger.h"
 #include "ConfigDB.h"

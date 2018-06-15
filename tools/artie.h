@@ -14,6 +14,10 @@
 #include <cmath>
 #include <fstream>
 
+#ifdef _WIN32
+#include <boost/random/linear_congruential.hpp>
+#endif
+
 
 namespace Turk {
 
