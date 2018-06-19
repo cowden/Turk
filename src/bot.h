@@ -10,9 +10,48 @@
 
 namespace Turk {
 
+	class location;
+	class status;
+
 class bot {
 
 public:
+
+	/**
+	* Execute a given command encoded as an integer
+	*/
+	virtual int execute(int command) = 0;
+
+	/**
+	* Return the bot type
+	*/
+	virtual const std::string & type() const = 0;
+
+	/**
+	* Return the location
+	*/
+	virtual const location & location() const = 0;
+
+	/**
+	* Return the status
+	*/
+	virtual const status & status() const = 0;
+
+	/**
+	* Load a model
+	*/
+	virtual void loadModel() = 0;
+
+	/**
+	* Dump the model
+	*/
+	virtual void dumpModel() = 0;
+
+	/**
+	* Delete this instance
+	*/
+	inline ~bot() { }
+
 
 
 

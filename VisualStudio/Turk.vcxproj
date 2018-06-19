@@ -23,6 +23,7 @@
     <ClCompile Include="..\tools\sqlite3.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\bot.h" />
     <ClInclude Include="..\src\HUD.h" />
     <ClInclude Include="..\src\Turk.h" />
     <ClInclude Include="..\tools\artie.h" />
