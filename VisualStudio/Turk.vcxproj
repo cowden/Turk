@@ -23,9 +23,14 @@
     <ClCompile Include="..\tools\sqlite3.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\ArmyManager.h" />
+    <ClInclude Include="..\src\BaseManager.h" />
     <ClInclude Include="..\src\bot.h" />
+    <ClInclude Include="..\src\Common.h" />
     <ClInclude Include="..\src\HUD.h" />
+    <ClInclude Include="..\src\StrategyManager.h" />
     <ClInclude Include="..\src\Turk.h" />
+    <ClInclude Include="..\src\UnitManager.h" />
     <ClInclude Include="..\tools\artie.h" />
     <ClInclude Include="..\tools\ConfigDB.h" />
     <ClInclude Include="..\tools\dbscan.h" />
@@ -40,7 +45,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9EF367EB-3001-4A26-96C6-4431787A830B}</ProjectGuid>
     <RootNamespace>Turk</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

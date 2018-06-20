@@ -20,3 +20,26 @@
 
 
 // Basic Building
+namespace Turk {
+
+/**
+* Convenience to store locations
+*/
+struct location {
+	int x;
+	int y;
+
+	location(int tx, int ty) :x(tx), y(ty) { }
+};
+
+/**
+* elevate status for IRQ handling
+*/
+enum status {
+	GOOD,
+	WARN,
+	ATTN,
+	URGNT
+};
+
+} // end Turk namespace

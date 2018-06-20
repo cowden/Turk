@@ -2,15 +2,20 @@
 #define BOT_H
 
 
-///////////////////////////////////
-// C S Cowden  11 June 2018
-// The bot base class for the various sub-agents
-// implemented in the TURK.
-/////////////////////////////////////
+
+/****************************************
+* C S Cowden  11 June 2018
+* The bot base class for the various sub-agents
+* implemented in the TURK.
+******************************************/
+
+
+#include <string>
+
+#include "Common.h"
 
 namespace Turk {
 
-	class location;
 	class status;
 
 class bot {
@@ -35,7 +40,7 @@ public:
 	/**
 	* Return the status
 	*/
-	virtual const status & status() const = 0;
+	virtual const status status() const = 0;
 
 	/**
 	* Load a model
