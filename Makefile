@@ -25,7 +25,13 @@ doc:
 $(TOOL_OBJS): %.o: %.cc
 	$(CXX) -MMD -c -o $@ $<  -llapack
 
+$(BWAPI_OBJS): %.o: %.cpp
+	$(CXX) -MMD -c -o $@ $<
+
 $(OBJDIR)/terrain: standalone/terrain.cc $(TOOL_OBJS)
 	$(CXX) -MMD -I $(INCDIR) -o $@ $^ -llapack
+
+$(OBJDIR)/techtree: standalone/techtree.cc $(BWAPI_OBJS)
+	$(CXX) -MMD $(INCLUDES)  -o $@ $^ 
 
 -include $(DEPENDS) 
