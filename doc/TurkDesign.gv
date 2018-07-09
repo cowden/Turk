@@ -1,0 +1,79 @@
+
+
+digraph cluster_Turk {
+
+  node [shape="box"];
+
+  bot [label="bot" style=filled fillcolor=grey]; 
+  StrategyManager [label="StrategyManager"];
+  BaseManager [label="BaseManager"];
+  ArmyManager [label="ArmyManager"];
+  UnitManager [label="UnitManager" xlabel="singleton" color="red" fillcolor=grey style=filled];
+
+  Scout [label="Scout"];
+  Attacker [label="Attacker"];
+  Defender [label="Defender"];
+
+  node [xlabel="singleton" shape=box style=filled color=magenta fillcolor=grey];
+  artie [label="ARTIE"];
+  weaver [label="WEAVER"];
+  cameron [label="CAMERON"]; 
+
+
+  edge [color="grey" style="dotted"];
+  bot -> StrategyManager;
+  bot -> BaseManager;
+  bot -> ArmyManager;
+  bot -> UnitManager;
+
+  ArmyManager -> Scout;
+  ArmyManager -> Attacker;
+  ArmyManager -> Defender;
+
+
+  edge [color="blue" style="dotted"];
+  StrategyManager -> BaseManager;
+  StrategyManager -> ArmyManager;
+  StrategyManager -> UnitManager;
+
+  ArmyManager -> Scout;
+  ArmyManager -> Attacker;
+  ArmyManager -> Defender;
+
+  edge [color="cyan" style="" penwidth=1];
+  StrategyManager -> artie;
+  BaseManager -> artie;
+  ArmyManager -> artie;
+  UnitManager -> artie;
+  Scout -> artie;
+  Attacker -> artie;
+  Defender -> artie;
+
+  BaseManager -> weaver; 
+
+
+  StrategyManager -> weaver;
+  StrategyManager -> cameron;
+  ArmyManager -> cameron;
+  Scout -> cameron;
+  Attacker -> cameron;
+  Defender -> cameron;
+  BaseManager -> cameron;
+  
+  cameron -> artie;
+  cameron -> weaver;
+
+
+  BaseManager -> UnitManager;
+  UnitManager -> BaseManager;
+  ArmyManager -> UnitManager;
+  UnitManager -> ArmyManager;
+  Scout -> UnitManager;
+  UnitManager -> Scout;
+  Defender -> UnitManager;
+  UnitManager -> Defender;
+  Attacker -> UnitManager;
+  UnitManager -> Attacker;
+  
+
+}
