@@ -13,8 +13,31 @@
 #include "Common.h"
 #include "bot.h"
 
+#include "weaver.h"
+
+
+
 namespace Turk {
 
+
+/**
+* argument struct for parsing commands to the agent.
+*/
+struct base_args : bot_args {
+
+  /**
+  * collection of desired units and counts.
+  */
+  std::vector<std::pair<TUnit,unsigned> > unit_count_;
+
+};
+
+
+
+
+/**
+* Agent which implements models to operate a single base.
+*/
 class BaseManager : public bot {
 public:
 	/**
@@ -30,7 +53,7 @@ public:
 	/**
 	* Execute a given command encoded as an integer
 	*/
-	virtual int execute(int command) { return 0; }
+	virtual int execute(int command, const bot_args & args) { return 0; }
 
 	/**
 	* Return the bot type
@@ -57,8 +80,61 @@ public:
 	*/
 	virtual void dumpModel() {}
 
+
+  /**
+  * process queue - to be called every frame for actions needed to take.
+  */
+  virtual void process();
+
+
 protected:
 
+  /**
+  * build a building, choose a worker(s) and location.
+  */
+  void building();
+
+  
+  /**
+  * train a unit
+  */
+  void train();
+
+ 
+  /**
+  * research upgrade/tech
+  */
+  void upgrade();
+
+
+  /**
+  * find the placement of a building.
+  */
+  void building_placement();
+
+
+
+  /**
+  * update HUD
+  */
+  void HUD();
+
+
+
+
+private:
+
+  // internal queue of tasks
+
+  // UnitManager
+
+  // list of units (updated from UnitManager)
+
+  // building status - collection of construction status
+  
+  // tech/upgrade status - collection of ongoing upgrade status
+
+  // unit train status - collection of ongoing training status
 	
 };
 

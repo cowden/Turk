@@ -13,6 +13,12 @@
 
 namespace Turk {
 
+/**
+* Argument struct for parsing commands to the agent.
+*/
+struct army_args : bot_args {
+};
+
 	class ArmyManager : public bot {
 	public:
 		/**
@@ -28,7 +34,7 @@ namespace Turk {
 		/**
 		* Execute a given command encoded as an integer
 		*/
-		virtual int execute(int command) { return 0; }
+		virtual int execute(int command,const bot_args & args) { return 0; }
 
 		/**
 		* Return the bot type
@@ -54,6 +60,12 @@ namespace Turk {
 		* Dump the model
 		*/
 		virtual void dumpModel() {}
+
+
+  /**
+  * process queue - to be called every frame for actions needed to take.
+  */
+  virtual void process();
 
 	protected:
 

@@ -13,6 +13,13 @@
 
 namespace Turk {
 
+/** 
+* argument struct for parsing commands to the agent.
+*/
+struct strategy_args : bot_args {
+};
+
+
 	class StrategyManager : public bot {
 	public:
 		/**
@@ -28,7 +35,7 @@ namespace Turk {
 		/**
 		* Execute a given command encoded as an integer
 		*/
-		virtual int execute(int command) { return 0; }
+		virtual int execute(int command,const bot_args & args) { return 0; }
 
 		/**
 		* Return the bot type
@@ -55,7 +62,37 @@ namespace Turk {
 		*/
 		virtual void dumpModel() {}
 
+  /**
+  * process queue - to be called every frame for actions needed to take.
+  */
+  virtual void process();
+
 	protected:
+
+  /**
+  * Initialize the strategy
+  *  - load the UnitManager
+  *  - initialize the base
+  */
+  void initialize();
+
+
+private:
+
+  // reference to the UnitManager
+  UnitManager & unit_manager_;
+
+  // list of BaseManagers
+  std::vector<BaseManager> bases_;
+
+  // list of ArmyManager
+  std::vector<ArmyManager> armies_;
+
+  // reference to ARTIE
+
+  // reference to WEAVER
+
+  // reference to CAMERON
 
 	};
 

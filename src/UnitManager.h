@@ -14,6 +14,12 @@
 
 namespace Turk {
 
+/**
+* argument struct for parsing commands to the agent.
+*/
+struct unit_args : bot_args {
+};
+
 class UnitManager : public bot {
 public:
 	/**
@@ -29,7 +35,7 @@ public:
 	/**
 	* Execute a given command encoded as an integer
 	*/
-	virtual int execute(int command) { return 0; }
+	virtual int execute(int command, const bot_args & args) { return 0; }
 
 	/**
 	* Return the bot type
@@ -56,7 +62,36 @@ public:
 	*/
 	virtual void dumpModel() {}
 
+
+  /**
+  * process queue - to be called every frame for actions needed to take.
+  */
+  virtual void process();
+
 protected:
+
+  /**
+  * process request
+  */
+  void process_request();
+
+  /**
+  * collect recently trained units and removed dead units
+  */
+  void update_unit_maps();
+
+
+private:
+
+  // list of all units
+  std::vector<BWAPI::Unit> units_;
+ 
+  // list of all registers agents
+  std::vector<bot> agents_;
+
+  // unit-agent map
+  std::vector<unsigned> unit_agent_map_;
+  std::vector<unsigned> agent_unit_map_;
 
 };
 
