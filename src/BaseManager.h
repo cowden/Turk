@@ -63,12 +63,12 @@ public:
 	/**
 	* Return the location
 	*/
-	virtual const location & location() const { return loc; }
+	virtual const Turk::location & location() const { return loc_; }
 
 	/**
 	* Return the status
 	*/
-	virtual const status status() const { return status_; }
+	virtual const Turk::status status() const { return status_; }
 
 	/**
 	* Load a model
@@ -126,8 +126,6 @@ private:
 
   // internal queue of tasks
 
-  // UnitManager
-
   // list of units (updated from UnitManager)
 
   // building status - collection of construction status
@@ -135,6 +133,12 @@ private:
   // tech/upgrade status - collection of ongoing upgrade status
 
   // unit train status - collection of ongoing training status
+
+  // location of the base
+	Turk::location loc_;
+
+  // hold the current status of the agent
+	Turk::status status_;
 	
 };
 

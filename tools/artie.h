@@ -385,5 +385,10 @@ template<class T> void ARTIE::dump_csv(const char *name, const T * data, const u
   out.close();
 }
 
+/**
+* Declare a global ARTIE object
+*/
+extern ARTIE artie;
+
 }
 #endif

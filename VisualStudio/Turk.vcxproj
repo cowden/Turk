@@ -11,9 +11,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\BaseManager.cpp" />
     <ClCompile Include="..\src\Dll.cpp" />
     <ClCompile Include="..\src\HUD.cpp" />
     <ClCompile Include="..\src\Turk.cpp" />
+    <ClCompile Include="..\src\UnitManager.cpp" />
     <ClCompile Include="..\tools\artie.cc" />
     <ClCompile Include="..\tools\dbscan.cc" />
     <ClCompile Include="..\tools\kdtree.cc" />
@@ -32,6 +34,7 @@
     <ClInclude Include="..\src\Turk.h" />
     <ClInclude Include="..\src\UnitManager.h" />
     <ClInclude Include="..\tools\artie.h" />
+    <ClInclude Include="..\tools\cameron.h" />
     <ClInclude Include="..\tools\ConfigDB.h" />
     <ClInclude Include="..\tools\dbscan.h" />
     <ClInclude Include="..\tools\kdtree.h" />
@@ -41,6 +44,7 @@
     <ClInclude Include="..\tools\polyartie.h" />
     <ClInclude Include="..\tools\queue.h" />
     <ClInclude Include="..\tools\sqlite3.h" />
+    <ClInclude Include="..\tools\weaver.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9EF367EB-3001-4A26-96C6-4431787A830B}</ProjectGuid>

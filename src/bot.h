@@ -16,8 +16,6 @@
 
 namespace Turk {
 
-	class status;
-
 /**
 * The base struct by which to pass arguments
 * to inherited classes.

@@ -20,7 +20,14 @@ namespace Turk {
 struct unit_args : bot_args {
 };
 
+/**
+* The UnitManager agent is like the HR department.
+* It tracks each registered agent and assigns units to them.
+* It processes requests for additional units by the agents and 
+* it can reallocate units amongst the agents.
+*/
 class UnitManager : public bot {
+
 public:
 	/**
 	* Default constructor
@@ -45,12 +52,12 @@ public:
 	/**
 	* Return the location
 	*/
-	virtual const location & location() const { return loc; }
+	virtual const Turk::location & location() const { return loc_; }
 
 	/**
 	* Return the status
 	*/
-	virtual const status status() const { return status_; }
+	virtual const Turk::status status() const { return status_; }
 
 	/**
 	* Load a model
@@ -67,6 +74,7 @@ public:
   * process queue - to be called every frame for actions needed to take.
   */
   virtual void process();
+
 
 protected:
 
@@ -93,6 +101,16 @@ private:
   std::vector<unsigned> unit_agent_map_;
   std::vector<unsigned> agent_unit_map_;
 
+
+  Turk::location loc_;
+  Turk::status status_;
+
 };
+
+
+/**
+* Define a global UnitManager object.
+*/
+extern UnitManager umanity;
 
 }  // end Turk namespace

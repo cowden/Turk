@@ -9,7 +9,6 @@ using namespace Turk;
 // Define static member data
 const char * TheTurk::m_name = "TheTurk";
 Logger * Logger::m_ptr = 0;
-ConfigDB * ConfigDB::m_ptr = 0;
 
 //
 // default constructor
@@ -39,12 +38,16 @@ TheTurk::TheTurk() {
 	for (auto r : res) {
 		m_log->log(m_name, r.c_str());
 	}
+	
 
 	m_log->log(m_name, "Get BaseName");
 	res = m_db->query("SELECT value FROM config WHERE key = 'LogBase';");
 	for (auto r : res) {
 		m_log->log(m_name, r.c_str());
 	}
+	
+	
+	
 	
 
 }

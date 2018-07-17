@@ -12,10 +12,10 @@
 #include <algorithm>
 #include <climits>
 
-#include "UnitType.h"
-#include "TechType.h"
-#include "UpgradeType.h"
-#include "Race.h"
+#include "BWAPI/UnitType.h"
+#include "BWAPI/TechType.h"
+#include "BWAPI/UpgradeType.h"
+#include "BWAPI/Race.h"
 
 namespace Turk {
 
@@ -293,6 +293,11 @@ public:
 private:
 
 };
+
+/**
+* Declare a global Weaver object
+*/
+extern Weaver weaver;
 
 } // end Turk namespace
 
