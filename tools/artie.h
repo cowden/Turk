@@ -1,5 +1,5 @@
-#ifndef artie
-#define artie
+#ifndef ARTIE_H
+#define ARTIE_H
 
 ///////////////////////////////////////////////////////
 // Turk Terrain Analysis - TTA

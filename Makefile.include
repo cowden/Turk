@@ -9,7 +9,7 @@ INCDIR := $(TOOLDIR)
 
 TOOL_OBJS := $(TOOLDIR)/artie.o $(TOOLDIR)/libppm.o \
    $(TOOLDIR)/polyartie.o $(TOOLDIR)/linear_model.o \
-   $(TOOLDIR)/dbscan.o $(TOOLDIR)/kdtree.o
+   $(TOOLDIR)/dbscan.o $(TOOLDIR)/kdtree.o 
 
 BWAPI_DIR := /home/me/proj/StarCraft/bwapi/bwapi
 
