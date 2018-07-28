@@ -8,9 +8,13 @@
 **********************************/
 
 #include <string>
+#include <vector>
+#include <queue>
 
 #include "Common.h"
 #include "bot.h"
+#include "Logger.h"
+#include "volatile_collections.h"
 
 namespace Turk {
 
@@ -19,6 +23,12 @@ namespace Turk {
 */
 struct unit_args : bot_args {
 };
+
+/**
+* unit request typedef to map a requested unit with a 
+* particular bot.
+*/
+typedef std::pair<const bot *, BWAPI::UnitType> unit_request;
 
 /**
 * The UnitManager agent is like the HR department.
@@ -32,7 +42,15 @@ public:
 	/**
 	* Default constructor
 	*/
-	inline UnitManager() {}
+	inline UnitManager():bot("UnitManager") {
+
+		// agent name
+		m_name = "UnitManager";
+
+		// initialize agent list
+		agents_.resize(100);
+		agent_count_ = 0;
+	}
 
 	/**
 	* Delete this instance
@@ -62,12 +80,17 @@ public:
 	/**
 	* Load a model
 	*/
-	virtual void loadModel() { }
+	virtual void loadModel(const model_args & args) { }
 
 	/**
 	* Dump the model
 	*/
-	virtual void dumpModel() {}
+	virtual void dumpModel(const model_args & argsB) {}
+
+	/**
+	* Get the agent name
+	*/
+	virtual inline const std::string & name() const { return m_name; }
 
 
   /**
@@ -75,6 +98,31 @@ public:
   */
   virtual void process();
 
+
+  /**
+  * register an agent
+  */
+  inline void register_agent(const bot * b) {
+
+	  std::stringstream msg;
+      msg << "Loading bot " << b->name() << " of type: " << b->type() << " at: 0x" << std::hex << (int)b;
+	  Turk::Logger::instance()->log(m_name.c_str(), msg.str().c_str());
+	  if (agents_.size() == agent_count_) agents_.resize(2 * agent_count_);
+	  agents_[agent_count_++] = b;
+
+  }
+
+
+  /**
+  * return the units assigned to an agent
+  */
+  inline std::vector<BWAPI::Unit> & getUnits(const bot * b) {}
+
+
+  /**
+  * Initial game setup
+  */
+  void initialize();
 
 protected:
 
@@ -88,22 +136,30 @@ protected:
   */
   void update_unit_maps();
 
+  
 
 private:
+
+  // queue of unit requests
+	std::queue<unit_request> unit_queue_;
+  
 
   // list of all units
   std::vector<BWAPI::Unit> units_;
  
   // list of all registers agents
-  std::vector<bot> agents_;
+  std::vector<const bot *> agents_;
+  unsigned agent_count_;
 
   // unit-agent map
-  std::vector<unsigned> unit_agent_map_;
-  std::vector<unsigned> agent_unit_map_;
-
+  vmap<const bot *, BWAPI::Unit> unit_map_;
+  
 
   Turk::location loc_;
   Turk::status status_;
+  
+  // bot name
+  std::string m_name;
 
 };
 

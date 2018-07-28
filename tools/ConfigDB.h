@@ -1,3 +1,4 @@
+#pragma once
 ///////////////////////////////////////
 // C S Cowden
 // Class to help connect to the sqlite3

@@ -22,6 +22,19 @@ namespace Turk {
 */
 struct bot_args {};
 
+/**
+* The base struct by which to pass arguments
+* for the loading and dumping of models
+*/
+struct model_args {
+	BWAPI::Race trace_; // This bot's race
+	BWAPI::Race erace_; // main enemy race (main in case of multiple. add vector later)
+	int index_; // index model
+
+	// constructor
+	model_args(BWAPI::Race t, BWAPI::Race e, int i) : trace_(t), erace_(e), index_(i) { }
+};
+
 
 /**
 * abstract base class for sub-agents.
@@ -31,6 +44,11 @@ class bot {
 public:
 
 	/**
+	* initialize the type
+	*/
+	bot(const std::string & t):type_(t) { }
+
+	/**
 	* Execute a given command encoded as an integer
 	*/
 	virtual int execute(int command, const bot_args &) = 0;
@@ -38,7 +56,9 @@ public:
 	/**
 	* Return the bot type
 	*/
-	virtual const std::string & type() const = 0;
+	virtual const std::string & type() const {
+		return type_;
+	}
 
 	/**
 	* Return the location
@@ -53,23 +73,32 @@ public:
 	/**
 	* Load a model
 	*/
-	virtual void loadModel() = 0;
+	virtual void loadModel(const model_args &) = 0;
 
 	/**
 	* Dump the model
 	*/
-	virtual void dumpModel() = 0;
+	virtual void dumpModel(const model_args &) = 0;
 
 	/**
 	* Delete this instance
 	*/
 	inline ~bot() { }
 
+	/**
+	* Get the model name
+	*/
+	virtual const std::string & name() const = 0;
+
 
   /**
   * process queue - to be called every frame for actions needed to take.
   */
   virtual void process() = 0;
+
+private:
+
+	std::string type_;
 
 
 };

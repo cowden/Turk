@@ -15,6 +15,8 @@
 
 #include "weaver.h"
 
+#include "UnitManager.h"
+
 
 
 namespace Turk {
@@ -43,7 +45,20 @@ public:
 	/**
 	* Default constructor
 	*/
-	inline BaseManager() {}
+	inline BaseManager():bot("BaseManager") {
+
+		// get name and increment agent count
+		m_instance = m_nBases++;
+		m_name = "BaseManager_" + std::to_string(m_instance);
+
+		// register agent with unit manager
+		umanity.register_agent(this);
+
+		std::stringstream msg;
+		msg << "Creating agent ";
+		msg << name() << " of type: " << type() << " at: 0x" << std::hex << (int)this;
+		Turk::Logger::instance()->log(name().c_str(), msg.str().c_str());
+	}
 
 	/**
 	* Delete this instance
@@ -58,7 +73,7 @@ public:
 	/**
 	* Return the bot type
 	*/
-	virtual const std::string & type() const { return "0"; }
+	//virtual const std::string & type() const { return "0"; }
 
 	/**
 	* Return the location
@@ -73,18 +88,23 @@ public:
 	/**
 	* Load a model
 	*/
-	virtual void loadModel() { }
+	void loadModel(const model_args & args);
 
 	/**
 	* Dump the model
 	*/
-	virtual void dumpModel() {}
+	virtual void dumpModel(const model_args & args) {}
+
+	/**
+	* Get the model name
+	*/
+	virtual inline const std::string & name() const { return m_name; }
 
 
   /**
   * process queue - to be called every frame for actions needed to take.
   */
-  virtual void process();
+	inline virtual void process() { }
 
 
 protected:
@@ -139,8 +159,20 @@ private:
 
   // hold the current status of the agent
 	Turk::status status_;
+
+  // the race
+	BWAPI::Race race_;
+
+	// track instance of this agent class
+	static unsigned m_nBases;
+	unsigned m_instance;
+
+	// name of this agent
+	std::string m_name;
+
 	
 };
+
 
 } // end Turk namespace
 

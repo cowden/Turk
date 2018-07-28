@@ -8,8 +8,12 @@
 
 #include <string>
 
+#include "BWAPI/Race.h"
+
 #include "Common.h"
 #include "bot.h"
+#include "BaseManager.h"
+#include "ArmyManager.h"
 
 namespace Turk {
 
@@ -17,6 +21,7 @@ namespace Turk {
 * argument struct for parsing commands to the agent.
 */
 struct strategy_args : bot_args {
+	BWAPI::Race race_;
 };
 
 
@@ -25,7 +30,7 @@ struct strategy_args : bot_args {
 		/**
 		* Default constructor
 		*/
-		inline StrategyManager() {}
+		inline StrategyManager():bot("StrategyManager"),m_name("StrategyManager") {}
 
 		/**
 		* Delete this instance
@@ -45,42 +50,71 @@ struct strategy_args : bot_args {
 		/**
 		* Return the location
 		*/
-		virtual const location & location() const { return loc; }
+		virtual const Turk::location & location() const { return loc_; }
 
 		/**
 		* Return the status
 		*/
-		virtual const status status() const { return status_; }
+		virtual const Turk::status status() const { return status_; }
 
 		/**
 		* Load a model
 		*/
-		virtual void loadModel() { }
+		virtual void loadModel(const model_args & args) { }
 
 		/**
 		* Dump the model
 		*/
-		virtual void dumpModel() {}
+		virtual void dumpModel(const model_args & args) {}
+
+		/**
+		* Get the model name
+		*/
+		virtual inline const std::string & name() const { return m_name; }
 
   /**
   * process queue - to be called every frame for actions needed to take.
   */
-  virtual void process();
+  inline virtual void process() {
 
-	protected:
+	  // process remaining UnitManager requests
+	  umanity.process();
+
+    // simply call process on all base and army managers
+	  for ( auto base : bases_) base.process();
+
+	  for ( auto army :armies_) army.process();
+
+  }
+
 
   /**
   * Initialize the strategy
-  *  - load the UnitManager
   *  - initialize the base
   */
-  void initialize();
+  inline void initialize(BWAPI::Race trace, BWAPI::Race erace) {
+
+	  // load initial base manager
+	  bases_.push_back(BaseManager());
+	  bases_[0].loadModel(model_args(trace, erace, 0));
+
+	  // load initial army manager
+	  //armies_.push_back(ArmyManager());
+	  //armies_[0].loadModel(model_args(trace, erace, 0));
+
+	  // initialize unit manager
+	  umanity.initialize();
+
+  }
+
+
+
+protected:
+
+ 
 
 
 private:
-
-  // reference to the UnitManager
-  UnitManager & unit_manager_;
 
   // list of BaseManagers
   std::vector<BaseManager> bases_;
@@ -93,6 +127,12 @@ private:
   // reference to WEAVER
 
   // reference to CAMERON
+
+
+  Turk::location loc_;
+  Turk::status status_;
+
+  std::string m_name;
 
 	};
 

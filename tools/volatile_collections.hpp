@@ -27,7 +27,7 @@ T & vqueue<T>::pop() {
 }
 
 // vqueue operator[]
-tempalte<class T>
+template<class T>
 T & vqueue<T>::operator[](unsigned i) {
   return data_[pos_+i];
 }

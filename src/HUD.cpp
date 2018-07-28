@@ -66,6 +66,6 @@ void HUD::drawInterface(){
 }
 
 
-const std::vector<BWAPI::Unit> & HUD::getUnits(){
+/*const std::vector<BWAPI::Unit> & HUD::getUnits(){
 
-}
+}*/

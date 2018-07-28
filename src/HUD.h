@@ -19,7 +19,7 @@ namespace Turk {
 
 	private:
 
-		const std::vector<BWAPI::Unit> & getUnits();
+		//const std::vector<BWAPI::Unit> & getUnits();
 
 	};
 	 

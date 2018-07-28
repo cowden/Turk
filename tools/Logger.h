@@ -1,3 +1,4 @@
+#pragma once
 /////////////////////////////////////////////////////////
 // C S Cowden
 // Log file coordinator class.
@@ -32,9 +33,8 @@ namespace Turk {
 		///
 		/// Get static reference
 		inline static Logger * instance() {
-			if (!m_ptr)
-				m_ptr = new Logger();
-			return m_ptr;
+			static Logger inst;
+			return &inst;
 		}
 
 		///

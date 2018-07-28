@@ -6,6 +6,8 @@
 #include "ConfigDB.h"
 #include "Common.h"
 
+#include "StrategyManager.h "
+
 #include "sqlite3.h"
 
 
@@ -57,6 +59,10 @@ private:
 
 	// name of the class
 	static const char * m_name;
+
+
+	// The strategy manager
+	StrategyManager strat_man_;
 
 };  // end TheTurk class declaration
 

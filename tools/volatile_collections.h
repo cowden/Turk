@@ -52,7 +52,7 @@ public:
   /**
   * push an element on the queue
   */
-  inline void push(T);
+  inline void push(T &);
 
   /**
   * pop an element off the from of the queue
@@ -188,7 +188,7 @@ public:
   /**
   * find T from S
   */
-  inline T & find(const & S);
+  inline T & find(const S &);
 
   /**
   * find S from T (reverse find)

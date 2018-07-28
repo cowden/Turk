@@ -109,6 +109,9 @@ void TheTurk::onStart()
 			sprintf(msg, "Matchup: %s vs %s", Broodwar->self()->getRace().c_str(), Broodwar->enemy()->getRace().c_str());
 			m_log->log(m_name, msg);
 		}
+
+		// start the strategy managery and itialize the models
+		strat_man_.initialize(Broodwar->self()->getRace(), Broodwar->enemy()->getRace());
 	}
 
 
@@ -129,6 +132,9 @@ void TheTurk::onFrame(){
 	// Latency frames are the number of frames before commands are processed.
 	if (Broodwar->getFrameCount() % Broodwar->getLatencyFrames() != 0)
 		return;
+
+	// process the bot
+	strat_man_.process();
 }
 
 

@@ -19,12 +19,12 @@ namespace Turk {
 struct army_args : bot_args {
 };
 
-	class ArmyManager : public bot {
-	public:
+class ArmyManager : public bot {
+public:
 		/**
 		* Default constructor
 		*/
-		inline ArmyManager() {}
+		inline ArmyManager():bot("ArmyManager") {}
 
 		/**
 		* Delete this instance
@@ -44,31 +44,48 @@ struct army_args : bot_args {
 		/**
 		* Return the location
 		*/
-		virtual const location & location() const { return loc; }
+		virtual const Turk::location & location() const { return loc_; }
 
 		/**
 		* Return the status
 		*/
-		virtual const status status() const { return status_; }
+		virtual const Turk::status status() const { return status_; }
 
 		/**
 		* Load a model
 		*/
-		virtual void loadModel() { }
+		virtual void loadModel(const model_args & args) { }
 
 		/**
 		* Dump the model
 		*/
-		virtual void dumpModel() {}
+		virtual void dumpModel(const model_args & args) {}
+
+		/**
+		* Get the model name
+		*/
+		virtual inline const std::string & name() const { return m_name; }
 
 
   /**
   * process queue - to be called every frame for actions needed to take.
   */
-  virtual void process();
+		inline virtual void process() { }
 
-	protected:
+protected:
 
-	};
+private:
+
+		Turk::location loc_;
+
+		Turk::status status_;
+
+		// track the number of army agents
+		static unsigned m_nArmies;
+		unsigned m_instance;
+
+		// bot name
+		std::string m_name;
+};
 
 }  // end Turk namespace
