@@ -114,7 +114,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BWAPI_DIR)\lib\BWAPId.lib;libblas.lib;liblapack.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)\lib\BWAPId.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)d$(TargetExt)</OutputFile>
       <SubSystem>Windows</SubSystem>
       <LinkTimeCodeGeneration />
