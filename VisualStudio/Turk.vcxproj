@@ -23,6 +23,7 @@
     <ClCompile Include="..\tools\linear_model.cc" />
     <ClCompile Include="..\tools\polyartie.cc" />
     <ClCompile Include="..\tools\sqlite3.c" />
+    <ClCompile Include="..\tools\weaver.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\ArmyManager.h" />
@@ -138,7 +139,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>$(BWAPI_DIR)\lib\BWAPI.lib;libblas.lib;liblapack.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)\lib\BWAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>

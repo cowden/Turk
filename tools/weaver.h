@@ -289,6 +289,16 @@ private:
 class Weaver {
 public:
   
+	inline TUnit getUnitType(const std::string & str) {
+		// cycle over all units.
+		for (auto unit : BWAPI::UnitTypes::allUnitTypes()) {
+			if (unit.getName() == str) {
+				return TUnit(unit);
+			}
+		}
+
+		return TUnit(BWAPI::UnitTypes::None);
+	}
 
 private:
 

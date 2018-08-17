@@ -25,8 +25,6 @@ TheTurk::TheTurk() {
 
 	//DB connection
 	m_log->log(m_name, "Connecting to DB");
-	//sqlite3 *db;
-	//int rc = sqlite3_open(std::string(baseDir + configName).c_str(),&db);
 	m_db = Turk::ConfigDB::instance();
 
 	char msg[500];

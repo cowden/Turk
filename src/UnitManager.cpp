@@ -30,18 +30,19 @@ void UnitManager::initialize() {
 		msg << "found agent [" << i << "] " <<  a->type() << " at: 0x" << std::hex << (int)a;
 		Turk::Logger::instance()->log(m_name.c_str(), msg.str().c_str());
 		
-		//else if (a->type().compare("ArmyManager") == 0) am = a;
+		if (a->type().compare("BaseManager") == 0) bm = a;
+		else if (a->type().compare("ArmyManager") == 0) am = a;
 	}
 	
 	// get a list of all units
     // assign each worker unit to the BaseManager
 	// assign all combat units to the ArmyManager (in case such units exist).
-	for (auto u : BWAPI::Broodwar->self()->getUnits()) {
+	for (auto &u : BWAPI::Broodwar->self()->getUnits()) {
 		if (u->getType().isWorker() && bm != NULL ) {
 			std::string msg("loading worker to ");
 			msg += bm->name();
-			//Turk::Logger::instance()->log(m_name.c_str(), msg.c_str());
-			//unit_map_.insert(std::pair<const bot *, BWAPI::Unit>(bm, u));
+			Turk::Logger::instance()->log(m_name.c_str(), msg.c_str());
+			unit_map_.insert(std::pair<const bot *, BWAPI::Unit>(bm, u));
 		}
 	}
 }

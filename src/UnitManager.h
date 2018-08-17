@@ -116,7 +116,14 @@ public:
   /**
   * return the units assigned to an agent
   */
-  inline std::vector<BWAPI::Unit> & getUnits(const bot * b) {}
+  inline std::vector<BWAPI::Unit> getUnits(const bot * b) {
+	  std::vector<BWAPI::Unit> units;
+	  for (unsigned i = 0; i != unit_map_.size(); i++) {
+		  if (unit_map_.ismask(i) && unit_map_[i].first == b)
+			  units.push_back(unit_map_[i].second);
+	  }
+	  return units;
+  }
 
 
   /**

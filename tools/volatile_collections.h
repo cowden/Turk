@@ -186,6 +186,11 @@ public:
   inline std::pair<T,S> & operator[](unsigned i) { return data_[i]; }
 
   /**
+  * return the mask of the map element
+  */
+  inline bool ismask(unsigned i) { return mask_[i]; }
+
+  /**
   * find T from S
   */
   inline T & find(const S &);

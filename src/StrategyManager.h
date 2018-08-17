@@ -81,9 +81,9 @@ struct strategy_args : bot_args {
 	  umanity.process();
 
     // simply call process on all base and army managers
-	  for ( auto base : bases_) base.process();
+	  for ( auto base : bases_) base->process();
 
-	  for ( auto army :armies_) army.process();
+	  for ( auto army :armies_) army->process();
 
   }
 
@@ -95,15 +95,19 @@ struct strategy_args : bot_args {
   inline void initialize(BWAPI::Race trace, BWAPI::Race erace) {
 
 	  // load initial base manager
-	  bases_.push_back(BaseManager());
-	  bases_[0].loadModel(model_args(trace, erace, 0));
+	  bases_.push_back(new BaseManager());
+	  
 
 	  // load initial army manager
-	  //armies_.push_back(ArmyManager());
-	  //armies_[0].loadModel(model_args(trace, erace, 0));
+	  //armies_.push_back(new ArmyManager());
+	  
 
 	  // initialize unit manager
 	  umanity.initialize();
+
+	  // load models
+	  bases_[0]->loadModel(model_args(trace, erace, 0));
+	  //armies_[0]->loadModel(model_args(trace, erace, 0));
 
   }
 
@@ -117,10 +121,10 @@ protected:
 private:
 
   // list of BaseManagers
-  std::vector<BaseManager> bases_;
+  std::vector<BaseManager *> bases_;
 
   // list of ArmyManager
-  std::vector<ArmyManager> armies_;
+  std::vector<ArmyManager *> armies_;
 
   // reference to ARTIE
 

@@ -35,6 +35,22 @@ struct base_args : bot_args {
 };
 
 
+/**
+* build order struct - encapsulate an item in a build order
+* * building/research
+* * supply level
+*/
+struct build_order_struct {
+	unsigned supply;
+	unsigned supply_base;
+	TUnit unit;
+
+	build_order_struct(){ }
+
+	build_order_struct(unsigned s, unsigned b, const TUnit & u):
+		supply(s),supply_base(b),unit(u) 
+	{}
+};
 
 
 /**
@@ -104,7 +120,51 @@ public:
   /**
   * process queue - to be called every frame for actions needed to take.
   */
-	inline virtual void process() { }
+	inline virtual void process() {
+		// check for IRQ commands
+
+		// get more workers if necessary
+		if (BWAPI::Broodwar->self()->minerals() >= 100
+			&& depot_->getTrainingQueue().size() < 5
+			&& umanity.getUnits(this).size() < 100
+			) {
+			depot_->train(race_.getWorker());
+		}
+
+		// check for idle workers
+		BWAPI::Unit tunit = depot_->getBuildUnit();
+		if (tunit) workers_.push_back(tunit);
+		for (auto u : workers_) {
+			if (u->isIdle()) {
+				u->gather(u->getClosestUnit(BWAPI::Filter::IsMineralField));
+			}
+		}
+
+		// check the build queue
+		if (build_queue_.nqueued() > 0
+			&& build_queue_[0].supply <= BWAPI::Broodwar->self()->supplyUsed()
+			) {
+
+			const TUnit & bu = build_queue_[0].unit;
+
+			if (bu.getType() == WeaverTypes::Unit_t) {
+				if (bu.getUnit().mineralPrice() <= BWAPI::Broodwar->self()->minerals()
+					&& bu.getUnit().gasPrice() <= BWAPI::Broodwar->self()->gas()
+					) {
+					// build the building
+					building(bu.getUnit());
+				}
+			}
+			else if (bu.getType() == WeaverTypes::Upgrade_t) {
+
+			}
+			else if (bu.getType() == WeaverTypes::Tech_t) {
+
+			}
+
+		}
+
+	}
 
 
 protected:
@@ -112,7 +172,7 @@ protected:
   /**
   * build a building, choose a worker(s) and location.
   */
-  void building();
+  void building(BWAPI::UnitType);
 
   
   /**
@@ -139,14 +199,19 @@ protected:
   */
   void HUD();
 
-
+  /**
+  * load a build order
+  */
+  void initialize_build_queue(const std::string & name);
 
 
 private:
 
   // internal queue of tasks
+  vqueue<build_order_struct> build_queue_;
 
   // list of units (updated from UnitManager)
+  std::vector<BWAPI::Unit> workers_;
 
   // building status - collection of construction status
   
@@ -162,6 +227,9 @@ private:
 
   // the race
 	BWAPI::Race race_;
+
+	// the main depot of this base
+	BWAPI::Unit depot_;
 
 	// track instance of this agent class
 	static unsigned m_nBases;
