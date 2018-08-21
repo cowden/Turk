@@ -124,7 +124,8 @@ void TheTurk::onFrame(){
 		return;
 
 	// draw the HUD
-	m_hud.drawInterface();
+	//m_hud.drawInterface();
+	HUD::Instance().drawInterface();
 
 	// Prevent spamming by only running our onFrame once every number of latency frames.
 	// Latency frames are the number of frames before commands are processed.

@@ -14,6 +14,8 @@
 #include "bot.h"
 
 #include "weaver.h"
+#include "HUD.h"
+#include "Logger.h"
 
 #include "UnitManager.h"
 
@@ -74,6 +76,9 @@ public:
 		msg << "Creating agent ";
 		msg << name() << " of type: " << type() << " at: 0x" << std::hex << (int)this;
 		Turk::Logger::instance()->log(name().c_str(), msg.str().c_str());
+
+		// get a lane in the HUD
+		hud_lane_ = HUD::Instance().getLane(this);
 	}
 
 	/**
@@ -121,6 +126,9 @@ public:
   * process queue - to be called every frame for actions needed to take.
   */
 	inline virtual void process() {
+		// update the HUD
+		updateHUD();
+
 		// check for IRQ commands
 
 		// get more workers if necessary
@@ -153,6 +161,7 @@ public:
 					) {
 					// build the building
 					building(bu.getUnit());
+					build_queue_.pop();
 				}
 			}
 			else if (bu.getType() == WeaverTypes::Upgrade_t) {
@@ -197,12 +206,17 @@ protected:
   /**
   * update HUD
   */
-  void HUD();
+  void updateHUD();
 
   /**
   * load a build order
   */
   void initialize_build_queue(const std::string & name);
+
+  /**
+  * Find the nearest geyser to this base
+  */
+  BWAPI::TilePosition findGeyser();
 
 
 private:
@@ -237,6 +251,9 @@ private:
 
 	// name of this agent
 	std::string m_name;
+
+	// HUD lane
+	int hud_lane_;
 
 	
 };

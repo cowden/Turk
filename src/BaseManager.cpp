@@ -121,12 +121,70 @@ void BaseManager::building(BWAPI::UnitType bu) {
 	// find a location and build it
 	bool searching = true;
 	while (searching) {
-		
-		BWAPI::Position delta(rand() % (50 + 50 + 1), rand() % (50 + 50 + 1));
-		BWAPI::TilePosition pos(depot_->getPosition() + delta);
-		searching = builder->build(bu, pos);
 
-		searching = false;
+		// if the building is a refinery
+		if (bu.isRefinery()) {
+			// find the nearest gas to the base location
+			//BWAPI::Position pos(findGeyser());
+			BWAPI::TilePosition tp(findGeyser());
+			std::stringstream msg;
+			msg << "Attempting to build Refinery @ " << tp;
+			BWAPI::Broodwar << msg.str() << std::endl;
+			Logger::instance()->log(name().c_str(), msg.str().c_str());
+			bool success = builder->build(bu, tp);
+			searching = !success;
+			continue;
+		}
+
+		BWAPI::Position delta(rand() % (8*200 + 1) - 100, rand() % (8*200 + 1) - 100);
+		BWAPI::TilePosition pos(depot_->getPosition() + delta);
+		std::stringstream msg;
+		msg << "Searching to build " << bu.getName() << " @ " << pos;
+		BWAPI::Broodwar << msg.str() << std::endl;
+		Logger::instance()->log(name().c_str(), msg.str().c_str());
+		bool success = builder->build(bu, pos);
+
+		searching = !success;
+		//searching = false;
 	}
 
+	
+}
+
+void BaseManager::updateHUD() {
+	
+	HUD::Instance().clear(hud_lane_);
+
+	// dump the build queue
+	const unsigned n = build_queue_.nqueued();
+	for (unsigned i = 0; i != n; i++) {
+		const TUnit & bu = build_queue_[i].unit;
+		if (bu.getType() == WeaverTypes::Unit_t)
+			HUD::Instance().write(hud_lane_, bu.getUnit().getName());
+	}
+}
+
+
+BWAPI::TilePosition BaseManager::findGeyser() {
+	
+	double dist = INFINITY;
+	BWAPI::TilePosition nearest;
+
+	// cycle over all geysers
+	for (auto geyser : BWAPI::Broodwar->getStaticGeysers()) {
+		if (geyser->getType() != BWAPI::UnitTypes::Resource_Vespene_Geyser)
+			continue;
+		double gd = depot_->getDistance(geyser->getInitialPosition());
+		if (gd < dist) {
+			dist = gd;
+			nearest = geyser->getInitialTilePosition();
+		}
+	}
+
+	std::stringstream msg;
+	msg << "Found geyser @ " << nearest;
+	Logger::instance()->log(name().c_str(), msg.str().c_str());
+	BWAPI::Broodwar << msg.str() << std::endl;
+
+	return nearest;
 }

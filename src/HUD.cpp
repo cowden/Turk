@@ -45,7 +45,13 @@ void HUD::drawInterface(){
 
 		// fill the training queue
 		if (unit->getRemainingTrainTime() > 0) {
-			trainingQueue.push_back(std::pair<BWAPI::UnitType, int>(ut, unit->getRemainingTrainTime()));
+			int count = 0;
+			for (auto tunit : unit->getTrainingQueue()) {
+				if (count++ == 0)
+					trainingQueue.push_back(std::pair<BWAPI::UnitType, int>(tunit, unit->getRemainingTrainTime()));
+				else
+					trainingQueue.push_back(std::pair<BWAPI::UnitType, int>(tunit, -1));
+			}
 		}
 
 	}
@@ -56,16 +62,20 @@ void HUD::drawInterface(){
 	// draw the train queue
 	int x = 14;
 	for (const auto & p : trainingQueue){
-		x += 4;
-		BWAPI::Broodwar->drawTextScreen(10, 10 + x, "%d: %d",p.first.getID(), p.second);
+		x += 10;
+		BWAPI::Broodwar->drawTextScreen(10, 10 + x, "%s: %d",p.first.getName().c_str(), p.second);
 	}
 
 	trainingQueue.clear();
 
 
+	// draw the lanes
+	// NB. The dimensions listed below are mere guesses. 
+	for (unsigned i = 0; i != lanes_; i++) {
+		BWAPI::Broodwar->drawTextScreen(500 - i * 20, 50, lane_names_[i].c_str());
+		BWAPI::Broodwar->drawTextScreen(500 -  i*20, 60, lane_stream_[i].str().c_str());
+	}
+
 }
 
 
-/*const std::vector<BWAPI::Unit> & HUD::getUnits(){
-
-}*/

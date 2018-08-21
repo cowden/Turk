@@ -49,7 +49,7 @@ public:
 private:
 
 	// Heads Up Display & Visualization
-	HUD m_hud;
+	HUD * m_hud;
 
 	// Logger
 	Logger * m_log;
