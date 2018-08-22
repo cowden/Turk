@@ -42,7 +42,7 @@ void BaseManager::loadModel(const model_args & args) {
 	std::stringstream build_name;
 	//build_name << std::getenv("TURKDIR") << "\\data\\Terran\\BaseManager\\Terran_twofactoryvulture_v1.txt";
 	//build_name << "C:\\\\Users\\User\\Desktop\\SCAI\\Turk\\data\\Terran\\BaseManager\\Terran_twofactoryvulture_v1.txt";
-	build_name << "C:\\Users\\User\\Desktop\\SCAI\\Turk\\data\\Terran\\BaseManager" << "\\Terran_twofactoryvulture_v1.txt.txt";
+	build_name << "C:\\Users\\User\\Desktop\\SCAI\\Turk\\data\\Terran\\BaseManager" << "\\Terran_twobarracks_v1.txt";
 	initialize_build_queue(build_name.str());
 
 }
@@ -127,17 +127,18 @@ void BaseManager::building(BWAPI::UnitType bu) {
 			// find the nearest gas to the base location
 			//BWAPI::Position pos(findGeyser());
 			BWAPI::TilePosition tp(findGeyser());
+			BWAPI::TilePosition buildPosition = BWAPI::Broodwar->getBuildLocation(bu, tp);
 			std::stringstream msg;
-			msg << "Attempting to build Refinery @ " << tp;
+			msg << "Attempting to build Refinery @ " << buildPosition;
 			BWAPI::Broodwar << msg.str() << std::endl;
 			Logger::instance()->log(name().c_str(), msg.str().c_str());
-			bool success = builder->build(bu, tp);
+			bool success = builder->build(bu, buildPosition);
 			searching = !success;
 			continue;
 		}
 
-		BWAPI::Position delta(rand() % (8*200 + 1) - 100, rand() % (8*200 + 1) - 100);
-		BWAPI::TilePosition pos(depot_->getPosition() + delta);
+		BWAPI::TilePosition delta(rand() % (8*200 + 1) - 100, rand() % (8*200 + 1) - 100);
+		BWAPI::TilePosition pos = BWAPI::Broodwar->getBuildLocation(bu,depot_->getTilePosition() + delta,500);
 		std::stringstream msg;
 		msg << "Searching to build " << bu.getName() << " @ " << pos;
 		BWAPI::Broodwar << msg.str() << std::endl;

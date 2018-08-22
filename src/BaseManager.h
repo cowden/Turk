@@ -134,7 +134,7 @@ public:
 		// get more workers if necessary
 		if (BWAPI::Broodwar->self()->minerals() >= 100
 			&& depot_->getTrainingQueue().size() < 5
-			&& umanity.getUnits(this).size() < 100
+			&& workers_.size() < 10
 			) {
 			depot_->train(race_.getWorker());
 		}
