@@ -28,13 +28,14 @@ namespace Turk {
 /**
 * Convenience to store locations
 */
-struct location {
+/*struct location {
 	int x;
 	int y;
 
 	location(int tx, int ty) :x(tx), y(ty) { }
 	location():x(-1),y(-1) { }
-};
+};*/
+	typedef BWAPI::Position location;
 
 /**
 * elevate status for IRQ handling

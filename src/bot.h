@@ -96,6 +96,16 @@ public:
   */
   virtual void process() = 0;
 
+  /**
+  * add units to bot control
+  */
+  virtual void addUnits(const std::vector<BWAPI::Unit> &) = 0;
+
+  /**
+  * update unit list under bot control
+  */
+  virtual void updateUnits() = 0;
+
 private:
 
 	std::string type_;

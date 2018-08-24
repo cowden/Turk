@@ -98,11 +98,15 @@ public:
   */
   virtual void process();
 
+  virtual void addUnits(const std::vector<BWAPI::Unit> & units) { }
+
+  virtual void updateUnits() { }
+
 
   /**
   * register an agent
   */
-  inline void register_agent(const bot * b) {
+  inline void register_agent(bot * b) {
 
 	  std::stringstream msg;
       msg << "Loading bot " << b->name() << " of type: " << b->type() << " at: 0x" << std::hex << (int)b;
@@ -131,6 +135,11 @@ public:
   */
   void initialize();
 
+  /**
+  * Assign newly created units to an agent
+  */
+  void onUnitCreate(BWAPI::Unit);
+
 protected:
 
   /**
@@ -155,7 +164,7 @@ private:
   std::vector<BWAPI::Unit> units_;
  
   // list of all registers agents
-  std::vector<const bot *> agents_;
+  std::vector<bot *> agents_;
   unsigned agent_count_;
 
   // unit-agent map

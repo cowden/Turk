@@ -72,6 +72,10 @@ public:
   */
 		inline virtual void process() { }
 
+		virtual void addUnits(const std::vector<BWAPI::Unit> & units) { }
+
+		virtual void updateUnits() { }
+
 protected:
 
 private:

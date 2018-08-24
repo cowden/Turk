@@ -200,6 +200,8 @@ void TheTurk::onUnitHide(BWAPI::Unit unit)
 
 void TheTurk::onUnitCreate(BWAPI::Unit unit)
 {
+	// pass to unit manager
+	umanity.onUnitCreate(unit);
 }
 
 

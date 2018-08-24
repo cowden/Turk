@@ -22,6 +22,8 @@ void BaseManager::loadModel(const model_args & args) {
 	for (auto b : BWAPI::Broodwar->self()->getUnits()) {
 		if (b->getType().isResourceDepot()) {
 			depot_ = b;
+			//BWAPI::Position pos = depot_->getPosition();
+			loc_ = depot_->getPosition();
 		}
 	}
 

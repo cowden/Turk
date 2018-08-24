@@ -42,7 +42,29 @@ void UnitManager::initialize() {
 			std::string msg("loading worker to ");
 			msg += bm->name();
 			Turk::Logger::instance()->log(m_name.c_str(), msg.c_str());
-			unit_map_.insert(std::pair<const bot *, BWAPI::Unit>(bm, u));
+			//unit_map_.insert(std::pair<bot *, BWAPI::Unit>(bm, u));
 		}
+	}
+}
+
+
+void UnitManager::onUnitCreate(BWAPI::Unit unit) {
+
+	// if unit is a worker, assign to nearest base
+	if (unit->getType().isWorker()) {
+		// find nearest base
+		for (unsigned i = 0; i != agent_count_; i++) {
+			Turk::bot * b = agents_[i];
+			if (b->type().compare("BaseManager") == 0 && unit->getDistance(b->location()) < 200 ) {
+				// assign worker to base
+				std::vector<BWAPI::Unit> ulist(1);
+				ulist[0] = unit;
+				b->addUnits(ulist);
+				unit_map_.insert(std::pair<const bot *, BWAPI::Unit>(b, unit));
+			}
+		}
+	}
+	else {
+		// log an error, but keep playing
 	}
 }

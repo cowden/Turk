@@ -140,8 +140,8 @@ public:
 		}
 
 		// check for idle workers
-		BWAPI::Unit tunit = depot_->getBuildUnit();
-		if (tunit) workers_.push_back(tunit);
+		//BWAPI::Unit tunit = depot_->getBuildUnit();
+		//if (tunit) workers_.push_back(tunit);
 		for (auto u : workers_) {
 			if (u->isIdle()) {
 				u->gather(u->getClosestUnit(BWAPI::Filter::IsMineralField));
@@ -173,6 +173,24 @@ public:
 
 		}
 
+	}
+
+	/**
+	* add a unit to the agent's control
+	*/
+	virtual void addUnits(const std::vector<BWAPI::Unit> & units) {
+		for (auto u : units) {
+			if (u->getType().isWorker())
+				workers_.push_back(u);
+		}
+	}
+
+
+	/**
+	* update the units controlled by this agent
+	*/
+	virtual void updateUnits() {
+		workers_ = umanity.getUnits(this);
 	}
 
 
@@ -235,7 +253,7 @@ private:
 
   // location of the base
 	Turk::location loc_;
-
+	
   // hold the current status of the agent
 	Turk::status status_;
 
