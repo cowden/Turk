@@ -228,7 +228,8 @@ void TheTurk::onSaveGame(std::string gameName)
 
 void TheTurk::onUnitComplete(BWAPI::Unit unit)
 {
-
+	// pass this to Umanity
+	umanity.onUnitComplete(unit);
 }
 
 

@@ -13,6 +13,82 @@
 
 namespace Turk {
 
+/**
+* class to hold a collection of volatile items
+*/
+template<class T>
+class vvec {
+public:
+	/**
+	* default constructor
+	*/
+	inline vvec() :size_(0U), nheld_(0U), cap_(50U), pos_(0U), end_(0U)
+	{}
+
+	/**
+	* constructor initialize the size
+	*/
+	inline vvec(unsigned n) :size_(0U), nheld_(0U), cap_(n), pos_(0U), end_(0U)
+	{}
+
+	/**
+	* push an item onto the back of the collection
+	*/
+
+	/**
+	* get the size of the container
+	*/
+
+	/**
+	* get the number of unmasked items
+	*/
+
+	/**
+	* return true if empty
+	*/
+
+	/**
+	* access elements []
+	*/
+
+	/**
+	* return if an element is masked
+	*/
+
+	/**
+	* mask an element
+	*/
+
+	/**
+	* set mask for the entire collection
+	*/
+
+private:
+
+	// size of the collection (total)
+	unsigned size_;
+
+	// number of unmasked items
+	unsigned nheld_;
+
+	// capacity of underlying container
+	unsigned cap_;
+
+	// first unmasked position
+	unsigned pos_;
+
+	// last element
+	unsigned end_;
+
+	// maks
+	std::vector<bool> mask_;
+
+	// collection
+	std::vector<T> data_;
+
+
+};
+
 
 /**
 * Class to queue volatile items 

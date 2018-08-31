@@ -64,7 +64,25 @@ void UnitManager::onUnitCreate(BWAPI::Unit unit) {
 			}
 		}
 	}
+	else if (unit->getType().isBuilding()) {
+		// find nearest base
+		Turk::bot * b = findNearestAgent(unit->getPosition(),"BaseManager");
+		if (b)
+			dynamic_cast<BaseManager *>(b)->buildingConstruction(unit);
+	}
 	else {
 		// log an error, but keep playing
+	}
+}
+
+void UnitManager::onUnitComplete(BWAPI::Unit unit) {
+	
+	// if the unit is a building
+	if (unit->getType().isBuilding() && unit->getPlayer() == BWAPI::Broodwar->self()) {
+		// find the nearest base
+		Turk::bot * bm = findNearestAgent(unit->getPosition(), "BaseManager");
+		if (bm)
+			dynamic_cast<BaseManager *>(bm)->buildingComplete(unit);
+		
 	}
 }

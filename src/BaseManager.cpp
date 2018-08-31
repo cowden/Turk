@@ -94,7 +94,7 @@ void BaseManager::initialize_build_queue(const std::string & name) {
 		// find the TUnit that matches theUnit.
 		TUnit unit = weaver.getUnitType(theUnit);
 
-		build_queue_.push(build_order_struct(supply, base_supply, unit));
+		build_order_queue_.push(build_order_struct(supply, base_supply, unit));
 
 		in.getline(txt, 500, '\n');
 
@@ -105,7 +105,7 @@ void BaseManager::initialize_build_queue(const std::string & name) {
 }
 
 
-void BaseManager::building(BWAPI::UnitType bu) {
+build_prep_struct BaseManager::building(BWAPI::UnitType bu) {
 	// find a worker
 	// grab one going to the mineral field
 	BWAPI::Unit builder;
@@ -121,7 +121,10 @@ void BaseManager::building(BWAPI::UnitType bu) {
 	}
 
 	// find a location and build it
+	BWAPI::TilePosition buildPosition;
+
 	bool searching = true;
+	unsigned count = 0;
 	while (searching) {
 
 		// if the building is a refinery
@@ -129,7 +132,7 @@ void BaseManager::building(BWAPI::UnitType bu) {
 			// find the nearest gas to the base location
 			//BWAPI::Position pos(findGeyser());
 			BWAPI::TilePosition tp(findGeyser());
-			BWAPI::TilePosition buildPosition = BWAPI::Broodwar->getBuildLocation(bu, tp);
+			buildPosition = BWAPI::Broodwar->getBuildLocation(bu, tp);
 			std::stringstream msg;
 			msg << "Attempting to build Refinery @ " << buildPosition;
 			BWAPI::Broodwar << msg.str() << std::endl;
@@ -139,19 +142,30 @@ void BaseManager::building(BWAPI::UnitType bu) {
 			continue;
 		}
 
-		BWAPI::TilePosition delta(rand() % (8*200 + 1) - 100, rand() % (8*200 + 1) - 100);
-		BWAPI::TilePosition pos = BWAPI::Broodwar->getBuildLocation(bu,depot_->getTilePosition() + delta,500);
+		BWAPI::TilePosition delta(rand() % (100 + 1) - 50, rand() % (100 + 1) - 50);
+		buildPosition = BWAPI::Broodwar->getBuildLocation(bu,depot_->getTilePosition(),20);
 		std::stringstream msg;
-		msg << "Searching to build " << bu.getName() << " @ " << pos;
+		msg << "Searching to build " << bu.getName() << " @ " << buildPosition << " "
+			<< buildPosition.getApproxDistance(depot_->getTilePosition()) << " from depot";
 		BWAPI::Broodwar << msg.str() << std::endl;
 		Logger::instance()->log(name().c_str(), msg.str().c_str());
-		bool success = builder->build(bu, pos);
+		bool success = builder->build(bu, buildPosition);
 
+		unsigned min = BWAPI::Broodwar->self()->minerals();
 		searching = !success;
 		//searching = false;
+
+		if (count++ > 7) break;
 	}
 
+	// add worker and building type to the prep queue
+	//build_prep_queue_.push(build_prep_struct(bu, builder, buildPosition));
+
+	std::stringstream msg;
+	msg << "\tBuilding " << bu.getName() << std::endl;
+	Logger::instance()->log(name().c_str(), msg.str().c_str());
 	
+	return build_prep_struct(bu, builder, buildPosition);
 }
 
 void BaseManager::updateHUD() {
@@ -159,9 +173,9 @@ void BaseManager::updateHUD() {
 	HUD::Instance().clear(hud_lane_);
 
 	// dump the build queue
-	const unsigned n = build_queue_.nqueued();
+	const unsigned n = build_order_queue_.nqueued();
 	for (unsigned i = 0; i != n; i++) {
-		const TUnit & bu = build_queue_[i].unit;
+		const TUnit & bu = build_order_queue_[i].unit;
 		if (bu.getType() == WeaverTypes::Unit_t)
 			HUD::Instance().write(hud_lane_, bu.getUnit().getName());
 	}

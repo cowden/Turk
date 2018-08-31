@@ -140,6 +140,11 @@ public:
   */
   void onUnitCreate(BWAPI::Unit);
 
+  /**
+  * call attention to agents upon unit completion
+  */
+  void onUnitComplete(BWAPI::Unit);
+
 protected:
 
   /**
@@ -152,6 +157,41 @@ protected:
   */
   void update_unit_maps();
 
+  /**
+  * search and find the nearest registered agent to a given
+  * position.
+  */
+  inline Turk::bot * findNearestAgent(BWAPI::Position & pos) {
+	  Turk::bot * b = NULL;
+	  int min_dist = INT_MAX;
+
+	  for (unsigned i = 0; i != agent_count_; i++) {
+		  int dist = pos.getApproxDistance(agents_[i]->location());
+		  if (dist < min_dist) {
+			  min_dist = dist;
+			  b = agents_[i];
+		  }
+	  }
+	  return b;
+  }
+
+  /**
+  * search and find the nearest registered agent of the specified type to a given
+  * position.
+  */
+  inline Turk::bot * findNearestAgent(BWAPI::Position & pos, const char t[]) {
+	  Turk::bot * b = NULL;
+	  int min_dist = INT_MAX;
+
+	  for (unsigned i = 0; i != agent_count_; i++) {
+		  int dist = pos.getApproxDistance(agents_[i]->location());
+		  if (agents_[i]->type().compare(t) == 0 && dist < min_dist) {
+			  min_dist = dist;
+			  b = agents_[i];
+		  }
+	  }
+	  return b;
+  }
   
 
 private:
