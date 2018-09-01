@@ -214,7 +214,8 @@ void TheTurk::onUnitDestroy(BWAPI::Unit unit)
 
 void TheTurk::onUnitMorph(BWAPI::Unit unit)
 {
-	
+	// catch construction on a geyser
+	umanity.onUnitCreate(unit);
 }
 
 void TheTurk::onUnitRenegade(BWAPI::Unit unit)

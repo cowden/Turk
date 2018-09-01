@@ -23,47 +23,78 @@ public:
 	* default constructor
 	*/
 	inline vvec() :size_(0U), nheld_(0U), cap_(50U), pos_(0U), end_(0U)
+		,mask_(50U,true),data_(50U)
 	{}
 
 	/**
 	* constructor initialize the size
 	*/
 	inline vvec(unsigned n) :size_(0U), nheld_(0U), cap_(n), pos_(0U), end_(0U)
+		,mask_(n,true),data_(n)
 	{}
 
 	/**
 	* push an item onto the back of the collection
 	*/
+	inline void push(T &t);
 
 	/**
 	* get the size of the container
 	*/
+	inline unsigned size() const { return size_; }
 
 	/**
 	* get the number of unmasked items
 	*/
+	inline unsigned nheld() const { return nheld_; }
 
 	/**
 	* return true if empty
 	*/
+	inline bool empty() const { return size_ == 0U; }
 
 	/**
 	* access elements []
 	*/
+	inline T & operator[](unsigned i);
 
 	/**
 	* return if an element is masked
 	*/
+	inline bool getMask(unsigned i) const { return mask_[i]; }
 
 	/**
 	* mask an element
 	*/
+	inline void mask(unsigned i);
 
 	/**
 	* set mask for the entire collection
 	*/
+	inline void mask(bool * m);
 
 private:
+
+	// resize the collections
+	inline void resize() {
+		cap_ *= 2;
+		mask_.resize(cap_);
+		data_.resize(cap_);
+	}
+
+	// update the number of held items
+	inline void update_nheld() {
+		nheld_ = size_ - pos_;
+		for (unsigned i = pos_; i != end_; i++)
+			if (!mask_[i]) nheld_--;
+	}
+
+	// find the first non-masked postion
+	inline void find_pos() {
+		pos_ = 0U;
+		while (!mask_[pos_] && pos_ < size_)
+			pos_++;
+	}
 
 	// size of the collection (total)
 	unsigned size_;

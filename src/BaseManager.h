@@ -186,12 +186,12 @@ public:
 		}
 
 		// check the ongoing construction queue
-		if (build_construct_queue_.nqueued() > 0) {
+		if (build_construct_queue_.nheld() > 0) {
 		}
 
 		// check the prep queue
-		if (build_prep_queue_.nqueued() > 0) {
-			const unsigned nq = build_prep_queue_.nqueued();
+		if (build_prep_queue_.nheld() > 0) {
+			const unsigned nq = build_prep_queue_.nheld();
 			for (unsigned i = 0; i != nq; i++) {
 				build_prep_struct & bs = build_prep_queue_[i];
 				if (bs.worker->isConstructing()) continue;
@@ -270,7 +270,7 @@ public:
 	*/
 	void buildingConstruction(BWAPI::Unit unit) { 
 		// find a unit/worker from prep queue
-		const unsigned nq = build_prep_queue_.nqueued();
+		const unsigned nq = build_prep_queue_.nheld();
 		for (unsigned i = 0; i != nq; i++) {
 			const build_prep_struct & bs = build_prep_queue_[i];
 			if (unit->getType() == bs.building_type
@@ -342,10 +342,10 @@ private:
   vqueue<build_order_struct> build_order_queue_;
 
   // queue of building between the order and construction
-  vqueue<build_prep_struct> build_prep_queue_;
+  vvec<build_prep_struct> build_prep_queue_;
 
   // queue of buildings under construction
-  vqueue<build_construct_struct> build_construct_queue_;
+  vvec<build_construct_struct> build_construct_queue_;
   
   // building locations
   vmap<BWAPI::TilePosition, BWAPI::Unit> build_map_;

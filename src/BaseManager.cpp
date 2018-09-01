@@ -44,7 +44,7 @@ void BaseManager::loadModel(const model_args & args) {
 	std::stringstream build_name;
 	//build_name << std::getenv("TURKDIR") << "\\data\\Terran\\BaseManager\\Terran_twofactoryvulture_v1.txt";
 	//build_name << "C:\\\\Users\\User\\Desktop\\SCAI\\Turk\\data\\Terran\\BaseManager\\Terran_twofactoryvulture_v1.txt";
-	build_name << "C:\\Users\\User\\Desktop\\SCAI\\Turk\\data\\Terran\\BaseManager" << "\\Terran_twobarracks_v1.txt";
+	build_name << "C:\\Users\\User\\Desktop\\SCAI\\Turk\\data\\Terran\\BaseManager" << "\\Terran_twofactoryvulture_v1.txt.txt";
 	initialize_build_queue(build_name.str());
 
 }

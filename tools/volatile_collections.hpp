@@ -1,5 +1,52 @@
 
 
+//vvec push
+template<class T>
+void vvec<T>::push(T & t) {
+	// check to resize the collection
+	if (end_ == cap_) resize();
+
+	// add element to end of collection
+	data_[end_++] = t;
+
+	// update size
+	size_++;
+	nheld_++;
+}
+
+// vvec []
+template<class T>
+T & vvec<T>::operator[](unsigned i) {
+	unsigned p = pos_+i;
+	while (!mask_[p] && p < size_)
+		p++;
+	return data_[p];
+}
+
+// mask
+template<class T>
+void vvec<T>::mask(unsigned i) {
+	unsigned p = pos_ + i;
+	while (!mask_[p] && p < size_)
+		p++;
+
+	mask_[p] = false;
+
+	find_pos();
+	update_nheld();
+}
+
+// mask
+template<class T>
+void vvec<T>::mask(bool * b) {
+	for (unsigned i = 0; i != size_; i++) {
+		mask_[i + pos_] = b[i];
+	}
+
+	find_pos();
+	update_nheld();
+}
+
 
 // vqueue push
 template<class T>
