@@ -1,3 +1,4 @@
+#pragma once
 ///////////////////////////////////////
 // C S Cowden
 // Class to help connect to the sqlite3
@@ -20,9 +21,8 @@ namespace Turk {
 		///
 		/// return a static reference 
 		inline static ConfigDB * instance() {
-			if (!m_ptr)
-				m_ptr = new ConfigDB();
-			return m_ptr;
+			static ConfigDB inst;
+			return &inst;
 		}
 
 		///
@@ -60,6 +60,5 @@ namespace Turk {
 		}
 
 		sqlite3 * m_db;
-		static ConfigDB * m_ptr;
 	};
 }

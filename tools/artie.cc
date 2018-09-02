@@ -5,14 +5,25 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+#include <cstring>
 
+#ifdef _WIN32
+#include <random>
+#else
 #include<sys/random.h>
+#endif
+
 
 #include "polyartie.h"
 #include "dbscan.h"
 #include "queue.h"
 
 using namespace Turk;
+
+#ifdef _WIN32
+boost::random::rand48 artie_gen;
+#endif
+
 
 const point Turk::ARTIE::m_neighbors[m_nNeighbs] = {point(-1,0), point(1,0), point(0,-1), point(0,1)};
 
@@ -22,9 +33,16 @@ const point Turk::ARTIE::m_segment[m_segsize] = {
   ,point(-1,-1), point(0,-1), point(1,-1) };
 
 color Turk::gen_random_color() {
-  // generate a random character from /dev/urandom
+  
   char col[3];
+#ifdef _WIN32
+  unsigned tmp = artie_gen();
+  memcpy(col, &tmp, 3);
+#else
+  // generate a random character from /dev/urandom
   getrandom(col,3,0);
+#endif
+
 
   return color(col[0],col[1],col[2]);
 }
@@ -723,7 +741,7 @@ void ARTIE::dist_nearest_obstacle_l2(const unsigned index) {
     const point start = origin + m_neighbors[0]*dist;
     for ( unsigned i=0; i != range; i++ ) {
       const unsigned x = start.x+i;
-      const unsigned delta = abs(origin.x-x);
+      const unsigned delta = abs((int)(origin.x-x));
       const point upper(x,start.y-sqrt(dist*dist-delta*delta));
       const point lower(x,start.y+sqrt(dist*dist-delta*delta));
 

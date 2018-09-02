@@ -1,5 +1,5 @@
-#ifndef artie
-#define artie
+#ifndef ARTIE_H
+#define ARTIE_H
 
 ///////////////////////////////////////////////////////
 // Turk Terrain Analysis - TTA
@@ -13,6 +13,10 @@
 #include <vector>
 #include <cmath>
 #include <fstream>
+
+#ifdef _WIN32
+#include <boost/random/linear_congruential.hpp>
+#endif
 
 
 namespace Turk {
@@ -380,6 +384,11 @@ template<class T> void ARTIE::dump_csv(const char *name, const T * data, const u
 
   out.close();
 }
+
+/**
+* Declare a global ARTIE object
+*/
+extern ARTIE artie;
 
 }
 #endif

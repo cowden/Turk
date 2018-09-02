@@ -3,6 +3,8 @@
 
 using namespace Turk;
 
+
+#ifdef __linux__
 extern "C" {
   extern void dgelsd_(
     int * m, int * n, int * nrhs
@@ -15,6 +17,8 @@ extern "C" {
     , int * info
   );
 }
+#endif
+
 
 void linear_model::fit(double * x
   ,double * y
@@ -40,14 +44,18 @@ void linear_model::fit(double * x
 
   // compute optimal size of the work array
   lwork = -1;
+#ifdef __linux__
   dgelsd_(&m,&n,&nrhs,&xT[0],&m,y,&m,&s[0],&rcond,&rank,&work[0],&lwork,&iwork[0],&m_info);
+#endif
   lwork = work[0];
 
   work.resize(lwork);
   iwork.resize(lwork);
 
   // solve the set of equations
+#ifdef __linux__
   dgelsd_(&m,&n,&nrhs,&xT[0],&m,y,&m,&s[0],&rcond,&rank,&work[0],&lwork,&iwork[0],&m_info);
+#endif
 
   m_coefs.resize(n_features);
   for ( unsigned i=0; i != n_features; i++ )

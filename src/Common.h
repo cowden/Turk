@@ -15,9 +15,36 @@
 #include <array>
 
 #include <BWAPI.h>
-#include <BWTA.h>
 #include <windows.h>
 
+#include "weaver.h"
+#include "artie.h"
+#include "cameron.h"
 
 
 // Basic Building
+namespace Turk {
+
+/**
+* Convenience to store locations
+*/
+/*struct location {
+	int x;
+	int y;
+
+	location(int tx, int ty) :x(tx), y(ty) { }
+	location():x(-1),y(-1) { }
+};*/
+	typedef BWAPI::Position location;
+
+/**
+* elevate status for IRQ handling
+*/
+enum status {
+	GOOD,
+	WARN,
+	ATTN,
+	URGNT
+};
+
+} // end Turk namespace
