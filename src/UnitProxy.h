@@ -1,36 +1,32 @@
-#pragma once
+#ifndef UNITPROXY_H
+#define UNITPROXY_H
 
-/*********************************
-* C S Cowden     19 June 2018
-* Army Manager - manages combat units
-* or other army manager units.
-**********************************/
+/*************************************
+* C S Cowden        7 September 2018
+* UnitProxy - A proxy to BWAPI::Unit.
+* This class incorporates interfaces
+* to navigation/path finding and control
+* from the owning manager.
+**************************************/
 
 #include <string>
 
 #include "Common.h"
-#include "bot.h"
+#include "ArmyManager.h"
 
-namespace Turk {
+namespace Turk{
 
-/**
-* Argument struct for parsing commands to the agent.
-*/
-struct army_args : bot_args {
-};
-
-
-class ArmyManager : public bot {
+class UnitProxy : public bot {
 public:
 		/**
 		* Default constructor
 		*/
-		inline ArmyManager():bot("ArmyManager") {}
+		inline UnitProxy():ArmyManager() {}
 
 		/**
 		* Delete this instance
 		*/
-		inline ~ArmyManager() { }
+		inline ~UnitProxy() { }
 
 		/**
 		* Execute a given command encoded as an integer
@@ -91,6 +87,10 @@ private:
 
 		// bot name
 		std::string m_name;
+
+    BWAPI::Unit unit_;
 };
 
-}  // end Turk namespace
+} // end Turk namespace
+
+#endif
