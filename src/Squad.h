@@ -70,7 +70,7 @@ public:
   */
   inline virtual void process() { }
 
-  inline void addUnits(const std::vector<BWAPI::Unit> & units) { }
+  inline void addUnits(const std::vector<UnitProxy> & units) { }
 
   virtual void updateUnits() { }
 

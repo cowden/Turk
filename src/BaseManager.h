@@ -248,7 +248,7 @@ public:
 	/**
 	* add a unit to the agent's control
 	*/
-	virtual void addUnits(const std::vector<BWAPI::Unit> & units) {
+	virtual void addUnits(const std::vector<UnitProxy> & units) {
 		for (auto u : units) {
 			if (u->getType().isWorker())
 				workers_.push_back(u);
@@ -351,7 +351,7 @@ private:
   vmap<BWAPI::TilePosition, BWAPI::Unit> build_map_;
 
   // list of units (updated from UnitManager)
- std::vector<BWAPI::Unit> workers_;
+ std::vector<UnitProxy> workers_;
 
   // building status - collection of construction status
  std::vector<BWAPI::Unit> buildings_;

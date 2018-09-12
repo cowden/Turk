@@ -33,7 +33,7 @@ void BaseManager::loadModel(const model_args & args) {
 	// get initial workers and set to collecting minerals
 	workers_ = umanity.getUnits(this);
 	for ( unsigned i=0; i != workers_.size(); i++ ){
-		BWAPI::Unit w = workers_[i];
+		BWAPI::Unit w = workers_[i].getUnit();
 		if (!w->gather(w->getClosestUnit(BWAPI::Filter::IsMineralField))) {
 			BWAPI::Broodwar << BWAPI::Broodwar->getLastError() << std::endl;
 		}
@@ -109,11 +109,12 @@ build_prep_struct BaseManager::building(BWAPI::UnitType bu) {
 	// find a worker
 	// grab one going to the mineral field
 	BWAPI::Unit builder;
-	for (auto w : workers_) {
-		if (w->isIdle()) {
+	for (auto wrkr : workers_) {
+               BWAPI::Unit w = wrkr.getUnit();
+		if (w.getUnit()->isIdle()) {
 			builder = w;
 			break;
-		} else if (w->getTarget() && w->getTarget()->getType().isMineralField() && !w->isCarryingMinerals()) {
+		} else if (w.->getTarget() && w->getTarget()->getType().isMineralField() && !w->isCarryingMinerals()) {
 			builder = w;
 			break;
 		}

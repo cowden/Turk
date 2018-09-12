@@ -99,7 +99,7 @@ public:
   /**
   * add units to bot control
   */
-  virtual void addUnits(const std::vector<BWAPI::Unit> &) = 0;
+  virtual void addUnits(const std::vector<UnitProxy> &) = 0;
 
   /**
   * update unit list under bot control

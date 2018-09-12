@@ -73,6 +73,11 @@ public:
 
 		virtual void updateUnits() { }
 
+  /**
+  * Expose the BWAPI::Unit for low level controls.
+  */
+  BWAPI::Unit & getUnit() { return unit_; }
+
 protected:
 
 private:

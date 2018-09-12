@@ -57,10 +57,11 @@ void UnitManager::onUnitCreate(BWAPI::Unit unit) {
 			Turk::bot * b = agents_[i];
 			if (b->type().compare("BaseManager") == 0 && unit->getDistance(b->location()) < 200 ) {
 				// assign worker to base
-				std::vector<BWAPI::Unit> ulist(1);
-				ulist[0] = unit;
+				std::vector<UnitProxy> ulist(1);
+                                UnitProxy up(unit);
+				ulist[0] = up;
 				b->addUnits(ulist);
-				unit_map_.insert(std::pair<const bot *, BWAPI::Unit>(b, unit));
+				unit_map_.insert(std::pair<const bot *, UnitProxy>(b, up));
 			}
 		}
 	}

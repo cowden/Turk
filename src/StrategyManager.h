@@ -112,7 +112,7 @@ struct strategy_args : bot_args {
   }
 
 
-  virtual void addUnits(const std::vector<BWAPI::Unit> & units) { }
+  virtual void addUnits(const std::vector<UnitProxy> & units) { }
 
   virtual void updateUnits() { }
 

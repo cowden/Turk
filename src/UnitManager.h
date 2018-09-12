@@ -98,7 +98,7 @@ public:
   */
   virtual void process();
 
-  virtual void addUnits(const std::vector<BWAPI::Unit> & units) { }
+  virtual void addUnits(const std::vector<UnitProxy> & units) { }
 
   virtual void updateUnits() { }
 
@@ -120,8 +120,8 @@ public:
   /**
   * return the units assigned to an agent
   */
-  inline std::vector<BWAPI::Unit> getUnits(const bot * b) {
-	  std::vector<BWAPI::Unit> units;
+  inline std::vector<UnitProxy> getUnits(const bot * b) {
+	  std::vector<UnitProxy> units;
 	  for (unsigned i = 0; i != unit_map_.size(); i++) {
 		  if (unit_map_.ismask(i) && unit_map_[i].first == b)
 			  units.push_back(unit_map_[i].second);
@@ -201,15 +201,15 @@ private:
   
 
   // list of all units
-  std::vector<BWAPI::Unit> units_;
+  std::vector<UnitProxy> units_;
  
   // list of all registers agents
   std::vector<bot *> agents_;
   unsigned agent_count_;
 
   // unit-agent map
-  vmap<const bot *, BWAPI::Unit> unit_map_;
-  
+  vmap<const bot *, UnitProxy> unit_map_; 
+
 
   Turk::location loc_;
   Turk::status status_;
