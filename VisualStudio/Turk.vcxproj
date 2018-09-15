@@ -31,9 +31,11 @@
     <ClInclude Include="..\src\bot.h" />
     <ClInclude Include="..\src\Common.h" />
     <ClInclude Include="..\src\HUD.h" />
+    <ClInclude Include="..\src\Squad.h" />
     <ClInclude Include="..\src\StrategyManager.h" />
     <ClInclude Include="..\src\Turk.h" />
     <ClInclude Include="..\src\UnitManager.h" />
+    <ClInclude Include="..\src\UnitProxy.h" />
     <ClInclude Include="..\tools\artie.h" />
     <ClInclude Include="..\tools\cameron.h" />
     <ClInclude Include="..\tools\ConfigDB.h" />

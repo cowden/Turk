@@ -13,17 +13,18 @@
 #include <vector>
 
 #include "Common.h"
-#include "ArmyManager.h"
+#include "bot.h"
 
 namespace Turk {
 
-class Squad : public ArmyManager {
+
+class Squad : public bot {
 public:
 
   /**
   * Default constructor
   */
-  inline Squad():ArmyManager() { }
+	inline Squad() : bot("Squad") {}
 
   /**
   * Delete this instance

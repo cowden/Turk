@@ -14,6 +14,7 @@
 #include "bot.h"
 #include "BaseManager.h"
 #include "ArmyManager.h"
+#include "UnitProxy.h"
 
 namespace Turk {
 
@@ -99,7 +100,7 @@ struct strategy_args : bot_args {
 	  
 
 	  // load initial army manager
-	  //armies_.push_back(new ArmyManager());
+	  armies_.push_back(new ArmyManager());
 	  
 
 	  // initialize unit manager
@@ -107,7 +108,7 @@ struct strategy_args : bot_args {
 
 	  // load models
 	  bases_[0]->loadModel(model_args(trace, erace, 0));
-	  //armies_[0]->loadModel(model_args(trace, erace, 0));
+	  armies_[0]->loadModel(model_args(trace, erace, 0));
 
   }
 

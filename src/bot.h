@@ -16,6 +16,9 @@
 
 namespace Turk {
 
+	// forward declare UnitProxy
+	class UnitProxy;
+
 /**
 * The base struct by which to pass arguments
 * to inherited classes.

@@ -86,4 +86,18 @@ void UnitManager::onUnitComplete(BWAPI::Unit unit) {
 			dynamic_cast<BaseManager *>(bm)->buildingComplete(unit);
 		
 	}
+	// if the unit is a combat unit
+	else if (!unit->getType().isWorker() && !unit->getType().isBuilding() && unit->getPlayer() == BWAPI::Broodwar->self()) {
+		// assign to army
+		Turk::bot * bm = findNearestAgent(unit->getPosition(), "ArmyManager");
+		if (bm) {
+			std::vector<UnitProxy> ulist(1);
+			UnitProxy up(unit);
+			ulist[0] = up;
+			bm->addUnits(ulist);
+
+			unit_map_.insert(std::pair<const bot *, UnitProxy>(bm, up));
+		}
+			
+	}
 }

@@ -12,7 +12,7 @@
 #include <string>
 
 #include "Common.h"
-#include "ArmyManager.h"
+#include "bot.h"
 
 namespace Turk{
 
@@ -21,7 +21,13 @@ public:
 		/**
 		* Default constructor
 		*/
-		inline UnitProxy():ArmyManager() {}
+		inline UnitProxy():bot("UnitProxy") {}
+
+		/**
+		* Construct from a BWAPI::Unit
+		*/
+		inline UnitProxy(BWAPI::Unit & u) :
+			bot("UnitProxy"), unit_(u) { }
 
 		/**
 		* Delete this instance
@@ -69,7 +75,7 @@ public:
   */
 		inline virtual void process() { }
 
-		virtual void addUnits(const std::vector<BWAPI::Unit> & units) { }
+		virtual void addUnits(const std::vector<UnitProxy> & units) { }
 
 		virtual void updateUnits() { }
 

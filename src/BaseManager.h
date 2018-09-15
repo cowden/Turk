@@ -18,6 +18,7 @@
 #include "Logger.h"
 
 #include "UnitManager.h"
+#include "UnitProxy.h"
 
 
 
@@ -175,7 +176,8 @@ public:
 		//BWAPI::Unit tunit = depot_->getBuildUnit();
 		//if (tunit) workers_.push_back(tunit);
 		bool construction = false;
-		for (auto u : workers_) {
+		for (auto up : workers_) {
+			BWAPI::Unit & u = up.getUnit();
 			if (u->isIdle()) {
 				u->gather(u->getClosestUnit(BWAPI::Filter::IsMineralField));
 			}
@@ -250,7 +252,7 @@ public:
 	*/
 	virtual void addUnits(const std::vector<UnitProxy> & units) {
 		for (auto u : units) {
-			if (u->getType().isWorker())
+			if (u.getUnit()->getType().isWorker())
 				workers_.push_back(u);
 		}
 	}

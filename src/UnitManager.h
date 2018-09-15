@@ -15,6 +15,7 @@
 #include "bot.h"
 #include "Logger.h"
 #include "volatile_collections.h"
+#include "UnitProxy.h"
 
 namespace Turk {
 
@@ -203,7 +204,7 @@ private:
   // list of all units
   std::vector<UnitProxy> units_;
  
-  // list of all registers agents
+  // list of all registered agents
   std::vector<bot *> agents_;
   unsigned agent_count_;
 

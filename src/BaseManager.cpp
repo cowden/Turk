@@ -42,9 +42,7 @@ void BaseManager::loadModel(const model_args & args) {
 	// load the initial build order
 	// get the path from configuration
 	std::stringstream build_name;
-	//build_name << std::getenv("TURKDIR") << "\\data\\Terran\\BaseManager\\Terran_twofactoryvulture_v1.txt";
-	//build_name << "C:\\\\Users\\User\\Desktop\\SCAI\\Turk\\data\\Terran\\BaseManager\\Terran_twofactoryvulture_v1.txt";
-	build_name << "C:\\Users\\User\\Desktop\\SCAI\\Turk\\data\\Terran\\BaseManager" << "\\Terran_twofactoryvulture_v1.txt.txt";
+	build_name << std::getenv("TURKDIR") << "\\data\\Terran\\BaseManager" << "\\Terran_twofactoryvulture_v1.txt";
 	initialize_build_queue(build_name.str());
 
 }
@@ -110,11 +108,11 @@ build_prep_struct BaseManager::building(BWAPI::UnitType bu) {
 	// grab one going to the mineral field
 	BWAPI::Unit builder;
 	for (auto wrkr : workers_) {
-               BWAPI::Unit w = wrkr.getUnit();
-		if (w.getUnit()->isIdle()) {
+        BWAPI::Unit w = wrkr.getUnit();
+		if (w->isIdle()) {
 			builder = w;
 			break;
-		} else if (w.->getTarget() && w->getTarget()->getType().isMineralField() && !w->isCarryingMinerals()) {
+		} else if (w->getTarget() && w->getTarget()->getType().isMineralField() && !w->isCarryingMinerals()) {
 			builder = w;
 			break;
 		}

@@ -10,6 +10,8 @@
 
 #include "Common.h"
 #include "bot.h"
+#include "UnitProxy.h"
+#include "Squad.h"
 
 namespace Turk {
 
@@ -19,13 +21,17 @@ namespace Turk {
 struct army_args : bot_args {
 };
 
-
 class ArmyManager : public bot {
 public:
 		/**
 		* Default constructor
 		*/
 		inline ArmyManager():bot("ArmyManager") {}
+
+		/**
+		* constructor with a given name
+		*/
+		inline ArmyManager(const char * name) : bot(name) { }
 
 		/**
 		* Delete this instance
@@ -91,6 +97,9 @@ private:
 
 		// bot name
 		std::string m_name;
+
+		std::vector<Squad> squads_;
+		std::vector<ArmyManager> armies_;
 };
 
 }  // end Turk namespace
