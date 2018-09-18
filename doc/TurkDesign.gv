@@ -29,8 +29,8 @@ digraph cluster_Turk {
   bot -> ArmyManager;
   bot -> UnitManager;
 
-  ArmyManager -> Squad;
-  ArmyManager -> UnitProxy;
+  bot -> Squad;
+  bot -> UnitProxy;
   ArmyManager -> Scout;
   ArmyManager -> Attacker;
   ArmyManager -> Defender;
