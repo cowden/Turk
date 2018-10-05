@@ -18,6 +18,9 @@
 #include <boost/random/linear_congruential.hpp>
 #endif
 
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/map.hpp>
+
 
 namespace Turk {
 
@@ -72,6 +75,14 @@ struct point {
   int x;
   int y;
 
+private:
+  friend class boost::serialization::access;
+  template<class S>
+  void serialize( S & ar, const unsigned version) {
+    ar & x;
+    ar & y;
+  }
+
 };
 
 class ARTIE {
@@ -88,11 +99,6 @@ public:
   * Destructor
   */
   ~ARTIE() {
-    if ( m_obstacles ) delete m_obstacles;
-    if ( m_walkable ) delete m_walkable;
-    if ( m_dmap ) delete m_dmap;
-    if ( m_wlmap ) delete m_wlmap;
-    if ( m_gatepoints ) delete m_gatepoints;
   }
 
   /**
@@ -116,7 +122,7 @@ public:
   /**
   * dump the map to an image (PPM) file.
   */
-  virtual void dump_image(const char * name, const bool *map, const unsigned width, const unsigned height);
+  virtual void dump_image(const char * name, const std::vector<bool> & map, const unsigned width, const unsigned height);
   virtual void dump_image(const char * name, const unsigned *map, const unsigned width, const unsigned height);
 
   /**
@@ -148,6 +154,44 @@ public:
   virtual void get_chokes();
 
 private:
+
+  friend class boost::serialization::access;
+  template<class S>
+  void serialize(S & ar, const unsigned version ) {
+    ar & m_width;
+    ar & m_height;
+    ar & m_mapsize;
+
+    ar & m_obstacles;
+    ar & m_nObstacles;
+
+    ar & m_walkable;
+    ar & m_nWalkable;
+
+    ar & m_dmap;
+    ar & m_nnobj;
+
+    ar & m_rdmap;
+
+    ar & m_wlmap;
+    
+    ar & m_gatepoints;
+    ar & m_gatepointmap;
+    ar & m_nGatePoints;
+
+    ar & m_walkable_areas;
+   
+    ar & m_critical_points;
+    ar & m_critical_mins;
+    ar & m_critical_clus;
+    ar & m_clu_labels;
+
+    ar & m_n_nuclei;
+    ar & m_region_map;
+    ar & m_map_graph;
+
+
+  }
 
 
   /**
@@ -206,7 +250,7 @@ private:
 
   }
 
-  inline virtual void rfill_area(const unsigned index, const unsigned counter, unsigned * map, const bool * exclude) {
+  inline virtual void rfill_area(const unsigned index, const unsigned counter, unsigned * map, const std::vector<bool> & exclude) {
     if ( index >= m_mapsize || map[index] ) return;
 
     if ( exclude[index] ) return;
@@ -312,17 +356,17 @@ private:
 
   // obstacle map
   // map each obstructed tile to obstacle cluster
-  unsigned * m_obstacles;
+  std::vector<unsigned> m_obstacles;
   unsigned m_nObstacles;
 
   // walkable map
   // a boolean of whether a tile is traversable
-  bool * m_walkable;
+  std::vector<bool> m_walkable;
   unsigned m_nWalkable;
 
   // distance map
   // distance to nearest obstacle
-  unsigned * m_dmap;
+  std::vector<unsigned> m_dmap;
   std::vector<unsigned> m_nnobj;
   
   // reverse distance map
@@ -334,15 +378,15 @@ private:
 
   // water level region map
   // region label at each tile of the map
-  unsigned * m_wlmap;
+  std::vector<unsigned> m_wlmap;
   
 
   // gateway/choke points
-  unsigned * m_gatepoints;
-  bool * m_gatepointmap;
+  std::vector<unsigned> m_gatepoints;
+  std::vector<bool> m_gatepointmap;
   unsigned m_nGatePoints;  
 
-  std::vector<unsigned> tmp;
+  std::vector<unsigned> m_walkable_areas;
 
   // critical points
   std::vector<point> m_critical_points;

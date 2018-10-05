@@ -50,13 +50,12 @@ color Turk::gen_random_color() {
 
 void ARTIE::load_map(const unsigned * map, const unsigned width, const unsigned height) { 
 
-  if ( m_walkable ) delete m_walkable;
-
   m_width = width;
   m_height = height;
   m_mapsize = width*height;
 
-  m_walkable = new bool[m_mapsize];
+  m_walkable.clear();
+  m_walkable.resize(m_mapsize);
 
   for ( unsigned i=0; i != m_mapsize; i++ ) 
     m_walkable[i] = (bool)map[i];
@@ -68,8 +67,8 @@ void ARTIE::analyze_map() {
   clean_map();
   obstacle_flood_fill();
   build_distance_map();
-  mat();
-  water_level_decomposition();
+  //mat();
+  //water_level_decomposition();
   find_critical_points();
   triangulate();
 }
@@ -92,32 +91,35 @@ void ARTIE::dump_data(const char * base_name) {
   // dump  distance map
   sprintf(output,"%s_distance.ppm",base_name);
   std::cout << "Dumping distance map: " << output << std::endl;
-  dump_image(output,m_dmap,m_width,m_height);
+  dump_image(output,&m_dmap[0],m_width,m_height);
   
   // dump obstacle clusters
   sprintf(output,"%s_obstacle.ppm",base_name);
   std::cout << "Dumping obstacle cluster map: " << output << std::endl;
-  dump_categorical_map(output,m_obstacles,m_width,m_height);
+  dump_categorical_map(output,&m_obstacles[0],m_width,m_height);
 
   // dump water level map
-  sprintf(output,"%s_waterlevel.ppm",base_name);
+  /*sprintf(output,"%s_waterlevel.ppm",base_name);
   std::cout << "Dumping water level map: " << output << std::endl;
-  dump_categorical_map(output,m_wlmap,m_width,m_height);
+  dump_categorical_map(output,&m_wlmap[0],m_width,m_height);
+  */
 
   // dump gate points
-  sprintf(output,"%s_gatepoint.ppm",base_name);
+  /*sprintf(output,"%s_gatepoint.ppm",base_name);
   std::cout << "Dumping gatepoint map: " << output << std::endl;
   dump_image(output,m_gatepointmap,m_width,m_height);
+  */
 
   // dump walkable areas flood fill map
   sprintf(output,"%s_walkable_areas.ppm",base_name);
   std::cout << "Dumping walkable areas map: " << output << std::endl;
-  dump_categorical_map(output,&tmp[0],m_width,m_height);
+  dump_categorical_map(output,&m_walkable_areas[0],m_width,m_height);
 
   // dump the MAT map
-  sprintf(output,"%s_mat.ppm",base_name);
+  /*sprintf(output,"%s_mat.ppm",base_name);
   std::cout << "Dumping MAT map: " << output << std::endl;
   dump_categorical_map(output,&m_mat[0],m_width,m_height);
+  */
 
   // dump the critical points
   sprintf(output,"%s_critical_points.csv",base_name);
@@ -145,7 +147,7 @@ void ARTIE::dump_data(const char * base_name) {
 
 }
 
-void ARTIE::dump_image(const char * name, const bool * map, const unsigned width, const unsigned height ) { 
+void ARTIE::dump_image(const char * name, const std::vector<bool> & map, const unsigned width, const unsigned height ) { 
 
   FILE * file = fopen(name,"wb");
   fprintf(file,"P6\n%i %i 255\n",width,height);
@@ -229,8 +231,8 @@ void ARTIE::build_distance_map() {
   std::cout << "Refine Distance Map" << std::endl;
 
   // allocate memory for distance map
-  if ( m_dmap ) delete m_dmap;
-  m_dmap = new unsigned[m_mapsize];
+  m_dmap.clear();
+  m_dmap.resize(m_mapsize);
   for ( unsigned i=0; i != m_mapsize; i++ ) m_dmap[i] = 0U;
 
   m_nnobj.resize(m_mapsize);
@@ -242,8 +244,6 @@ void ARTIE::build_distance_map() {
     if ( m_obstacles[i] ) continue;
 
     // distance fill the area
-    //dist_fill_area(i);
-    //dist_nearest_obstacle_l1(i);
     dist_nearest_obstacle_l2(i);
  
   }
@@ -269,8 +269,8 @@ void ARTIE::water_level_decomposition() {
   unsigned cur_label = 1;
 
   m_nGatePoints = 0;
-  m_gatepoints = new unsigned[m_mapsize];
-  m_wlmap = new unsigned[m_mapsize];
+  m_gatepoints.resize(m_mapsize);
+  m_wlmap.resize(m_mapsize);
 
 
   // reverse iterate over the reverse distance map
@@ -339,7 +339,8 @@ void ARTIE::water_level_decomposition() {
   }
 
   // create gatepoint map
-  m_gatepointmap = new bool[m_mapsize];
+  m_gatepointmap.clear();
+  m_gatepointmap.resize(m_mapsize);
   for ( unsigned i=0; i != m_mapsize; i++ ) 
     m_gatepointmap[i] = false;
 
@@ -352,12 +353,8 @@ void ARTIE::water_level_decomposition() {
 void ARTIE::obstacle_flood_fill() {
 
   // allocate the obstacle map
-  if ( m_obstacles ) {
-    delete m_obstacles;
-    m_nObstacles = 0U;
-  }
-
-  m_obstacles = new unsigned[m_mapsize];
+  //m_obstacles.clear(); // check
+  m_obstacles.resize(m_mapsize);
   
   // fill with zeros
   for ( unsigned i = 0; i != m_mapsize; i++ )
@@ -367,7 +364,7 @@ void ARTIE::obstacle_flood_fill() {
   unsigned counter = 1;
   for ( unsigned i = 0; i != m_mapsize; i++ ) {
     if ( !m_walkable[i] && !m_obstacles[i] ) {
-      rfill_area(i,counter,m_obstacles,m_walkable);
+      rfill_area(i,counter,&m_obstacles[0],m_walkable);
       counter++;
     }
   }
@@ -380,9 +377,8 @@ void ARTIE::obstacle_flood_fill() {
 void ARTIE::clean_map() {
 
   // flood fill the walkable map
-  //std::vector<unsigned> tmp(m_mapsize);
-  tmp.resize(m_mapsize);
-  std::cout << "Created cleaner map: " << tmp.size() << std::endl;
+  m_walkable_areas.resize(m_mapsize);
+  std::cout << "Created cleaner map: " << m_walkable_areas.size() << std::endl;
 
   std::vector<unsigned> dummy(m_mapsize);
   for ( unsigned i=0; i != m_mapsize; i++ )
@@ -392,15 +388,15 @@ void ARTIE::clean_map() {
   unsigned tcount = 0U;
   // remove small regions
   for ( unsigned i=0; i != m_mapsize; i++ ) {
-    if ( m_walkable[i] && !tmp[i] ) {
+    if ( m_walkable[i] && !m_walkable_areas[i] ) {
       tcount++;
-      ff_fill_area(i,tcount,&tmp[0],&dummy[0]);
+      ff_fill_area(i,tcount,&m_walkable_areas[0],&dummy[0]);
     }
   }
 
-  // check for empty tmps
+  // check for empty m_walkable_areas
   /*for ( unsigned i=0; i != m_mapsize; i++ ) {
-    assert((tmp[i] > 0 && m_walkable[i]) ^ (tmp[i] == 0 && m_obstacles[i] > 0 ));
+    assert((m_walkable_areas[i] > 0 && m_walkable[i]) ^ (m_walkable_areas[i] == 0 && m_obstacles[i] > 0 ));
   }*/
   
   // acquire size/area for each walkable region
@@ -411,8 +407,8 @@ void ARTIE::clean_map() {
   }
 
   for ( unsigned i=0; i != m_mapsize; i++ ) {
-    if ( tmp[i] ) {
-      areas[tmp[i]-1]++;
+    if ( m_walkable_areas[i] ) {
+      areas[m_walkable_areas[i]-1]++;
     }
   }
 
@@ -437,8 +433,11 @@ void ARTIE::clean_map() {
 
   // clean up walkable map
   for ( unsigned i=0; i != m_mapsize; i++ ) {
-    if ( tmp[i] && areas[tmp[i]-1] < 1000 ) m_walkable[i] = false;
+    if ( m_walkable_areas[i] && areas[m_walkable_areas[i]-1] < 1000 ) m_walkable[i] = false;
   }
+
+  // delete areas memory
+  delete [] areas;
 
 }
 

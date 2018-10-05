@@ -29,9 +29,9 @@ $(BWAPI_OBJS): %.o: %.cpp
 	$(CXX) -MMD $(INCLUDES) -c -o $@ $<
 
 $(OBJDIR)/terrain: standalone/terrain.cc $(TOOL_OBJS)
-	$(CXX) -MMD -I $(INCDIR) -o $@ $^ -llapack
+	$(CXX) -MMD $(LIBS) -I $(INCDIR) -o $@ $^ -llapack
 
 $(OBJDIR)/techtree: standalone/techtree.cc $(BWAPI_OBJS)
-	$(CXX) -MMD $(INCLUDES)  -o $@ $^ 
+	$(CXX) -MMD $(LIBS) $(INCLUDES)  -o $@ $^ 
 
 -include $(DEPENDS) 
