@@ -189,6 +189,7 @@ private:
     ar & m_n_nuclei;
     ar & m_region_map;
     ar & m_map_graph;
+    ar & m_region_areas;
 
 
   }
@@ -399,6 +400,7 @@ private:
   unsigned m_n_nuclei;
   std::vector<unsigned> m_region_map;
   std::vector<unsigned> m_map_graph;
+  std::vector<unsigned> m_region_areas; 
   
   
 };

@@ -67,8 +67,6 @@ void ARTIE::analyze_map() {
   clean_map();
   obstacle_flood_fill();
   build_distance_map();
-  //mat();
-  //water_level_decomposition();
   find_critical_points();
   triangulate();
 }
@@ -140,6 +138,11 @@ void ARTIE::dump_data(const char * base_name) {
   // dump regions
   sprintf(output,"%s_map_regions.ppm",base_name);
   dump_categorical_map(output,&m_region_map[0],m_width,m_height);
+
+  // dump region attributes
+  sprintf(output,"%s_map_areas.csv",base_name);
+  std::cout << "Dumping region attributes: " << output << std::endl;
+  dump_csv<unsigned>(output,&m_region_areas[0],1,m_n_nuclei);
  
   // dump map graph
   sprintf(output,"%s_map_graph.csv",base_name);
@@ -976,6 +979,11 @@ void ARTIE::triangulate() {
   m_region_map.resize(m_width*m_height); 
   for ( unsigned i=0; i != m_mapsize; i++ )
     m_region_map[i] = 0;
+
+  // create region area size data structure
+  m_region_areas.resize(m_n_nuclei);
+  for ( unsigned i=0; i != m_n_nuclei; i++ )
+    m_region_areas[i] = 0;
   
   // create graph matrix
   m_map_graph.resize(m_n_nuclei*m_n_nuclei);
@@ -1007,6 +1015,7 @@ void ARTIE::triangulate() {
         // label index with cluster label
         if ( m_region_map[index] == 0 ) {
           m_region_map[index] = i;
+          m_region_areas[i]++;
           // add neighbors to queue
           const point pt = decomposeIndex(index);
           const point & cpt = center_points[i];
