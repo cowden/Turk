@@ -126,6 +126,8 @@ build_prep_struct BaseManager::building(BWAPI::UnitType bu) {
 	unsigned count = 0;
 	while (searching) {
 
+		if (count++ > 8) break;
+
 		// if the building is a refinery
 		if (bu.isRefinery()) {
 			// find the nearest gas to the base location
@@ -154,7 +156,7 @@ build_prep_struct BaseManager::building(BWAPI::UnitType bu) {
 		searching = !success;
 		//searching = false;
 
-		if (count++ > 7) break;
+		
 	}
 
 	// add worker and building type to the prep queue
