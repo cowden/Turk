@@ -17,6 +17,7 @@
 #include "polyartie.h"
 #include "dbscan.h"
 #include "queue.h"
+#include "tarjan.h"
 
 using namespace Turk;
 
@@ -69,6 +70,7 @@ void ARTIE::analyze_map() {
   build_distance_map();
   find_critical_points();
   triangulate();
+  tarjan();
 }
 
 
@@ -143,6 +145,9 @@ void ARTIE::dump_data(const char * base_name) {
   sprintf(output,"%s_map_areas.csv",base_name);
   std::cout << "Dumping region attributes: " << output << std::endl;
   dump_csv<unsigned>(output,&m_region_areas[0],1,m_n_nuclei);
+
+  sprintf(output,"%s_map_articulation.csv",base_name);
+  dump_csv<unsigned>(output,&m_articulation_points[0],1,m_n_nuclei);
  
   // dump map graph
   sprintf(output,"%s_map_graph.csv",base_name);
@@ -1077,3 +1082,23 @@ void ARTIE::triangulate() {
 
 
 
+void  ARTIE::tarjan() { 
+
+  // fit the tarjan class
+  Turk::tarjan tj;
+  tj.fit<unsigned>(m_map_graph);
+
+  // extract the articulation points
+  const std::vector<unsigned> & aps = tj.articulation_points();
+
+  m_articulation_points.resize(m_n_nuclei,0);
+  for ( unsigned i=0; i != m_n_nuclei; i++ )
+    m_articulation_points[i] = 0;
+
+  for ( auto x: aps) {
+    m_articulation_points[x] = 1;
+  }
+
+}
+
+void ARTIE::label_chokes() { }

@@ -348,6 +348,18 @@ private:
   void find_critical_points();
 
 
+  /**
+  * Execute the Tarjan algorithm to identify articulation points
+  * in the region graph.
+  */
+  void tarjan();
+
+
+  /**
+  * Label choke points.
+  */
+  void label_chokes();
+
 
   // private members
   // map parameters
@@ -401,6 +413,8 @@ private:
   std::vector<unsigned> m_region_map;
   std::vector<unsigned> m_map_graph;
   std::vector<unsigned> m_region_areas; 
+  
+  std::vector<unsigned> m_articulation_points;
   
   
 };
