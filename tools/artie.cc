@@ -71,12 +71,18 @@ void ARTIE::analyze_map() {
   find_critical_points();
   triangulate();
   tarjan();
+
+  // consolidate choke point list
+  label_chokes();
+
+  // prepare region list
+  construct_region_list();
+
+
 }
 
 
-void ARTIE::get_distance_map() { }
-
-void ARTIE::get_chokes() { }
+const std::vector<unsigned> & ARTIE::get_chokes() { }
 
 
 void ARTIE::dump_data(const char * base_name) { 
@@ -1101,4 +1107,49 @@ void  ARTIE::tarjan() {
 
 }
 
-void ARTIE::label_chokes() { }
+void ARTIE::label_chokes() { 
+
+  // clear choke point labels
+  m_choke_points.clear();
+
+  m_choke_points.resize(m_n_nuclei,0);
+
+  // cycle over all nodes,
+  for ( unsigned i=0; i != m_n_nuclei; i++ ) {
+
+    // check if the node is an articulation point of the depth 
+    // is less than 15.
+    const unsigned index = composeIndex(m_critical_clus[2*i],m_critical_clus[2*i+1]);
+    if ( m_articulation_points[i] || m_dmap[index] < 15 )
+      m_choke_points[i] = 1;
+  }
+
+}
+
+void ARTIE::construct_region_list() { 
+
+  // clear out region list
+  m_regions.clear();
+  m_regions.resize(m_n_nuclei);
+
+  for ( unsigned i=0; i != m_n_nuclei; i++ ) {
+    // get neighbors
+    std::vector<unsigned> neighbs;
+    for ( unsigned j=0; j != m_n_nuclei; j++ ) {
+      if ( m_map_graph[i*m_n_nuclei+j] )
+        neighbs.push_back(j);
+    }
+
+    // construct region
+    region reg(i,(unsigned)m_critical_clus[2*i],(unsigned)m_critical_clus[2*i+1]
+      ,m_region_areas[i]
+      ,m_dmap[composeIndex(m_critical_clus[2*i],m_critical_clus[2*i+1])]
+      ,(bool)m_articulation_points[i]
+      ,(bool)m_choke_points[i]
+      ,neighbs);
+
+    m_regions[i] = reg;
+
+  }
+
+}

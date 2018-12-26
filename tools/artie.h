@@ -22,6 +22,8 @@
 #include <boost/serialization/map.hpp>
 
 
+
+
 namespace Turk {
 
 struct color {
@@ -85,6 +87,120 @@ private:
 
 };
 
+
+// =====================================================
+// Region
+
+struct region {
+
+  /**
+  * default constructor
+  */
+  region():index_(UINT_MAX) { }
+
+  /**
+  * construct a region with the necessary information.
+  * index
+  * position (x,y)
+  * area
+  * depth
+  * articulation
+  * choke
+  * neighbors
+  */
+  region(unsigned idx
+    ,unsigned x, unsigned y
+    ,unsigned area
+    ,unsigned depth
+    ,bool artic
+    ,bool choke
+    ,const std::vector<unsigned> & neighbs ):
+    index_(idx),x_(x),y_(y),area_(area)
+    ,depth_(depth),articulation_(artic),choke_(choke)
+    ,neighbors_(neighbs) { }
+
+  /**
+  * copy constructor
+  */
+  region( const region & reg):
+    index_(reg.index_), x_(reg.x_), y_(reg.y_)
+    ,area_(reg.area_), depth_(reg.depth_)
+    ,articulation_(reg.articulation_), choke_(reg.choke_)
+    ,neighbors_(reg.neighbors_) { }
+
+  // ------ accessor methods ----
+
+  /**
+   * return the ARTIE index of this region.
+  */
+  unsigned index() const { return index_; }
+
+  /**
+  * return the position of the centroid
+  */
+  point position() const { return point(x_,y_); }
+
+  /**
+  * return the area of the region
+  */
+  unsigned area() const { return area_; }
+
+  /**
+  * return the depth of the centroid
+  */
+  unsigned depth() const { return depth_; }
+
+  /**
+  * return an indicator if this region is an articulation point.
+  */
+  bool is_articulation() const { return articulation_; }
+
+  /**
+  * return an indicator if this is choke point.
+  */
+  bool is_choke() const { return choke_; }
+
+  /**
+  * return a list of neighbors.
+  */
+  const std::vector<unsigned> & neighbors() const { return neighbors_; }
+
+
+  // ------- members --------
+
+  unsigned index_;
+  unsigned x_, y_;
+  unsigned area_;
+  unsigned depth_;
+  bool articulation_;
+  bool choke_;
+  std::vector<unsigned> neighbors_;
+
+
+private:
+
+  friend class boost::serialization::access;
+  template<class S>
+  void serialize(S & ar, const unsigned version ) {
+
+    ar & index_;
+    ar & x_;
+    ar & y_;
+    ar & area_;
+    ar & depth_;
+    ar & articulation_;
+    ar & choke_;
+    ar & neighbors_;
+
+  }
+
+};
+
+
+//========================================================
+// ARTIE
+//
+
 class ARTIE {
 public:
 
@@ -143,15 +259,73 @@ public:
   template<class T> void dump_csv(const char * name, const T * data, const unsigned n_features, const unsigned n_obs);
 
 
+  // ---------------------------
+  // accessor methods
+
+  // --
+  // map pixel to region
+  /**
+  * Return the region information given the walk tile (8x8 pixels)
+  * location.
+  */
+  inline virtual region get_region(unsigned x, unsigned y) {
+    
+    // look up the region
+    // construct the map index
+    const unsigned index = composeIndex(x,y);
+    const unsigned reg = m_region_map[index];
+ 
+    // return the region
+    return m_regions[reg];
+
+  }
+
+  /** 
+  * Return the region information given the walk tile by BWAPI::WalkPosition
+  */
+  inline virtual region get_region(const point & pt) {
+    
+    // look up the region
+    // construct the map index
+    const unsigned index = composeIndex(pt);
+    const unsigned reg = m_region_map[index];
+ 
+    // return the region
+    return m_regions[reg];
+  }
+
+  /**
+  * Return a region by index.
+  */
+  inline virtual region operator[](const unsigned i) const {
+    if ( m_regions.size() ) 
+      return m_regions[i];
+    else
+      return region();
+  }
+
+
+  /**
+  * Get the map width
+  */
+  inline virtual unsigned width() const { return m_width; }
+
+  /**
+  * Get the map height
+  */
+  inline virtual unsigned height() const { return m_height; }
+
   /**
   * Return the distance map
   */
-  virtual void get_distance_map();
+  inline virtual const std::vector<unsigned> & get_distance_map() const { return m_dmap; }
+
   
   /**
-  * Return the chokepoints.
+  * Return a list of choke indicators for all nuclei.
   */
-  virtual void get_chokes();
+  virtual const std::vector<unsigned> & get_chokes();
+
 
 private:
 
@@ -191,6 +365,10 @@ private:
     ar & m_map_graph;
     ar & m_region_areas;
 
+    ar & m_articulation_points;
+    ar & m_choke_points;
+  
+    ar & m_regions;
 
   }
 
@@ -360,6 +538,11 @@ private:
   */
   void label_chokes();
 
+  /**
+  * Construct a list of regions (struct).
+  */
+  void construct_region_list();
+
 
   // private members
   // map parameters
@@ -413,8 +596,13 @@ private:
   std::vector<unsigned> m_region_map;
   std::vector<unsigned> m_map_graph;
   std::vector<unsigned> m_region_areas; 
-  
+ 
+  // post-analysis labels of nodes 
   std::vector<unsigned> m_articulation_points;
+  std::vector<unsigned> m_choke_points;
+
+  // final list of regions
+  std::vector<region> m_regions;
   
   
 };
