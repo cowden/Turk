@@ -324,7 +324,7 @@ public:
   /**
   * Return a list of choke indicators for all nuclei.
   */
-  virtual const std::vector<unsigned> & get_chokes();
+  inline virtual const std::vector<unsigned> & get_chokes() const { return m_choke_points; }
 
 
 private:

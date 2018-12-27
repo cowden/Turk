@@ -82,9 +82,6 @@ void ARTIE::analyze_map() {
 }
 
 
-const std::vector<unsigned> & ARTIE::get_chokes() { }
-
-
 void ARTIE::dump_data(const char * base_name) { 
 
   char output[500];
