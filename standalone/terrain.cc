@@ -10,6 +10,8 @@
 
 #include <iostream>
 
+#include <boost/archive/text_oarchive.hpp>
+
 int main(int argc, char ** argv ) {
 
   // parse command line arguments
@@ -52,6 +54,11 @@ int main(int argc, char ** argv ) {
   sprintf(output_base,"%s/%s",output_dir,base_name);
   ta.dump_data(output_base);
 
+  // save the artie object
+  sprintf(output_base,"%s/%s_artie.txt",output_dir,base_name);
+  std::ofstream out(output_base);
+  boost::archive::text_oarchive oa(out);
+  oa << ta;
 
   return 0;
 }

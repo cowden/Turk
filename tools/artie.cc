@@ -17,6 +17,7 @@
 #include "polyartie.h"
 #include "dbscan.h"
 #include "queue.h"
+#include "tarjan.h"
 
 using namespace Turk;
 
@@ -50,13 +51,12 @@ color Turk::gen_random_color() {
 
 void ARTIE::load_map(const unsigned * map, const unsigned width, const unsigned height) { 
 
-  if ( m_walkable ) delete m_walkable;
-
   m_width = width;
   m_height = height;
   m_mapsize = width*height;
 
-  m_walkable = new bool[m_mapsize];
+  m_walkable.clear();
+  m_walkable.resize(m_mapsize);
 
   for ( unsigned i=0; i != m_mapsize; i++ ) 
     m_walkable[i] = (bool)map[i];
@@ -68,16 +68,21 @@ void ARTIE::analyze_map() {
   clean_map();
   obstacle_flood_fill();
   build_distance_map();
-  mat();
-  water_level_decomposition();
   find_critical_points();
   triangulate();
+  tarjan();
+
+  // consolidate choke point list
+  label_chokes();
+
+  // prepare region list
+  construct_region_list();
+
+
 }
 
 
-void ARTIE::get_distance_map() { }
-
-void ARTIE::get_chokes() { }
+const std::vector<unsigned> & ARTIE::get_chokes() { }
 
 
 void ARTIE::dump_data(const char * base_name) { 
@@ -92,32 +97,35 @@ void ARTIE::dump_data(const char * base_name) {
   // dump  distance map
   sprintf(output,"%s_distance.ppm",base_name);
   std::cout << "Dumping distance map: " << output << std::endl;
-  dump_image(output,m_dmap,m_width,m_height);
+  dump_image(output,&m_dmap[0],m_width,m_height);
   
   // dump obstacle clusters
   sprintf(output,"%s_obstacle.ppm",base_name);
   std::cout << "Dumping obstacle cluster map: " << output << std::endl;
-  dump_categorical_map(output,m_obstacles,m_width,m_height);
+  dump_categorical_map(output,&m_obstacles[0],m_width,m_height);
 
   // dump water level map
-  sprintf(output,"%s_waterlevel.ppm",base_name);
+  /*sprintf(output,"%s_waterlevel.ppm",base_name);
   std::cout << "Dumping water level map: " << output << std::endl;
-  dump_categorical_map(output,m_wlmap,m_width,m_height);
+  dump_categorical_map(output,&m_wlmap[0],m_width,m_height);
+  */
 
   // dump gate points
-  sprintf(output,"%s_gatepoint.ppm",base_name);
+  /*sprintf(output,"%s_gatepoint.ppm",base_name);
   std::cout << "Dumping gatepoint map: " << output << std::endl;
   dump_image(output,m_gatepointmap,m_width,m_height);
+  */
 
   // dump walkable areas flood fill map
   sprintf(output,"%s_walkable_areas.ppm",base_name);
   std::cout << "Dumping walkable areas map: " << output << std::endl;
-  dump_categorical_map(output,&tmp[0],m_width,m_height);
+  dump_categorical_map(output,&m_walkable_areas[0],m_width,m_height);
 
   // dump the MAT map
-  sprintf(output,"%s_mat.ppm",base_name);
+  /*sprintf(output,"%s_mat.ppm",base_name);
   std::cout << "Dumping MAT map: " << output << std::endl;
   dump_categorical_map(output,&m_mat[0],m_width,m_height);
+  */
 
   // dump the critical points
   sprintf(output,"%s_critical_points.csv",base_name);
@@ -138,6 +146,14 @@ void ARTIE::dump_data(const char * base_name) {
   // dump regions
   sprintf(output,"%s_map_regions.ppm",base_name);
   dump_categorical_map(output,&m_region_map[0],m_width,m_height);
+
+  // dump region attributes
+  sprintf(output,"%s_map_areas.csv",base_name);
+  std::cout << "Dumping region attributes: " << output << std::endl;
+  dump_csv<unsigned>(output,&m_region_areas[0],1,m_n_nuclei);
+
+  sprintf(output,"%s_map_articulation.csv",base_name);
+  dump_csv<unsigned>(output,&m_articulation_points[0],1,m_n_nuclei);
  
   // dump map graph
   sprintf(output,"%s_map_graph.csv",base_name);
@@ -145,7 +161,7 @@ void ARTIE::dump_data(const char * base_name) {
 
 }
 
-void ARTIE::dump_image(const char * name, const bool * map, const unsigned width, const unsigned height ) { 
+void ARTIE::dump_image(const char * name, const std::vector<bool> & map, const unsigned width, const unsigned height ) { 
 
   FILE * file = fopen(name,"wb");
   fprintf(file,"P6\n%i %i 255\n",width,height);
@@ -229,8 +245,8 @@ void ARTIE::build_distance_map() {
   std::cout << "Refine Distance Map" << std::endl;
 
   // allocate memory for distance map
-  if ( m_dmap ) delete m_dmap;
-  m_dmap = new unsigned[m_mapsize];
+  m_dmap.clear();
+  m_dmap.resize(m_mapsize);
   for ( unsigned i=0; i != m_mapsize; i++ ) m_dmap[i] = 0U;
 
   m_nnobj.resize(m_mapsize);
@@ -242,8 +258,6 @@ void ARTIE::build_distance_map() {
     if ( m_obstacles[i] ) continue;
 
     // distance fill the area
-    //dist_fill_area(i);
-    //dist_nearest_obstacle_l1(i);
     dist_nearest_obstacle_l2(i);
  
   }
@@ -269,8 +283,8 @@ void ARTIE::water_level_decomposition() {
   unsigned cur_label = 1;
 
   m_nGatePoints = 0;
-  m_gatepoints = new unsigned[m_mapsize];
-  m_wlmap = new unsigned[m_mapsize];
+  m_gatepoints.resize(m_mapsize);
+  m_wlmap.resize(m_mapsize);
 
 
   // reverse iterate over the reverse distance map
@@ -339,7 +353,8 @@ void ARTIE::water_level_decomposition() {
   }
 
   // create gatepoint map
-  m_gatepointmap = new bool[m_mapsize];
+  m_gatepointmap.clear();
+  m_gatepointmap.resize(m_mapsize);
   for ( unsigned i=0; i != m_mapsize; i++ ) 
     m_gatepointmap[i] = false;
 
@@ -352,12 +367,8 @@ void ARTIE::water_level_decomposition() {
 void ARTIE::obstacle_flood_fill() {
 
   // allocate the obstacle map
-  if ( m_obstacles ) {
-    delete m_obstacles;
-    m_nObstacles = 0U;
-  }
-
-  m_obstacles = new unsigned[m_mapsize];
+  //m_obstacles.clear(); // check
+  m_obstacles.resize(m_mapsize);
   
   // fill with zeros
   for ( unsigned i = 0; i != m_mapsize; i++ )
@@ -367,7 +378,7 @@ void ARTIE::obstacle_flood_fill() {
   unsigned counter = 1;
   for ( unsigned i = 0; i != m_mapsize; i++ ) {
     if ( !m_walkable[i] && !m_obstacles[i] ) {
-      rfill_area(i,counter,m_obstacles,m_walkable);
+      rfill_area(i,counter,&m_obstacles[0],m_walkable);
       counter++;
     }
   }
@@ -380,9 +391,8 @@ void ARTIE::obstacle_flood_fill() {
 void ARTIE::clean_map() {
 
   // flood fill the walkable map
-  //std::vector<unsigned> tmp(m_mapsize);
-  tmp.resize(m_mapsize);
-  std::cout << "Created cleaner map: " << tmp.size() << std::endl;
+  m_walkable_areas.resize(m_mapsize);
+  std::cout << "Created cleaner map: " << m_walkable_areas.size() << std::endl;
 
   std::vector<unsigned> dummy(m_mapsize);
   for ( unsigned i=0; i != m_mapsize; i++ )
@@ -392,15 +402,15 @@ void ARTIE::clean_map() {
   unsigned tcount = 0U;
   // remove small regions
   for ( unsigned i=0; i != m_mapsize; i++ ) {
-    if ( m_walkable[i] && !tmp[i] ) {
+    if ( m_walkable[i] && !m_walkable_areas[i] ) {
       tcount++;
-      ff_fill_area(i,tcount,&tmp[0],&dummy[0]);
+      ff_fill_area(i,tcount,&m_walkable_areas[0],&dummy[0]);
     }
   }
 
-  // check for empty tmps
+  // check for empty m_walkable_areas
   /*for ( unsigned i=0; i != m_mapsize; i++ ) {
-    assert((tmp[i] > 0 && m_walkable[i]) ^ (tmp[i] == 0 && m_obstacles[i] > 0 ));
+    assert((m_walkable_areas[i] > 0 && m_walkable[i]) ^ (m_walkable_areas[i] == 0 && m_obstacles[i] > 0 ));
   }*/
   
   // acquire size/area for each walkable region
@@ -411,8 +421,8 @@ void ARTIE::clean_map() {
   }
 
   for ( unsigned i=0; i != m_mapsize; i++ ) {
-    if ( tmp[i] ) {
-      areas[tmp[i]-1]++;
+    if ( m_walkable_areas[i] ) {
+      areas[m_walkable_areas[i]-1]++;
     }
   }
 
@@ -437,8 +447,11 @@ void ARTIE::clean_map() {
 
   // clean up walkable map
   for ( unsigned i=0; i != m_mapsize; i++ ) {
-    if ( tmp[i] && areas[tmp[i]-1] < 1000 ) m_walkable[i] = false;
+    if ( m_walkable_areas[i] && areas[m_walkable_areas[i]-1] < 1000 ) m_walkable[i] = false;
   }
+
+  // delete areas memory
+  delete [] areas;
 
 }
 
@@ -977,6 +990,11 @@ void ARTIE::triangulate() {
   m_region_map.resize(m_width*m_height); 
   for ( unsigned i=0; i != m_mapsize; i++ )
     m_region_map[i] = 0;
+
+  // create region area size data structure
+  m_region_areas.resize(m_n_nuclei);
+  for ( unsigned i=0; i != m_n_nuclei; i++ )
+    m_region_areas[i] = 0;
   
   // create graph matrix
   m_map_graph.resize(m_n_nuclei*m_n_nuclei);
@@ -1008,6 +1026,7 @@ void ARTIE::triangulate() {
         // label index with cluster label
         if ( m_region_map[index] == 0 ) {
           m_region_map[index] = i;
+          m_region_areas[i]++;
           // add neighbors to queue
           const point pt = decomposeIndex(index);
           const point & cpt = center_points[i];
@@ -1069,3 +1088,68 @@ void ARTIE::triangulate() {
 
 
 
+void  ARTIE::tarjan() { 
+
+  // fit the tarjan class
+  Turk::tarjan tj;
+  tj.fit<unsigned>(m_map_graph);
+
+  // extract the articulation points
+  const std::vector<unsigned> & aps = tj.articulation_points();
+
+  m_articulation_points.resize(m_n_nuclei,0);
+  for ( unsigned i=0; i != m_n_nuclei; i++ )
+    m_articulation_points[i] = 0;
+
+  for ( auto x: aps) {
+    m_articulation_points[x] = 1;
+  }
+
+}
+
+void ARTIE::label_chokes() { 
+
+  // clear choke point labels
+  m_choke_points.clear();
+
+  m_choke_points.resize(m_n_nuclei,0);
+
+  // cycle over all nodes,
+  for ( unsigned i=0; i != m_n_nuclei; i++ ) {
+
+    // check if the node is an articulation point of the depth 
+    // is less than 15.
+    const unsigned index = composeIndex(m_critical_clus[2*i],m_critical_clus[2*i+1]);
+    if ( m_articulation_points[i] || m_dmap[index] < 15 )
+      m_choke_points[i] = 1;
+  }
+
+}
+
+void ARTIE::construct_region_list() { 
+
+  // clear out region list
+  m_regions.clear();
+  m_regions.resize(m_n_nuclei);
+
+  for ( unsigned i=0; i != m_n_nuclei; i++ ) {
+    // get neighbors
+    std::vector<unsigned> neighbs;
+    for ( unsigned j=0; j != m_n_nuclei; j++ ) {
+      if ( m_map_graph[i*m_n_nuclei+j] )
+        neighbs.push_back(j);
+    }
+
+    // construct region
+    region reg(i,(unsigned)m_critical_clus[2*i],(unsigned)m_critical_clus[2*i+1]
+      ,m_region_areas[i]
+      ,m_dmap[composeIndex(m_critical_clus[2*i],m_critical_clus[2*i+1])]
+      ,(bool)m_articulation_points[i]
+      ,(bool)m_choke_points[i]
+      ,neighbs);
+
+    m_regions[i] = reg;
+
+  }
+
+}

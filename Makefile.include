@@ -15,6 +15,8 @@ BWAPI_DIR := /home/me/proj/StarCraft/bwapi/bwapi
 
 INCLUDES := -I $(INCDIR) -I $(BWAPI_DIR) -I $(BWAPI_DIR)/include -I $(BWAPI_DIR)/include/BWAPI
 
+LIBS := -lboost_serialization
+
 BWAPI_SRC := $(wildcard $(BWAPI_DIR)/BWAPILIB/Source/*.cpp) $(wildcard $(BWAPI_DIR)/BWAPILIB/*.cpp) $(wildcard source/*.cpp) $(wildcard source/main/*.cpp) $(wildcard source/gui/*.cpp)
 
 BWAPI_OBJS := $(BWAPI_SRC:.cpp=.o)
