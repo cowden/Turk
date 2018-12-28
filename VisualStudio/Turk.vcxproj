@@ -117,7 +117,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BWAPI_DIR)\lib\BWAPId.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)\lib\BWAPId.lib;$(BOOST_DIR)\stage\lib\libboost_serialization-vc141-mt-gd-x32-1_68.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)d$(TargetExt)</OutputFile>
       <SubSystem>Windows</SubSystem>
       <LinkTimeCodeGeneration />
@@ -141,7 +141,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>$(BWAPI_DIR)\lib\BWAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)\lib\BWAPI.lib;$(BOOST_DIR)\stage\lib\libboost_serialization-vc141-mt-x32-1_68.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
