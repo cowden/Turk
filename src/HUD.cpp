@@ -13,6 +13,21 @@ HUD & HUD::Instance(){
 
 void HUD::drawInterface(){
 
+	// geography
+	// draw choke point location
+	const std::vector<unsigned> & chks = artie.get_chokes();
+	const unsigned N = chks.size();
+	for (unsigned i = 0; i != N; i++ ) {
+		if (chks[i]) {
+			
+			const Turk::region & reg = artie[i];
+			const unsigned x = reg.position().x;
+			const unsigned y = reg.position().y;
+			if ( reg.depth() < 15 ) BWAPI::Broodwar->drawCircleMap(BWAPI::Position(BWAPI::WalkPosition(x,y)),50,BWAPI::Colors::Red);
+
+		}
+	}
+
 
 	// training queue
 	std::vector < std::pair<BWAPI::UnitType, int> > trainingQueue;

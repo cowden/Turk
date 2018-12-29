@@ -47,4 +47,9 @@ enum status {
 	URGNT
 };
 
+/**
+* Declare the singleton instance of ARTIE
+*/
+extern ARTIE artie;
+
 } // end Turk namespace
