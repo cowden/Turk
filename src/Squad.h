@@ -15,7 +15,19 @@
 #include "Common.h"
 #include "bot.h"
 
+#define SQUAD_MOVE 1
+#define SQUAD_ATTACK 2
+
 namespace Turk {
+
+
+/**
+* Argument struct for parsing commands to squad
+*/
+struct squad_args : bot_args {
+	unsigned command;
+	Turk::location location;
+};
 
 
 class Squad : public bot {
@@ -35,6 +47,17 @@ public:
   * Execute a given command encoded as an integer
   */
   inline int execute(int command, const bot_args & args) { return 0; }
+
+  /**
+  * Execute a given command given squad_args
+  */
+  inline int execute(const squad_args & args) {
+	  if (args.command & SQUAD_MOVE) {
+		  move(args.location);
+	  }
+
+	  return 0;
+  }
 
   /**
   * Return the bot type
@@ -98,6 +121,17 @@ public:
 
 
 private:
+
+	/**
+	* Move the squad (i.e.
+	* move all units to a single location)
+	*/
+	inline void move(const Turk::location & loc) {
+		const unsigned nu = units_.nheld();
+		for (unsigned i = 0; i != nu; i++)
+			units_[i].getUnit()->move(loc);
+	}
+
 
   Turk::location loc_;
   Turk::status status_;

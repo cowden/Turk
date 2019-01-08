@@ -145,6 +145,21 @@ public:
 			}
 
 			// keep units near choke point
+			const Turk::region & choke = artie[nc];
+			const BWAPI::Position choke_pos(BWAPI::WalkPosition(choke.position().x, choke.position().y));
+			// cycle over squads, if dist > X move to location
+			for (unsigned i = 0; i != ns; i++) {
+				double dist = choke_pos.getDistance(squads_[i]->location());
+
+				if (dist > 15) {
+					// issue move command
+					Turk::squad_args args;
+					args.command |= SQUAD_MOVE;
+					args.location = choke_pos;
+
+					squads_[i]->execute(args);
+				}
+			}
 
 		}
 
