@@ -10,6 +10,12 @@
 
 #include "Common.h"
 #include "bot.h"
+
+#include "weaver.h"
+#include "HUD.h"
+#include "Logger.h"
+
+#include "UnitManager.h"
 #include "UnitProxy.h"
 #include "Squad.h"
 
@@ -26,7 +32,23 @@ public:
 		/**
 		* Default constructor
 		*/
-		inline ArmyManager():bot("ArmyManager") {}
+		inline ArmyManager():bot("ArmyManager") {
+
+			// get name and increment agent count
+			m_instance = m_nArmies++;
+			m_name = "ArmyManager_" + std::to_string(m_instance);
+
+			// register agent with unit manager
+			umanity.register_agent(this);
+
+			std::stringstream msg;
+			msg << "Creating agent ";
+			msg << name() << " of type: " << type() << " at: 0x" << std::hex << (int)this;
+			Turk::Logger::instance()->log(name().c_str(), msg.str().c_str());
+
+			// get a lane in the HUD
+			hud_lane_ = HUD::Instance().getLane(this);
+		}
 
 		/**
 		* constructor with a given name
@@ -46,7 +68,7 @@ public:
 		/**
 		* Return the bot type
 		*/
-		virtual const std::string & type() const { return "0"; }
+		//virtual const std::string & type() const { return "0"; }
 
 		/**
 		* Return the location
@@ -77,11 +99,88 @@ public:
   /**
   * process queue - to be called every frame for actions needed to take.
   */
-		inline virtual void process() { }
+		inline virtual void process() { 
 
-		virtual void addUnits(const std::vector<UnitProxy> & units) { }
+			// process components
+			const unsigned ns = squads_.nheld();
+			for (unsigned i=0; i != ns; i++)
+				squads_[i]->process();
+
+			const unsigned na = armies_.nheld();
+			for (unsigned i=0; i != na; i++)
+				armies_[i]->process();
+
+			// update location
+			loc_ = BWAPI::Positions::Origin;
+			double s = 0U;
+
+			
+			for (unsigned i = 0; i != ns; i++) {
+				loc_ += squads_[i]->location()*squads_[i]->size();
+				s += squads_[i]->size();
+			}
+			
+			for (unsigned i = 0; i != na; i++) {
+				loc_ += armies_[i]->location()*armies_[i]->size();
+				s += armies_[i]->size();
+			}
+			if (s) loc_ /= s;
+			
+
+			// send units to the base choke point
+			// find the nearest choke point
+			unsigned nc = 0;
+			double dist = DBL_MAX;
+			const unsigned N = artie.get_chokes().size();
+			for (unsigned i = 1; i != N; i++) {
+				const Turk::region & reg = artie[i];
+				if (reg.depth() < 15) {
+					BWAPI::Position pos(BWAPI::WalkPosition(reg.position().x, reg.position().y));
+					double d = loc_.getDistance(pos);
+					if (d < dist) {
+						dist = d;
+						nc = i;
+					}
+				}
+			}
+
+			// keep units near choke point
+
+		}
+
+		virtual void addUnits(const std::vector<UnitProxy> & units) { 
+
+			// keep it simple and add units to a squad
+			if (squads_.size() == 0) {
+				Turk::Squad * sq = new Turk::Squad();
+				squads_.push(sq);
+			}
+
+			squads_[0]->addUnits(units);
+
+		}
 
 		virtual void updateUnits() { }
+
+		/**
+		*  return the size of the army as the number of units 
+		* all squads and sub-armies.
+		*/
+		inline virtual unsigned size() const {
+			unsigned s = 0U;
+
+			// sum over squads
+			const unsigned ns = squads_.nheld();
+			for (unsigned i=0; i != ns; i++)
+			  s += squads_[i]->size();
+
+			// sum over armies
+			const unsigned na = armies_.nheld();
+			for (unsigned i=0; i != na; i++)
+				s += armies_[i]->size();
+
+			return s;
+		}
 
 protected:
 
@@ -98,8 +197,11 @@ private:
 		// bot name
 		std::string m_name;
 
-		std::vector<Squad> squads_;
-		std::vector<ArmyManager> armies_;
+	    Turk::vvec<Squad *> squads_;
+		Turk::vvec<ArmyManager *> armies_;
+
+		// HUD lane
+		int hud_lane_;
 };
 
 }  // end Turk namespace

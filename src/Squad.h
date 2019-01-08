@@ -24,7 +24,7 @@ public:
   /**
   * Default constructor
   */
-	inline Squad() : bot("Squad") {}
+	inline Squad() : bot("Squad") { }
 
   /**
   * Delete this instance
@@ -69,11 +69,31 @@ public:
   /**
   * process queue - to be called every frame for actions needed to take
   */
-  inline virtual void process() { }
+  inline virtual void process() { 
+	  
+	  // update location
+	  loc_ = BWAPI::Positions::Origin;
+	  const unsigned nh = units_.nheld();
+	  for (unsigned i=0; i != nh; i++)
+		  loc_ += units_[i].getUnit()->getPosition();
 
-  inline void addUnits(const std::vector<UnitProxy> & units) { }
+	  if ( units_.nheld() ) loc_ /= (double)units_.nheld();
+	  
+  }
+
+  inline void addUnits(const std::vector<UnitProxy> & units) { 
+	  for (auto u : units)
+		  units_.push(u);
+  }
 
   virtual void updateUnits() { }
+
+  /**
+  * return the size in the number of units in the squad
+  */
+  inline virtual unsigned size() const {
+	  return units_.nheld();
+  }
 
 
 

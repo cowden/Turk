@@ -59,6 +59,11 @@ public:
 	inline T & operator[](unsigned i);
 
 	/**
+	* const accessor
+	*/
+	const inline const T & operator[](unsigned i) const;
+
+	/**
 	* return if an element is masked
 	*/
 	inline bool getMask(unsigned i) const { return mask_[i]; }

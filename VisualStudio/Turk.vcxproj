@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\ArmyManager.cpp" />
     <ClCompile Include="..\src\BaseManager.cpp" />
     <ClCompile Include="..\src\Dll.cpp" />
     <ClCompile Include="..\src\HUD.cpp" />

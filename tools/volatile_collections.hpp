@@ -23,6 +23,15 @@ T & vvec<T>::operator[](unsigned i) {
 	return data_[p];
 }
 
+//const  vvec []
+template<class T>
+const T & vvec<T>::operator[](unsigned i) const {
+	unsigned p = pos_ + i;
+	while (!mask_[p] && p < size_)
+		p++;
+	return data_[p];
+}
+
 // mask
 template<class T>
 void vvec<T>::mask(unsigned i) {
