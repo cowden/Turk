@@ -128,8 +128,10 @@ private:
 	*/
 	inline void move(const Turk::location & loc) {
 		const unsigned nu = units_.nheld();
-		for (unsigned i = 0; i != nu; i++)
+		for (unsigned i = 0; i != nu; i++) {
+			if ( loc.getDistance(units_[i].getUnit()->getPosition()) > 50 )
 			units_[i].getUnit()->move(loc);
+		}
 	}
 
 

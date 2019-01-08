@@ -151,7 +151,7 @@ public:
 			for (unsigned i = 0; i != ns; i++) {
 				double dist = choke_pos.getDistance(squads_[i]->location());
 
-				if (dist > 15) {
+				if (dist > 50) {
 					// issue move command
 					Turk::squad_args args;
 					args.command |= SQUAD_MOVE;

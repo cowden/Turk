@@ -87,8 +87,8 @@ void HUD::drawInterface(){
 	// draw the lanes
 	// NB. The dimensions listed below are mere guesses. 
 	for (unsigned i = 0; i != lanes_; i++) {
-		BWAPI::Broodwar->drawTextScreen(500 - i * 20, 50, lane_names_[i].c_str());
-		BWAPI::Broodwar->drawTextScreen(500 -  i*20, 60, lane_stream_[i].str().c_str());
+		BWAPI::Broodwar->drawTextScreen(500 - i * 100, 50, lane_names_[i].c_str());
+		BWAPI::Broodwar->drawTextScreen(500 -  i*100, 60, lane_stream_[i].str().c_str());
 	}
 
 }
