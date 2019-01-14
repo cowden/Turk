@@ -131,9 +131,9 @@ public:
 			// find the nearest choke point
 			unsigned nc = 0;
 			double dist = DBL_MAX;
-			const unsigned N = artie.get_chokes().size();
+			const unsigned N = artie.getARTIE().get_chokes().size();
 			for (unsigned i = 1; i != N; i++) {
-				const Turk::region & reg = artie[i];
+				const Turk::region & reg = artie.getARTIE()[i];
 				if (reg.depth() < 15) {
 					BWAPI::Position pos(BWAPI::WalkPosition(reg.position().x, reg.position().y));
 					double d = loc_.getDistance(pos);
@@ -145,7 +145,7 @@ public:
 			}
 
 			// keep units near choke point
-			const Turk::region & choke = artie[nc];
+			const Turk::region & choke = artie.getARTIE()[nc];
 			const BWAPI::Position choke_pos(BWAPI::WalkPosition(choke.position().x, choke.position().y));
 			// cycle over squads, if dist > X move to location
 			for (unsigned i = 0; i != ns; i++) {

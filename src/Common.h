@@ -18,7 +18,7 @@
 #include <windows.h>
 
 #include "weaver.h"
-#include "artie.h"
+#include "ArtieInterface.h"
 #include "cameron.h"
 
 
@@ -50,6 +50,6 @@ enum status {
 /**
 * Declare the singleton instance of ARTIE
 */
-extern ARTIE artie;
+extern ArtieInterface artie;
 
 } // end Turk namespace

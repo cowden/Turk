@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\ArmyManager.h" />
+    <ClInclude Include="..\src\ArtieInterface.h" />
     <ClInclude Include="..\src\BaseManager.h" />
     <ClInclude Include="..\src\bot.h" />
     <ClInclude Include="..\src\Common.h" />
