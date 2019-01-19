@@ -257,6 +257,29 @@ public:
 		}
 	}
 
+	/**
+	* remove a unit of a given type
+	*/
+	virtual UnitProxy removeUnit(const BWAPI::UnitType & ut) {
+		if ( ut.isWorker() && workers_.size() > 0 ) {
+			// remove a worker
+			// find a worker
+	// grab one going to the mineral field
+			for (auto wrkr : workers_) {
+				BWAPI::Unit w = wrkr.getUnit();
+				if (w->isIdle()) {
+					return wrkr;
+				}
+				else if (w->getTarget() && w->getTarget()->getType().isMineralField() && !w->isCarryingMinerals()) {
+					return wrkr;
+				}
+
+			}
+
+		}
+
+		return UnitProxy();
+	}
 
 	/**
 	* update the units controlled by this agent

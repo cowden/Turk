@@ -101,6 +101,8 @@ public:
 
   virtual void addUnits(const std::vector<UnitProxy> & units) { }
 
+  virtual UnitProxy removeUnit(const BWAPI::UnitType & ut) { return UnitProxy(); }
+
   virtual void updateUnits() { }
 
 
@@ -194,6 +196,31 @@ protected:
 	  return b;
   }
   
+
+  /**
+  * Request a unit of a given type. The UnitManager
+  * will find a suitable agent to fill the request
+  */
+  inline virtual void request(const BWAPI::UnitType & t, const Turk::bot * b) {
+
+  }
+
+  /**
+  * Request a unit of a given type from a specific agent.
+  */
+  inline virtual void request(const BWAPI::UnitType & t, const Turk::bot * sup, const Turk::bot * req) {
+	  
+  }
+
+  /**
+  * Transfer a list of units (UnitProxy) from one agent to another.
+  */
+  inline virtual void transfer(const Turk::bot * a, const Turk::bot * b, const std::vector<UnitProxy> & units) {
+
+	  // cycle over the units and move from a to b.
+	  // If a does not control the unit, skip to the next
+	  // if a or b is not registered, throw an error
+  }
 
 private:
 

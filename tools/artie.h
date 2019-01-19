@@ -268,7 +268,7 @@ public:
   * Return the region information given the walk tile (8x8 pixels)
   * location.
   */
-  inline virtual region get_region(unsigned x, unsigned y) {
+  inline virtual const region & get_region(unsigned x, unsigned y) const {
     
     // look up the region
     // construct the map index
@@ -283,7 +283,7 @@ public:
   /** 
   * Return the region information given the walk tile by BWAPI::WalkPosition
   */
-  inline virtual region get_region(const point & pt) {
+  inline virtual const region & get_region(const point & pt) const {
     
     // look up the region
     // construct the map index
@@ -297,7 +297,7 @@ public:
   /**
   * Return a region by index.
   */
-  inline virtual region operator[](const unsigned i) const {
+  inline virtual const region & operator[](const unsigned i) const {
     if ( m_regions.size() ) 
       return m_regions[i];
     else
@@ -498,9 +498,9 @@ private:
   /**
   * re-compose index from x,y coordinates
   */
-  unsigned composeIndex(const point & pt) { return pt.y*m_width+pt.x; }
+  unsigned composeIndex(const point & pt) const { return pt.y*m_width+pt.x; }
   
-  unsigned composeIndex(const unsigned x, const unsigned y) { return y*m_width+x;}
+  unsigned composeIndex(const unsigned x, const unsigned y) const { return y*m_width+x;}
 
   /** 
   * list allowable directions

@@ -115,6 +115,8 @@ struct strategy_args : bot_args {
 
   virtual void addUnits(const std::vector<UnitProxy> & units) { }
 
+  virtual UnitProxy removeUnit(const BWAPI::UnitType & ut) { return UnitProxy(); }
+
   virtual void updateUnits() { }
 
 

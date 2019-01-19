@@ -14,16 +14,22 @@
 
 #include "Common.h"
 
+// define some bot commands
+#define REQUEST_UNIT 1
+
 namespace Turk {
 
 	// forward declare UnitProxy
 	class UnitProxy;
-
 /**
 * The base struct by which to pass arguments
 * to inherited classes.
 */
-struct bot_args {};
+struct bot_args {
+	unsigned command;
+	Turk::location location;
+	BWAPI::UnitType unitType;
+};
 
 /**
 * The base struct by which to pass arguments
@@ -103,6 +109,11 @@ public:
   * add units to bot control
   */
   virtual void addUnits(const std::vector<UnitProxy> &) = 0;
+
+  /**
+  * remove a unit of a given type
+  */
+  virtual UnitProxy removeUnit(const BWAPI::UnitType &) = 0;
 
   /**
   * update unit list under bot control

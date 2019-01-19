@@ -30,6 +30,29 @@ struct squad_args : bot_args {
 };
 
 
+enum CommandStatus {
+	waiting = 0,
+	inprogress,
+	blocking,
+	complete
+};
+
+/**
+* command arguments and processing information
+*/
+struct process_command_struct {
+	squad_args args_;
+
+	CommandStatus status_;
+
+	process_command_struct() {}
+
+	process_command_struct(const squad_args & args) :
+		args_(args), status_(waiting)
+	{ }
+};
+
+
 class Squad : public bot {
 public:
 
@@ -52,6 +75,7 @@ public:
   * Execute a given command given squad_args
   */
   inline int execute(const squad_args & args) {
+
 	  if (args.command & SQUAD_MOVE) {
 		  move(args.location);
 	  }
@@ -109,6 +133,8 @@ public:
 		  units_.push(u);
   }
 
+  virtual UnitProxy removeUnit(const BWAPI::UnitType & ut) { return UnitProxy(); }
+
   virtual void updateUnits() { }
 
   /**
@@ -148,6 +174,9 @@ private:
   // the collection of units
   Turk::vvec<Turk::UnitProxy> units_;
   unsigned nUnits_;
+
+  // command queue
+  vqueue<process_command_struct> command_queue_;
 
 };
 

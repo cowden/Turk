@@ -129,14 +129,15 @@ public:
 
 			// send units to the base choke point
 			// find the nearest choke point
+			const BWAPI::WalkPosition & base_loc = artie.get_start_pos();
 			unsigned nc = 0;
 			double dist = DBL_MAX;
 			const unsigned N = artie.getARTIE().get_chokes().size();
 			for (unsigned i = 1; i != N; i++) {
 				const Turk::region & reg = artie.getARTIE()[i];
 				if (reg.depth() < 15) {
-					BWAPI::Position pos(BWAPI::WalkPosition(reg.position().x, reg.position().y));
-					double d = loc_.getDistance(pos);
+					BWAPI::WalkPosition pos(reg.position().x, reg.position().y);
+					double d = base_loc.getDistance(pos);
 					if (d < dist) {
 						dist = d;
 						nc = i;
@@ -174,6 +175,8 @@ public:
 			squads_[0]->addUnits(units);
 
 		}
+
+		virtual UnitProxy removeUnit(const BWAPI::UnitType & ut) { return UnitProxy(); }
 
 		virtual void updateUnits() { }
 

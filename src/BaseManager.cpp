@@ -26,6 +26,7 @@ void BaseManager::loadModel(const model_args & args) {
 			loc_ = depot_->getPosition();
 		}
 	}
+	artie.set_start(BWAPI::WalkPosition(loc_));
 
 
 	// map race's units
