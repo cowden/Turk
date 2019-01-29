@@ -282,6 +282,13 @@ public:
 	}
 
 	/**
+	* Request a unit to be trained
+	*/
+	inline virtual void requestUnit(const BWAPI::UnitType & ut) {
+
+	}
+
+	/**
 	* update the units controlled by this agent
 	*/
 	virtual void updateUnits() {

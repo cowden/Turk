@@ -11,7 +11,9 @@ using namespace Turk;
 UnitManager Turk::umanity;
 
 
-void UnitManager::process() {} 
+void UnitManager::process() {
+	updateHUD();
+} 
 
 void UnitManager::process_request() {}
 
@@ -94,10 +96,26 @@ void UnitManager::onUnitComplete(BWAPI::Unit unit) {
 			std::vector<UnitProxy> ulist(1);
 			UnitProxy up(unit);
 			ulist[0] = up;
+			unit_map_.insert(std::pair<const bot *, UnitProxy>(bm, up));
+
 			bm->addUnits(ulist);
 
-			unit_map_.insert(std::pair<const bot *, UnitProxy>(bm, up));
+			
 		}
 			
+	}
+}
+
+void UnitManager::updateHUD() {
+	HUD::Instance().clear(hud_lane_);
+
+	// dump the registered agents
+	for (unsigned i = 0; i != agent_count_; i++) {
+
+		std::stringstream msg;
+		msg << agents_[i]->name() << " (" << agents_[i]->location().x 
+			<< "," << agents_[i]->location().y << ")";
+
+		HUD::Instance().write(hud_lane_, msg.str().c_str());
 	}
 }

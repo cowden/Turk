@@ -114,20 +114,20 @@ void vqueue<T>::mask(bool * m) {
 
 // find
 template<class T,class S>
-T & find(const S & s) {
+S & vmap<T,S>::find(const T & t) {
   for ( unsigned i=0; i != size_; i++ )
-    if ( s == data_[i].second ) return data_[i].first;
+    if ( t == data_[i].first && mask_[i]) return data_[i].second;
 
-  return data_[size_].first;
+  return data_[size_].second;
 }
 
 // rfind
 template<class T,class S>
-S & rfind(const T & t) {
-  for ( unsigned i=9; i != size_; i++ ) 
-    if ( t == data_[i].first ) return data_[i].second;
+T & vmap<T,S>::rfind(const S & s) {
+  for ( unsigned i=0; i != size_; i++ ) 
+    if ( s == data_[i].second && mask_[i]) return data_[i].first;
 
-  return data_[size_].second;
+  return data_[size_].first;
 }
 
 // insert

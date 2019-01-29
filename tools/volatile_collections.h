@@ -303,14 +303,14 @@ public:
   inline bool ismask(unsigned i) { return mask_[i]; }
 
   /**
-  * find T from S
+  * find S from T
   */
-  inline T & find(const S &);
+  inline S & find(const T &);
 
   /**
-  * find S from T (reverse find)
+  * find T from S (reverse find)
   */
-  inline S & rfind(const T & t);
+  inline T & rfind(const S & s);
 
   /**
   * insert a new element
@@ -340,6 +340,23 @@ public:
   * mask a series of elements
   */
   inline void mask( bool * m );
+
+  /**
+  * set method.  This is assigning the value returned by find.
+  */
+  inline void set(const T & t,const S & s) {
+	  for (unsigned i = 0; i != size_; i++)
+		  if (t == data_[i].first && mask_[i]) data_[i].second = s;
+  }
+
+
+  /**
+  * set method.  This is assigning the value returned by rfind.
+  */
+  inline void set(const S & s, const T & t) {
+	  for (unsigned i = 0; i != size_; i++)
+		  if (s == data_[i].second && mask_[i]) data_[i].first = t;
+  }
 
   
 private:

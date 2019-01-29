@@ -14,6 +14,7 @@
 
 #include "Common.h"
 #include "bot.h"
+#include "UnitManager.h"
 
 #define SQUAD_MOVE 1
 #define SQUAD_ATTACK 2
@@ -59,7 +60,15 @@ public:
   /**
   * Default constructor
   */
-	inline Squad() : bot("Squad") { }
+	inline Squad() : bot("Squad") {
+
+		// get name and increment agent count
+		m_instance = m_nSquads++;
+		m_name = "Squad_" + std::to_string(m_instance);
+
+		// register agent with UnitManager
+		umanity.register_agent(this);
+	}
 
   /**
   * Delete this instance
@@ -86,7 +95,7 @@ public:
   /**
   * Return the bot type
   */
-  virtual inline const std::string & type() const { return "Squad"; }
+  //virtual inline const std::string & type() const { return "Squad"; }
 
   /**
   * Return the location
@@ -120,28 +129,28 @@ public:
 	  
 	  // update location
 	  loc_ = BWAPI::Positions::Origin;
-	  const unsigned nh = units_.nheld();
+	  const unsigned nh = units_.size();
 	  for (unsigned i=0; i != nh; i++)
 		  loc_ += units_[i].getUnit()->getPosition();
 
-	  if ( units_.nheld() ) loc_ /= (double)units_.nheld();
+	  if ( units_.size() ) loc_ /= (double)units_.size();
 	  
   }
 
   inline void addUnits(const std::vector<UnitProxy> & units) { 
 	  for (auto u : units)
-		  units_.push(u);
+		  units_.push_back(u);
   }
 
   virtual UnitProxy removeUnit(const BWAPI::UnitType & ut) { return UnitProxy(); }
 
-  virtual void updateUnits() { }
+  inline virtual void updateUnits() { units_ = umanity.getUnits(this); }
 
   /**
   * return the size in the number of units in the squad
   */
   inline virtual unsigned size() const {
-	  return units_.nheld();
+	  return units_.size();
   }
 
 
@@ -153,7 +162,7 @@ private:
 	* move all units to a single location)
 	*/
 	inline void move(const Turk::location & loc) {
-		const unsigned nu = units_.nheld();
+		const unsigned nu = units_.size();
 		for (unsigned i = 0; i != nu; i++) {
 			if ( loc.getDistance(units_[i].getUnit()->getPosition()) > 50 )
 			units_[i].getUnit()->move(loc);
@@ -172,7 +181,7 @@ private:
   std::string m_name;
 
   // the collection of units
-  Turk::vvec<Turk::UnitProxy> units_;
+  std::vector<Turk::UnitProxy> units_;
   unsigned nUnits_;
 
   // command queue

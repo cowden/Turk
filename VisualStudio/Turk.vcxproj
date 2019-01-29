@@ -15,6 +15,7 @@
     <ClCompile Include="..\src\BaseManager.cpp" />
     <ClCompile Include="..\src\Dll.cpp" />
     <ClCompile Include="..\src\HUD.cpp" />
+    <ClCompile Include="..\src\Squad.cpp" />
     <ClCompile Include="..\src\Turk.cpp" />
     <ClCompile Include="..\src\UnitManager.cpp" />
     <ClCompile Include="..\tools\artie.cc" />

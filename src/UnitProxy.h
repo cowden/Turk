@@ -21,13 +21,13 @@ public:
 		/**
 		* Default constructor
 		*/
-		inline UnitProxy():bot("UnitProxy") {}
+		inline UnitProxy():bot("UnitProxy"),empty_(true) {}
 
 		/**
 		* Construct from a BWAPI::Unit
 		*/
 		inline UnitProxy(BWAPI::Unit & u) :
-			bot("UnitProxy"), unit_(u) { }
+			bot("UnitProxy"),empty_(false), unit_(u) { }
 
 		/**
 		* Delete this instance
@@ -81,10 +81,22 @@ public:
 
 		virtual void updateUnits() { }
 
+		/**
+		* Return a flag to indicate if this is an empty proxy
+		*/
+		inline bool is_empty() const { return empty_; }
+
   /**
   * Expose the BWAPI::Unit for low level controls.
   */
   BWAPI::Unit & getUnit() { return unit_; }
+
+  /**
+  * overload the equality operator
+  */
+  bool operator==(const UnitProxy & up) const {
+	  return up.m_name == m_name && up.unit_ == unit_;
+  }
 
 protected:
 
@@ -97,6 +109,9 @@ private:
 		// track the number of army agents
 		static unsigned m_nArmies;
 		unsigned m_instance;
+
+		// flag to test if this is an empty proxy
+		bool empty_;
 
 		// bot name
 		std::string m_name;

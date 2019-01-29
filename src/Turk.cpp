@@ -156,6 +156,9 @@ void TheTurk::onFrame(){
 	if (Broodwar->isReplay() || Broodwar->isPaused() || !Broodwar->self())
 		return;
 
+	// process UnitManager
+	umanity.process();
+
 	// draw the HUD
 	//m_hud.drawInterface();
 	HUD::Instance().drawInterface();

@@ -12,6 +12,7 @@
 #include <queue>
 
 #include "Common.h"
+#include "HUD.h"
 #include "bot.h"
 #include "Logger.h"
 #include "volatile_collections.h"
@@ -51,6 +52,9 @@ public:
 		// initialize agent list
 		agents_.resize(100);
 		agent_count_ = 0;
+
+		// get a lane in the HUD
+		hud_lane_ = HUD::Instance().getLane(this);
 	}
 
 	/**
@@ -148,6 +152,98 @@ public:
   */
   void onUnitComplete(BWAPI::Unit);
 
+  /**
+ * Request a unit of a given type. The UnitManager
+ * will find a suitable agent to fill the request
+ */
+  inline virtual void request(BWAPI::UnitType & t, Turk::bot * b) {
+	  // if t is not in the map, throw an error
+	  bool has_b = false;
+	  for ( unsigned i=0; i != agent_count_; i++ )
+		  if (agents_[i] == b) {
+			  has_b = true;
+			  break;
+		  }
+	  assert(has_b);
+
+	  // find the nearest basemanager which can train the unit
+	  // add the unit to the queue
+	  Turk::bot * bm = findNearestAgent(BWAPI::Position(b->location()), "BaseManager");
+
+	  unit_queue_.push(unit_request(b,t));
+
+	  // request the unit from the base manager
+	  // if the unit is a worker, take one from the base manager
+	  if (t.isWorker()) {
+		  request(t, bm, b);
+		  unit_queue_.pop();
+	  }
+	  else {
+		  request(t, bm, b);
+	  }
+
+
+  }
+
+  /**
+  * Request a unit of a given type from a specific agent.
+  */
+  inline virtual void request(BWAPI::UnitType & t, Turk::bot * sup, Turk::bot * req) {
+	  // if t or sup are not in the map, throw an error
+	  assert(!unit_map_.find(req).is_empty());
+	  assert(!unit_map_.find(sup).is_empty());
+
+	  // ask sup to remove a unit, then assign it (transfer) it to t
+	  UnitProxy px = sup->removeUnit(t);
+	  if (!px.is_empty()) {
+		  transfer(sup, req, std::vector<UnitProxy>(1, px));
+	  }
+  }
+
+  /**
+  * Transfer a list of units (UnitProxy) from one agent to another.
+  */
+  inline virtual void transfer(Turk::bot * a, Turk::bot * b, const std::vector<UnitProxy> & units) {
+
+
+	  // if a or b is not registered, throw an error
+	  //assert(!unit_map_.find(a).is_empty());
+	  //assert(!unit_map_.find(b).is_empty());
+	  bool have_a = false;
+	  bool have_b = false;
+	  for (unsigned i = 0; i != agent_count_; i++) {
+		  if (agents_[i] == a)
+			  have_a = true;
+		  else if (agents_[i] == b)
+			  have_b = true;
+	  }
+	  assert(have_a);
+	  assert(have_b);
+
+	  // cycle over the units and move from a to b.
+	  // If a does not control the unit, skip to the next
+	  const unsigned nunits = units.size();
+	  for (unsigned i = 0; i != nunits; i++) {
+		  assert(units[i] == units[i]);
+		  if (unit_map_.rfind(units[i]) == a) {
+			  // swap bot pointer
+			  unit_map_.set(units[i], const_cast<Turk::bot *>(b));
+		  }
+	  }
+
+	  // have both bots update units
+	  a->updateUnits();
+	  b->updateUnits();
+
+  }
+
+  /**
+  * Return a list of registered agents
+  */
+  inline const std::vector<bot *> & get_agents() const {
+	  return agents_;
+  }
+
 protected:
 
   /**
@@ -197,30 +293,12 @@ protected:
   }
   
 
-  /**
-  * Request a unit of a given type. The UnitManager
-  * will find a suitable agent to fill the request
-  */
-  inline virtual void request(const BWAPI::UnitType & t, const Turk::bot * b) {
-
-  }
+ 
 
   /**
-  * Request a unit of a given type from a specific agent.
+  * Update the HUD list of registered agents
   */
-  inline virtual void request(const BWAPI::UnitType & t, const Turk::bot * sup, const Turk::bot * req) {
-	  
-  }
-
-  /**
-  * Transfer a list of units (UnitProxy) from one agent to another.
-  */
-  inline virtual void transfer(const Turk::bot * a, const Turk::bot * b, const std::vector<UnitProxy> & units) {
-
-	  // cycle over the units and move from a to b.
-	  // If a does not control the unit, skip to the next
-	  // if a or b is not registered, throw an error
-  }
+  void updateHUD();
 
 private:
 
@@ -244,6 +322,9 @@ private:
   
   // bot name
   std::string m_name;
+
+  // HUD lane
+  int hud_lane_;
 
 };
 
