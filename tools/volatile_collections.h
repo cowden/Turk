@@ -66,7 +66,7 @@ public:
 	/**
 	* return if an element is masked
 	*/
-	inline bool getMask(unsigned i) const { return mask_[i]; }
+	inline bool getMask(unsigned i) const { return mask_[pos_+i]; }
 
 	/**
 	* mask an element
@@ -211,6 +211,12 @@ private:
     nqueued_ = size_;
     for ( unsigned i=pos_; i != end_; i++ )
       if ( !mask_[i] ) nqueued_--;
+  }
+
+  // find position of first unmasked item
+  inline void find_pos() {
+	  while (!mask_[pos_] && pos_ < size_)
+		  pos_++;
   }
 
   // size

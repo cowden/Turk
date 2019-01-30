@@ -79,6 +79,18 @@ void UnitManager::onUnitCreate(BWAPI::Unit unit) {
 }
 
 void UnitManager::onUnitComplete(BWAPI::Unit unit) {
+
+	// process the unit_queue_ 
+	// transfer completed unit requests to the requesting bot.
+	unsigned nq = unit_queue_.size();
+	for (unsigned i = 0; i != nq; i++) {
+		unit_request & rq = unit_queue_[i];
+		if ( rq.unit_type == unit->getType() ) {
+			unit_queue_.mask(i);
+			std::vector<UnitProxy> ups(1, UnitProxy(unit));
+			transfer(rq.producer, rq.requester, ups);
+		}
+	}
 	
 	// if the unit is a building
 	if (unit->getType().isBuilding() && unit->getPlayer() == BWAPI::Broodwar->self()) {

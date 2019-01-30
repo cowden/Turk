@@ -85,17 +85,25 @@ T & vqueue<T>::pop() {
 // vqueue operator[]
 template<class T>
 T & vqueue<T>::operator[](unsigned i) {
-  return data_[pos_+i];
+	unsigned p = pos_ + i;
+	while (!mask_[p] && p < size_)
+		p++;
+	return data_[p];
 }
 
 
 // vqueue mask(i)
 template<class T>
 void vqueue<T>::mask(unsigned i) {
-  mask_[pos_+i] = false;
 
-  // update nqueued
-  update_nqueued();
+	unsigned p = pos_ + i;
+	while (!mask_[p] && p < size_)
+		p++;
+
+	mask_[p] = false;
+
+	find_pos();
+	update_nqueued();
 }
 
 // vqueue mask(bool *)

@@ -30,7 +30,17 @@ struct unit_args : bot_args {
 * unit request typedef to map a requested unit with a 
 * particular bot.
 */
-typedef std::pair<const bot *, BWAPI::UnitType> unit_request;
+//typedef std::pair<const bot *, BWAPI::UnitType> unit_request;
+struct unit_request {
+	bot * producer;
+	bot * requester;
+	BWAPI::UnitType unit_type;
+
+	unit_request() {}
+
+	unit_request(bot * p, bot * r, BWAPI::UnitType ut) :
+		producer(p), requester(r), unit_type(ut) { }
+};
 
 /**
 * The UnitManager agent is like the HR department.
@@ -170,7 +180,7 @@ public:
 	  // add the unit to the queue
 	  Turk::bot * bm = findNearestAgent(BWAPI::Position(b->location()), "BaseManager");
 
-	  unit_queue_.push(unit_request(b,t));
+	  unit_queue_.push(unit_request(bm,b,t));
 
 	  // request the unit from the base manager
 	  // if the unit is a worker, take one from the base manager
@@ -303,7 +313,7 @@ protected:
 private:
 
   // queue of unit requests
-	std::queue<unit_request> unit_queue_;
+	vqueue<unit_request> unit_queue_;
   
 
   // list of all units
