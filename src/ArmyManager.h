@@ -34,6 +34,8 @@ public:
 		*/
 		inline ArmyManager():bot("ArmyManager") {
 
+			scout_ = NULL;
+
 			// get name and increment agent count
 			m_instance = m_nArmies++;
 			m_name = "ArmyManager_" + std::to_string(m_instance);
@@ -63,7 +65,7 @@ public:
 		/**
 		* Execute a given command encoded as an integer
 		*/
-		virtual int execute(int command,const bot_args & args) { return 0; }
+		virtual int execute(int command, const bot_args & args);
 
 		/**
 		* Return the bot type
@@ -205,6 +207,8 @@ protected:
 
 private:
 
+	void initiate_scout();
+
 		Turk::location loc_;
 
 		Turk::status status_;
@@ -218,6 +222,8 @@ private:
 
 	    Turk::vvec<Squad *> squads_;
 		Turk::vvec<ArmyManager *> armies_;
+		
+		ArmyManager * scout_;
 
 		// HUD lane
 		int hud_lane_;

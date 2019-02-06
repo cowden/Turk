@@ -200,8 +200,17 @@ public:
   */
   inline virtual void request(BWAPI::UnitType & t, Turk::bot * sup, Turk::bot * req) {
 	  // if t or sup are not in the map, throw an error
-	  assert(!unit_map_.find(req).is_empty());
-	  assert(!unit_map_.find(sup).is_empty());
+	  bool has_sup = false;
+	  bool has_req = false;
+	  for (unsigned i = 0; i != agent_count_; i++) {
+		  const bot * agent = agents_[i];
+		  if (agents_[i] == sup)
+			  has_sup = true;
+		  if (agents_[i] == req)
+			  has_req = true;
+	  }
+	  assert(has_sup);
+	  assert(has_req);
 
 	  // ask sup to remove a unit, then assign it (transfer) it to t
 	  UnitProxy px = sup->removeUnit(t);

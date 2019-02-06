@@ -15,7 +15,9 @@
 #include "Common.h"
 
 // define some bot commands
-#define REQUEST_UNIT 1
+#define REQUEST_UNIT 0x1
+
+#define INITIATE_SCOUT 0x10
 
 namespace Turk {
 

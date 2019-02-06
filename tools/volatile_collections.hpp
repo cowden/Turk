@@ -120,6 +120,16 @@ void vqueue<T>::mask(bool * m) {
 //-----------------------------------------
 //-----------------------------------------
 
+
+// has
+template<class T, class S>
+bool vmap<T, S>::has(const T & t) {
+	for (unsigned i = 0; i != size_; i++)
+		if (t == data_[i].first && mask_[i]) return true;
+	
+	return false;
+}
+
 // find
 template<class T,class S>
 S & vmap<T,S>::find(const T & t) {

@@ -309,6 +309,11 @@ public:
   inline bool ismask(unsigned i) { return mask_[i]; }
 
   /**
+  * Check if the map contains a primary key
+  */
+  inline bool has(const T &);
+
+  /**
   * find S from T
   */
   inline S & find(const T &);
