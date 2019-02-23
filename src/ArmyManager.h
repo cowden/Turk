@@ -57,6 +57,7 @@ public:
 		*/
 		inline ArmyManager(const char * name) : bot(name) { }
 
+		
 		/**
 		* Delete this instance
 		*/
@@ -112,6 +113,8 @@ public:
 			for (unsigned i=0; i != na; i++)
 				armies_[i]->process();
 
+			if (scout_) scout_->process();
+
 			// update location
 			loc_ = BWAPI::Positions::Origin;
 			double s = 0U;
@@ -166,7 +169,7 @@ public:
 
 		}
 
-		virtual void addUnits(const std::vector<UnitProxy> & units) { 
+		inline virtual void addUnits(const std::vector<UnitProxy> & units) { 
 
 			// keep it simple and add units to a squad
 			if (squads_.size() == 0) {
@@ -179,9 +182,9 @@ public:
 
 		}
 
-		virtual UnitProxy removeUnit(const BWAPI::UnitType & ut) { return UnitProxy(); }
+		inline virtual UnitProxy removeUnit(const BWAPI::UnitType & ut) { return UnitProxy(); }
 
-		virtual void updateUnits() { }
+		inline virtual void updateUnits() { }
 
 		/**
 		*  return the size of the army as the number of units 
@@ -205,28 +208,29 @@ public:
 
 protected:
 
+	Turk::location loc_;
+	Turk::status status_;
+
+	// bot name
+	std::string m_name;
+
+	// HUD lane
+	int hud_lane_;
+
+
 private:
 
 	void initiate_scout();
 
-		Turk::location loc_;
-
-		Turk::status status_;
-
 		// track the number of army agents
 		static unsigned m_nArmies;
 		unsigned m_instance;
-
-		// bot name
-		std::string m_name;
 
 	    Turk::vvec<Squad *> squads_;
 		Turk::vvec<ArmyManager *> armies_;
 		
 		ArmyManager * scout_;
 
-		// HUD lane
-		int hud_lane_;
 };
 
 }  // end Turk namespace

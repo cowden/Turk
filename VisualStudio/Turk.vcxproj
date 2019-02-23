@@ -15,6 +15,7 @@
     <ClCompile Include="..\src\BaseManager.cpp" />
     <ClCompile Include="..\src\Dll.cpp" />
     <ClCompile Include="..\src\HUD.cpp" />
+    <ClCompile Include="..\src\Scout.cpp" />
     <ClCompile Include="..\src\Squad.cpp" />
     <ClCompile Include="..\src\Turk.cpp" />
     <ClCompile Include="..\src\UnitManager.cpp" />
@@ -34,6 +35,7 @@
     <ClInclude Include="..\src\bot.h" />
     <ClInclude Include="..\src\Common.h" />
     <ClInclude Include="..\src\HUD.h" />
+    <ClInclude Include="..\src\Scout.h" />
     <ClInclude Include="..\src\Squad.h" />
     <ClInclude Include="..\src\StrategyManager.h" />
     <ClInclude Include="..\src\Turk.h" />
@@ -120,7 +122,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BWAPI_DIR)\lib\BWAPId.lib;$(BOOST_DIR)\stage\lib\libboost_serialization-vc141-mt-gd-x32-1_68.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)\lib\BWAPId.lib;$(BOOST_DIR)\stage\lib\libboost_serialization-vc141-mt-gd-x32-1_69.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)d$(TargetExt)</OutputFile>
       <SubSystem>Windows</SubSystem>
       <LinkTimeCodeGeneration />
@@ -144,7 +146,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>$(BWAPI_DIR)\lib\BWAPI.lib;$(BOOST_DIR)\stage\lib\libboost_serialization-vc141-mt-x32-1_68.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BWAPI_DIR)\lib\BWAPI.lib;$(BOOST_DIR)\stage\lib\libboost_serialization-vc141-mt-x32-1_69.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateMapFile>true</GenerateMapFile>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>

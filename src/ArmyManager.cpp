@@ -3,6 +3,8 @@
 
 #include "Logger.h"
 
+#include "Scout.h"
+
 using namespace Turk;
 
 unsigned ArmyManager::m_nArmies = 0U;
@@ -18,6 +20,6 @@ int ArmyManager::execute(int command, const bot_args & args) {
 }
 
 void ArmyManager::initiate_scout() {
-	scout_ = new ArmyManager();
-	umanity.request(BWAPI::Broodwar->self()->getRace().getWorker(), this);
+	scout_ = new Scout();
+	umanity.request(BWAPI::Broodwar->self()->getRace().getWorker(), scout_);
 }
