@@ -76,6 +76,21 @@ namespace Turk {
 		*/
 		inline virtual void process() { 
 
+			// process components
+			const unsigned ns = squads_.nheld();
+			for (unsigned i = 0; i != ns; i++)
+				squads_[i]->process();
+
+			// update the location
+			loc_ = BWAPI::Positions::Origin;
+			double s = 0U;
+
+			for (unsigned i = 0; i != ns; i++) {
+				loc_ += squads_[i]->location()*squads_[i]->size();
+				s += squads_[i]->size();
+			}
+			if (s) loc_ /= s;
+
 
 			// if state is active and there are units, go scout
 			if (active_state_ == active && squads_.size() > 0) {
@@ -106,7 +121,7 @@ namespace Turk {
 				}
 				// if the location has been reached,
 				// remove the active location from the queue
-				else if (active_queue_.nqueued() > 0 && active_queue_[0].getDistance(BWAPI::TilePosition(squads_[0]->location())) < 50) {
+				else if (active_queue_.nqueued() > 0 && active_queue_[0].getDistance(BWAPI::TilePosition(squads_[0]->location())) < 5) {
 					active_queue_.pop();
 				}
 			}
