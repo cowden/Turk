@@ -123,8 +123,18 @@ namespace Turk {
 				// remove the active location from the queue
 				else if (active_queue_.nqueued() > 0 && active_queue_[0].getDistance(BWAPI::TilePosition(squads_[0]->location())) < 5) {
 					active_queue_.pop();
+
+					// leave active state if  no more items in queue go to inactive state
+					if (base_queue_.nqueued() == 0)
+						active_state_ = complete;
 				}
 			}
+
+			else if (active_state_ == active && squads_.size() == 0) {
+				// assume total loss of units.
+				active_state_ = complete;
+			}
+
 
 		}
 
@@ -192,7 +202,8 @@ namespace Turk {
 		enum TheState {
 			null,
 			active,
-			evade
+			evade,
+			complete
 		} active_state_;
 		
 
