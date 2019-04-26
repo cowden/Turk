@@ -57,7 +57,7 @@ void UnitManager::onUnitCreate(BWAPI::Unit unit) {
 		// find nearest base
 		for (unsigned i = 0; i != agent_count_; i++) {
 			Turk::bot * b = agents_[i];
-			if (b->type().compare("BaseManager") == 0 && unit->getDistance(b->location()) < 200 ) {
+			if (b && b->type().compare("BaseManager") == 0 && unit->getDistance(b->location()) < 200 ) {
 				// assign worker to base
 				std::vector<UnitProxy> ulist(1);
                                 UnitProxy up(unit);
@@ -118,11 +118,29 @@ void UnitManager::onUnitComplete(BWAPI::Unit unit) {
 	}
 }
 
+
+void UnitManager::onUnitDestroy(BWAPI::Unit unit) {
+
+	// lookup which agent owns the unit
+	UnitProxy up(unit);
+	const Turk::bot * b = unit_map_.rfind(up);
+
+	// remove unit
+	unit_map_.mask(unit);
+
+	if(b)
+	  const_cast<Turk::bot *>(b)->updateUnits();
+
+
+}
+
 void UnitManager::updateHUD() {
 	HUD::Instance().clear(hud_lane_);
 
 	// dump the registered agents
 	for (unsigned i = 0; i != agent_count_; i++) {
+
+		if (!agents_[i]) continue;
 
 		std::stringstream msg;
 		msg << agents_[i]->name() << " (" << agents_[i]->location().x 

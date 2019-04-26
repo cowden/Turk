@@ -61,7 +61,7 @@ public:
 		/**
 		* Delete this instance
 		*/
-		inline ~ArmyManager() { }
+		virtual inline ~ArmyManager() { }
 
 		/**
 		* Execute a given command encoded as an integer
@@ -113,7 +113,13 @@ public:
 			for (unsigned i=0; i != na; i++)
 				armies_[i]->process();
 
-			if (scout_) scout_->process();
+			if (scout_) {
+				scout_->process();
+				if (!scout_->isAlive()) {
+					delete scout_;
+					scout_ = NULL;
+				}
+			}
 
 			// update location
 			loc_ = BWAPI::Positions::Origin;

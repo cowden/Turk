@@ -94,7 +94,7 @@ public:
 	/**
 	* Delete this instance
 	*/
-	inline ~bot() { }
+	virtual inline ~bot() { }
 
 	/**
 	* Get the model name
@@ -121,6 +121,12 @@ public:
   * update unit list under bot control
   */
   virtual void updateUnits() = 0;
+
+
+  /**
+  * return isalive status of the agent
+  */
+  virtual bool isAlive() const { return true; }
 
 private:
 

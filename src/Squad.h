@@ -73,7 +73,11 @@ public:
   /**
   * Delete this instance
   */
-  inline ~Squad() { }
+  virtual inline ~Squad() { 
+
+	  // unregister agent
+	  umanity.unregister_agent(this);
+  }
 
   /**
   * Execute a given command encoded as an integer

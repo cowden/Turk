@@ -348,6 +348,11 @@ public:
   inline void mask(unsigned i);
 
   /**
+  * mask a particular element based on S
+  */
+  inline void mask(const S & s);
+
+  /**
   * mask a series of elements
   */
   inline void mask( bool * m );

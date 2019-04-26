@@ -173,6 +173,15 @@ void vmap<T,S>::mask(unsigned i) {
   update_actives();
 }
 
+
+// mask
+template<class T, class S>
+void vmap<T, S>::mask(const S & s) {
+	for (unsigned i = 0; i != size_; i++)
+		if (data_[i].second == s && mask_[i])
+			mask(i);
+}
+
 // mask from array
 template<class T, class S>
 void vmap<T,S>::mask(bool * m) {

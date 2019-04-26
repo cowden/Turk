@@ -247,6 +247,8 @@ void TheTurk::onUnitCreate(BWAPI::Unit unit)
 
 void TheTurk::onUnitDestroy(BWAPI::Unit unit)
 {
+	// call unit manager to update loss to agents
+	umanity.onUnitDestroy(unit);
 
 }
 

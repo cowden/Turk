@@ -47,6 +47,10 @@ namespace Turk {
 			// get a lane in the HUD
 			hud_lane_ = HUD::Instance().getLane(this);
 
+			// this agent is alive, but no units
+			isAlive_ = true;
+			units_loaded_ = false;
+
 			// start active state at null
 			active_state_ = active;
 			filled_locations_ = false;
@@ -64,7 +68,16 @@ namespace Turk {
 		/**
 		* Delete this instance
 		*/
-		inline ~Scout() { }
+		virtual inline ~Scout() { 
+
+			// delete squads
+			for (unsigned i = 0; i != squads_.nheld(); i++) {
+				delete squads_[i];
+			}
+
+			// unregister this agent
+			umanity.unregister_agent(this);
+		}
 
 		/**
 		* Execute a given command encoded as an integer
@@ -76,8 +89,22 @@ namespace Turk {
 		*/
 		inline virtual void process() { 
 
-			// process components
+			updateHUD();
+
 			const unsigned ns = squads_.nheld();
+
+			// unwind when all units are destroyed
+			unsigned nunits = 0U;
+			for (unsigned i = 0; i != ns; i++)
+				nunits += squads_[i]->size();
+
+			if (isAlive_ && units_loaded_ && nunits == 0) {
+				isAlive_ = false;
+				active_state_ = null;
+			}
+
+
+			// process components
 			for (unsigned i = 0; i != ns; i++)
 				squads_[i]->process();
 
@@ -97,7 +124,8 @@ namespace Turk {
 
 				// check for enemies,
 				// if found, evade
-				const BWAPI::Unitset & units = BWAPI::Broodwar->getUnitsInRadius(BWAPI::Position(squads_[0]->location()), 7, BWAPI::Filter::IsEnemy);
+				const BWAPI::Unitset & units = BWAPI::Broodwar->getUnitsInRadius(BWAPI::Position(squads_[0]->location()), 100, BWAPI::Filter::IsEnemy);
+				//const BWAPI::Unitset & units = BWAPI::Broodwar->getUnitsInRadius(BWAPI::Position(pos_), 500, BWAPI::Filter::IsEnemy);
 				if (units.size() > 0) {
 					active_state_ = evade;
 				}
@@ -152,6 +180,10 @@ namespace Turk {
 			//squads_[0]->addUnits(units);
 			umanity.transfer(this, squads_[0], units);
 
+			// the agent is definitely alive if it gets reinforcements
+			isAlive_ = true;
+			units_loaded_ = true;
+
 		}
 
 		inline virtual UnitProxy removeUnit(const BWAPI::UnitType & ut) { return UnitProxy(); }
@@ -164,9 +196,17 @@ namespace Turk {
 					squads_.push(sq);
 				}
 				umanity.transfer(this, squads_[0], umanity.getUnits(this));
+				isAlive_ = true;
+				units_loaded_ = true;
 			}
 		}
 
+
+		inline bool isAlive() const { return isAlive_; }
+
+	protected:
+
+		void updateHUD();
 
 	private:
 
@@ -188,6 +228,12 @@ namespace Turk {
 		unsigned m_instance;
 
 		Turk::vvec<Squad *> squads_;
+
+		// flag if all units have been lost
+		bool isAlive_;
+
+		// flag to indicate units have been loaded
+		bool units_loaded_;
 
 		// keep track of destination queues
 		vqueue<BWAPI::TilePosition> base_queue_;

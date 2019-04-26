@@ -70,7 +70,7 @@ public:
 	/**
 	* Delete this instance
 	*/
-	inline ~UnitManager() { }
+	virtual inline ~UnitManager() { }
 
 	/**
 	* Execute a given command encoded as an integer
@@ -133,6 +133,23 @@ public:
 
   }
 
+  /**
+  * unregister an agent
+  */
+  inline void unregister_agent(bot *b) {
+	  std::stringstream msg;
+	  msg << "Unloading bot " << b->name() << " of type: " << b->type() << "at: 0x" << std::hex << (int)b;
+	  Turk::Logger::instance()->log(m_name.c_str(), msg.str().c_str());
+	  
+	  // find agent
+	  for (unsigned i = 0; i != agent_count_; i++) {
+		  if (agents_[i] == b) {
+			  agents_[i] = NULL;
+			  break;
+		  }
+	  }
+  }
+
 
   /**
   * return the units assigned to an agent
@@ -161,6 +178,11 @@ public:
   * call attention to agents upon unit completion
   */
   void onUnitComplete(BWAPI::Unit);
+
+  /**
+  * call attention to agents upon unit destrcution
+  */
+  void onUnitDestroy(BWAPI::Unit);
 
   /**
  * Request a unit of a given type. The UnitManager
@@ -284,6 +306,7 @@ protected:
 	  int min_dist = INT_MAX;
 
 	  for (unsigned i = 0; i != agent_count_; i++) {
+		  if (!agents_[i]) continue;
 		  int dist = pos.getApproxDistance(agents_[i]->location());
 		  if (dist < min_dist) {
 			  min_dist = dist;
@@ -302,6 +325,7 @@ protected:
 	  int min_dist = INT_MAX;
 
 	  for (unsigned i = 0; i != agent_count_; i++) {
+		  if (!agents_[i]) continue;
 		  int dist = pos.getApproxDistance(agents_[i]->location());
 		  if (agents_[i]->type().compare(t) == 0 && dist < min_dist) {
 			  min_dist = dist;
