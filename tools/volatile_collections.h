@@ -59,9 +59,14 @@ public:
 	inline T & operator[](unsigned i);
 
 	/**
+	* const accessor
+	*/
+	const inline const T & operator[](unsigned i) const;
+
+	/**
 	* return if an element is masked
 	*/
-	inline bool getMask(unsigned i) const { return mask_[i]; }
+	inline bool getMask(unsigned i) const { return mask_[pos_+i]; }
 
 	/**
 	* mask an element
@@ -208,6 +213,12 @@ private:
       if ( !mask_[i] ) nqueued_--;
   }
 
+  // find position of first unmasked item
+  inline void find_pos() {
+	  while (!mask_[pos_] && pos_ < size_)
+		  pos_++;
+  }
+
   // size
   unsigned size_;
 
@@ -298,14 +309,19 @@ public:
   inline bool ismask(unsigned i) { return mask_[i]; }
 
   /**
-  * find T from S
+  * Check if the map contains a primary key
   */
-  inline T & find(const S &);
+  inline bool has(const T &);
 
   /**
-  * find S from T (reverse find)
+  * find S from T
   */
-  inline S & rfind(const T & t);
+  inline S & find(const T &);
+
+  /**
+  * find T from S (reverse find)
+  */
+  inline T & rfind(const S & s);
 
   /**
   * insert a new element
@@ -332,9 +348,31 @@ public:
   inline void mask(unsigned i);
 
   /**
+  * mask a particular element based on S
+  */
+  inline void mask(const S & s);
+
+  /**
   * mask a series of elements
   */
   inline void mask( bool * m );
+
+  /**
+  * set method.  This is assigning the value returned by find.
+  */
+  inline void set(const T & t,const S & s) {
+	  for (unsigned i = 0; i != size_; i++)
+		  if (t == data_[i].first && mask_[i]) data_[i].second = s;
+  }
+
+
+  /**
+  * set method.  This is assigning the value returned by rfind.
+  */
+  inline void set(const S & s, const T & t) {
+	  for (unsigned i = 0; i != size_; i++)
+		  if (s == data_[i].second && mask_[i]) data_[i].first = t;
+  }
 
   
 private:

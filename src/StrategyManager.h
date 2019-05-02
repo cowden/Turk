@@ -14,6 +14,7 @@
 #include "bot.h"
 #include "BaseManager.h"
 #include "ArmyManager.h"
+#include "UnitProxy.h"
 
 namespace Turk {
 
@@ -30,7 +31,7 @@ struct strategy_args : bot_args {
 		/**
 		* Default constructor
 		*/
-		inline StrategyManager():bot("StrategyManager"),m_name("StrategyManager") {}
+		inline StrategyManager():bot("StrategyManager"),m_name("StrategyManager"),initiate_scout_(false) {}
 
 		/**
 		* Delete this instance
@@ -77,8 +78,15 @@ struct strategy_args : bot_args {
   */
   inline virtual void process() {
 
-	  // process remaining UnitManager requests
-	  umanity.process();
+	  // send command to begin scouting
+	  if (!initiate_scout_ && BWAPI::Broodwar->getFrameCount() > 500 && armies_.size() > 0 ) {
+		  Turk::Logger::instance()->log(name().c_str(), "Initiating Scout");
+		  bot_args ba;
+		  ba.command = INITIATE_SCOUT;
+		  armies_[0]->execute(INITIATE_SCOUT, ba);
+		  initiate_scout_ = true;
+	  }
+
 
     // simply call process on all base and army managers
 	  for ( auto base : bases_) base->process();
@@ -99,7 +107,7 @@ struct strategy_args : bot_args {
 	  
 
 	  // load initial army manager
-	  //armies_.push_back(new ArmyManager());
+	  armies_.push_back(new ArmyManager());
 	  
 
 	  // initialize unit manager
@@ -107,12 +115,14 @@ struct strategy_args : bot_args {
 
 	  // load models
 	  bases_[0]->loadModel(model_args(trace, erace, 0));
-	  //armies_[0]->loadModel(model_args(trace, erace, 0));
+	  armies_[0]->loadModel(model_args(trace, erace, 0));
 
   }
 
 
-  virtual void addUnits(const std::vector<BWAPI::Unit> & units) { }
+  virtual void addUnits(const std::vector<UnitProxy> & units) { }
+
+  virtual UnitProxy removeUnit(const BWAPI::UnitType & ut) { return UnitProxy(); }
 
   virtual void updateUnits() { }
 
@@ -141,6 +151,8 @@ private:
   Turk::status status_;
 
   std::string m_name;
+
+  bool initiate_scout_;
 
 	};
 

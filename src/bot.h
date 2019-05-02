@@ -14,13 +14,24 @@
 
 #include "Common.h"
 
+// define some bot commands
+#define REQUEST_UNIT 0x1
+
+#define INITIATE_SCOUT 0x10
+
 namespace Turk {
 
+	// forward declare UnitProxy
+	class UnitProxy;
 /**
 * The base struct by which to pass arguments
 * to inherited classes.
 */
-struct bot_args {};
+struct bot_args {
+	unsigned command;
+	Turk::location location;
+	BWAPI::UnitType unitType;
+};
 
 /**
 * The base struct by which to pass arguments
@@ -83,7 +94,7 @@ public:
 	/**
 	* Delete this instance
 	*/
-	inline ~bot() { }
+	virtual inline ~bot() { }
 
 	/**
 	* Get the model name
@@ -99,12 +110,23 @@ public:
   /**
   * add units to bot control
   */
-  virtual void addUnits(const std::vector<BWAPI::Unit> &) = 0;
+  virtual void addUnits(const std::vector<UnitProxy> &) = 0;
+
+  /**
+  * remove a unit of a given type
+  */
+  virtual UnitProxy removeUnit(const BWAPI::UnitType &) = 0;
 
   /**
   * update unit list under bot control
   */
   virtual void updateUnits() = 0;
+
+
+  /**
+  * return isalive status of the agent
+  */
+  virtual bool isAlive() const { return true; }
 
 private:
 

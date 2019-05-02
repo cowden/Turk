@@ -23,6 +23,15 @@ T & vvec<T>::operator[](unsigned i) {
 	return data_[p];
 }
 
+//const  vvec []
+template<class T>
+const T & vvec<T>::operator[](unsigned i) const {
+	unsigned p = pos_ + i;
+	while (!mask_[p] && p < size_)
+		p++;
+	return data_[p];
+}
+
 // mask
 template<class T>
 void vvec<T>::mask(unsigned i) {
@@ -76,17 +85,25 @@ T & vqueue<T>::pop() {
 // vqueue operator[]
 template<class T>
 T & vqueue<T>::operator[](unsigned i) {
-  return data_[pos_+i];
+	unsigned p = pos_ + i;
+	while (!mask_[p] && p < size_)
+		p++;
+	return data_[p];
 }
 
 
 // vqueue mask(i)
 template<class T>
 void vqueue<T>::mask(unsigned i) {
-  mask_[pos_+i] = false;
 
-  // update nqueued
-  update_nqueued();
+	unsigned p = pos_ + i;
+	while (!mask_[p] && p < size_)
+		p++;
+
+	mask_[p] = false;
+
+	find_pos();
+	update_nqueued();
 }
 
 // vqueue mask(bool *)
@@ -103,22 +120,32 @@ void vqueue<T>::mask(bool * m) {
 //-----------------------------------------
 //-----------------------------------------
 
+
+// has
+template<class T, class S>
+bool vmap<T, S>::has(const T & t) {
+	for (unsigned i = 0; i != size_; i++)
+		if (t == data_[i].first && mask_[i]) return true;
+	
+	return false;
+}
+
 // find
 template<class T,class S>
-T & find(const S & s) {
+S & vmap<T,S>::find(const T & t) {
   for ( unsigned i=0; i != size_; i++ )
-    if ( s == data_[i].second ) return data_[i].first;
+    if ( t == data_[i].first && mask_[i]) return data_[i].second;
 
-  return data_[size_].first;
+  return data_[size_].second;
 }
 
 // rfind
 template<class T,class S>
-S & rfind(const T & t) {
-  for ( unsigned i=9; i != size_; i++ ) 
-    if ( t == data_[i].first ) return data_[i].second;
+T & vmap<T,S>::rfind(const S & s) {
+  for ( unsigned i=0; i != size_; i++ ) 
+    if ( s == data_[i].second && mask_[i]) return data_[i].first;
 
-  return data_[size_].second;
+  return data_[size_].first;
 }
 
 // insert
@@ -144,6 +171,15 @@ void vmap<T,S>::mask(unsigned i) {
   
   // update the active count
   update_actives();
+}
+
+
+// mask
+template<class T, class S>
+void vmap<T, S>::mask(const S & s) {
+	for (unsigned i = 0; i != size_; i++)
+		if (data_[i].second == s && mask_[i])
+			mask(i);
 }
 
 // mask from array

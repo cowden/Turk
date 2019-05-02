@@ -12,9 +12,11 @@
 #include <queue>
 
 #include "Common.h"
+#include "HUD.h"
 #include "bot.h"
 #include "Logger.h"
 #include "volatile_collections.h"
+#include "UnitProxy.h"
 
 namespace Turk {
 
@@ -28,7 +30,17 @@ struct unit_args : bot_args {
 * unit request typedef to map a requested unit with a 
 * particular bot.
 */
-typedef std::pair<const bot *, BWAPI::UnitType> unit_request;
+//typedef std::pair<const bot *, BWAPI::UnitType> unit_request;
+struct unit_request {
+	bot * producer;
+	bot * requester;
+	BWAPI::UnitType unit_type;
+
+	unit_request() {}
+
+	unit_request(bot * p, bot * r, BWAPI::UnitType ut) :
+		producer(p), requester(r), unit_type(ut) { }
+};
 
 /**
 * The UnitManager agent is like the HR department.
@@ -50,12 +62,15 @@ public:
 		// initialize agent list
 		agents_.resize(100);
 		agent_count_ = 0;
+
+		// get a lane in the HUD
+		hud_lane_ = HUD::Instance().getLane(this);
 	}
 
 	/**
 	* Delete this instance
 	*/
-	inline ~UnitManager() { }
+	virtual inline ~UnitManager() { }
 
 	/**
 	* Execute a given command encoded as an integer
@@ -98,7 +113,9 @@ public:
   */
   virtual void process();
 
-  virtual void addUnits(const std::vector<BWAPI::Unit> & units) { }
+  virtual void addUnits(const std::vector<UnitProxy> & units) { }
+
+  virtual UnitProxy removeUnit(const BWAPI::UnitType & ut) { return UnitProxy(); }
 
   virtual void updateUnits() { }
 
@@ -116,12 +133,29 @@ public:
 
   }
 
+  /**
+  * unregister an agent
+  */
+  inline void unregister_agent(bot *b) {
+	  std::stringstream msg;
+	  msg << "Unloading bot " << b->name() << " of type: " << b->type() << "at: 0x" << std::hex << (int)b;
+	  Turk::Logger::instance()->log(m_name.c_str(), msg.str().c_str());
+	  
+	  // find agent
+	  for (unsigned i = 0; i != agent_count_; i++) {
+		  if (agents_[i] == b) {
+			  agents_[i] = NULL;
+			  break;
+		  }
+	  }
+  }
+
 
   /**
   * return the units assigned to an agent
   */
-  inline std::vector<BWAPI::Unit> getUnits(const bot * b) {
-	  std::vector<BWAPI::Unit> units;
+  inline std::vector<UnitProxy> getUnits(const bot * b) {
+	  std::vector<UnitProxy> units;
 	  for (unsigned i = 0; i != unit_map_.size(); i++) {
 		  if (unit_map_.ismask(i) && unit_map_[i].first == b)
 			  units.push_back(unit_map_[i].second);
@@ -145,6 +179,112 @@ public:
   */
   void onUnitComplete(BWAPI::Unit);
 
+  /**
+  * call attention to agents upon unit destrcution
+  */
+  void onUnitDestroy(BWAPI::Unit);
+
+  /**
+ * Request a unit of a given type. The UnitManager
+ * will find a suitable agent to fill the request
+ */
+  inline virtual void request(BWAPI::UnitType & t, Turk::bot * b) {
+	  // if t is not in the map, throw an error
+	  bool has_b = false;
+	  for ( unsigned i=0; i != agent_count_; i++ )
+		  if (agents_[i] == b) {
+			  has_b = true;
+			  break;
+		  }
+	  assert(has_b);
+
+	  // find the nearest basemanager which can train the unit
+	  // add the unit to the queue
+	  Turk::bot * bm = findNearestAgent(BWAPI::Position(b->location()), "BaseManager");
+
+	  unit_queue_.push(unit_request(bm,b,t));
+
+	  // request the unit from the base manager
+	  // if the unit is a worker, take one from the base manager
+	  if (t.isWorker()) {
+		  request(t, bm, b);
+		  unit_queue_.pop();
+	  }
+	  else {
+		  request(t, bm, b);
+	  }
+
+
+  }
+
+  /**
+  * Request a unit of a given type from a specific agent.
+  */
+  inline virtual void request(BWAPI::UnitType & t, Turk::bot * sup, Turk::bot * req) {
+	  // if t or sup are not in the map, throw an error
+	  bool has_sup = false;
+	  bool has_req = false;
+	  for (unsigned i = 0; i != agent_count_; i++) {
+		  const bot * agent = agents_[i];
+		  if (agents_[i] == sup)
+			  has_sup = true;
+		  if (agents_[i] == req)
+			  has_req = true;
+	  }
+	  assert(has_sup);
+	  assert(has_req);
+
+	  // ask sup to remove a unit, then assign it (transfer) it to t
+	  UnitProxy px = sup->removeUnit(t);
+	  if (!px.is_empty()) {
+		  transfer(sup, req, std::vector<UnitProxy>(1, px));
+	  }
+  }
+
+  /**
+  * Transfer a list of units (UnitProxy) from one agent to another.
+  */
+  inline virtual void transfer(Turk::bot * a, Turk::bot * b, const std::vector<UnitProxy> & units) {
+
+
+	  // if a or b is not registered, throw an error
+	  //assert(!unit_map_.find(a).is_empty());
+	  //assert(!unit_map_.find(b).is_empty());
+	  bool have_a = false;
+	  bool have_b = false;
+	  for (unsigned i = 0; i != agent_count_; i++) {
+		  if (agents_[i] == a)
+			  have_a = true;
+		  else if (agents_[i] == b)
+			  have_b = true;
+	  }
+	  assert(have_a);
+	  assert(have_b);
+
+	  // cycle over the units and move from a to b.
+	  // If a does not control the unit, skip to the next
+	  const unsigned nunits = units.size();
+	  for (unsigned i = 0; i != nunits; i++) {
+		  assert(units[i] == units[i]);
+		  if (unit_map_.rfind(units[i]) == a) {
+			  // swap bot pointer
+			  unit_map_.set(units[i], const_cast<Turk::bot *>(b));
+		  }
+	  }
+
+	  // have both bots update units
+	  a->updateUnits();
+	  b->updateUnits();
+
+  }
+
+  /**
+  * Return a list of registered agents
+  */
+  inline const std::vector<bot *> & get_agents() const {
+	  return agents_;
+  }
+
 protected:
 
   /**
@@ -166,6 +306,7 @@ protected:
 	  int min_dist = INT_MAX;
 
 	  for (unsigned i = 0; i != agent_count_; i++) {
+		  if (!agents_[i]) continue;
 		  int dist = pos.getApproxDistance(agents_[i]->location());
 		  if (dist < min_dist) {
 			  min_dist = dist;
@@ -184,6 +325,7 @@ protected:
 	  int min_dist = INT_MAX;
 
 	  for (unsigned i = 0; i != agent_count_; i++) {
+		  if (!agents_[i]) continue;
 		  int dist = pos.getApproxDistance(agents_[i]->location());
 		  if (agents_[i]->type().compare(t) == 0 && dist < min_dist) {
 			  min_dist = dist;
@@ -194,28 +336,38 @@ protected:
   }
   
 
+ 
+
+  /**
+  * Update the HUD list of registered agents
+  */
+  void updateHUD();
+
 private:
 
   // queue of unit requests
-	std::queue<unit_request> unit_queue_;
+	vqueue<unit_request> unit_queue_;
   
 
   // list of all units
-  std::vector<BWAPI::Unit> units_;
+  std::vector<UnitProxy> units_;
  
-  // list of all registers agents
+  // list of all registered agents
   std::vector<bot *> agents_;
   unsigned agent_count_;
 
   // unit-agent map
-  vmap<const bot *, BWAPI::Unit> unit_map_;
-  
+  vmap<const bot *, UnitProxy> unit_map_; 
+
 
   Turk::location loc_;
   Turk::status status_;
   
   // bot name
   std::string m_name;
+
+  // HUD lane
+  int hud_lane_;
 
 };
 

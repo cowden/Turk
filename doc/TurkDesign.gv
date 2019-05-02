@@ -14,6 +14,9 @@ digraph cluster_Turk {
   Attacker [label="Attacker"];
   Defender [label="Defender"];
 
+  Squad [label="Squad"];
+  UnitProxy [label="UnitProxy"];
+
   node [xlabel="singleton" shape=box style=filled color=magenta fillcolor=grey];
   artie [label="ARTIE"];
   weaver [label="WEAVER"];
@@ -26,6 +29,8 @@ digraph cluster_Turk {
   bot -> ArmyManager;
   bot -> UnitManager;
 
+  bot -> Squad;
+  bot -> UnitProxy;
   ArmyManager -> Scout;
   ArmyManager -> Attacker;
   ArmyManager -> Defender;
@@ -40,6 +45,13 @@ digraph cluster_Turk {
   ArmyManager -> Attacker;
   ArmyManager -> Defender;
 
+  ArmyManager -> Squad;
+  Squad -> UnitProxy;
+
+  Scout -> Squad;
+  Attacker -> Squad;
+  Defender -> Squad;
+
   edge [color="cyan" style="" penwidth=1];
   StrategyManager -> artie;
   BaseManager -> artie;
@@ -48,6 +60,9 @@ digraph cluster_Turk {
   Scout -> artie;
   Attacker -> artie;
   Defender -> artie;
+
+  Squad -> artie;
+  UnitProxy -> artie;
 
   BaseManager -> weaver; 
 

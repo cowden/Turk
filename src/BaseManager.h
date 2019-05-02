@@ -18,6 +18,7 @@
 #include "Logger.h"
 
 #include "UnitManager.h"
+#include "UnitProxy.h"
 
 
 
@@ -175,7 +176,8 @@ public:
 		//BWAPI::Unit tunit = depot_->getBuildUnit();
 		//if (tunit) workers_.push_back(tunit);
 		bool construction = false;
-		for (auto u : workers_) {
+		for (auto up : workers_) {
+			BWAPI::Unit & u = up.getUnit();
 			if (u->isIdle()) {
 				u->gather(u->getClosestUnit(BWAPI::Filter::IsMineralField));
 			}
@@ -248,13 +250,43 @@ public:
 	/**
 	* add a unit to the agent's control
 	*/
-	virtual void addUnits(const std::vector<BWAPI::Unit> & units) {
+	virtual void addUnits(const std::vector<UnitProxy> & units) {
 		for (auto u : units) {
-			if (u->getType().isWorker())
+			if (u.getUnit()->getType().isWorker())
 				workers_.push_back(u);
 		}
 	}
 
+	/**
+	* remove a unit of a given type
+	*/
+	virtual UnitProxy removeUnit(const BWAPI::UnitType & ut) {
+		if ( ut.isWorker() && workers_.size() > 0 ) {
+			// remove a worker
+			// find a worker
+	// grab one going to the mineral field
+			for (auto wrkr : workers_) {
+				BWAPI::Unit w = wrkr.getUnit();
+				if (w->isIdle()) {
+					return wrkr;
+				}
+				else if (w->getTarget() && w->getTarget()->getType().isMineralField() && !w->isCarryingMinerals()) {
+					return wrkr;
+				}
+
+			}
+
+		}
+
+		return UnitProxy();
+	}
+
+	/**
+	* Request a unit to be trained
+	*/
+	inline virtual void requestUnit(const BWAPI::UnitType & ut) {
+
+	}
 
 	/**
 	* update the units controlled by this agent
@@ -351,7 +383,7 @@ private:
   vmap<BWAPI::TilePosition, BWAPI::Unit> build_map_;
 
   // list of units (updated from UnitManager)
- std::vector<BWAPI::Unit> workers_;
+ std::vector<UnitProxy> workers_;
 
   // building status - collection of construction status
  std::vector<BWAPI::Unit> buildings_;

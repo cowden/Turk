@@ -26,6 +26,7 @@ void BaseManager::loadModel(const model_args & args) {
 			loc_ = depot_->getPosition();
 		}
 	}
+	artie.set_start(BWAPI::WalkPosition(loc_));
 
 
 	// map race's units
@@ -33,7 +34,7 @@ void BaseManager::loadModel(const model_args & args) {
 	// get initial workers and set to collecting minerals
 	workers_ = umanity.getUnits(this);
 	for ( unsigned i=0; i != workers_.size(); i++ ){
-		BWAPI::Unit w = workers_[i];
+		BWAPI::Unit w = workers_[i].getUnit();
 		if (!w->gather(w->getClosestUnit(BWAPI::Filter::IsMineralField))) {
 			BWAPI::Broodwar << BWAPI::Broodwar->getLastError() << std::endl;
 		}
@@ -42,9 +43,7 @@ void BaseManager::loadModel(const model_args & args) {
 	// load the initial build order
 	// get the path from configuration
 	std::stringstream build_name;
-	//build_name << std::getenv("TURKDIR") << "\\data\\Terran\\BaseManager\\Terran_twofactoryvulture_v1.txt";
-	//build_name << "C:\\\\Users\\User\\Desktop\\SCAI\\Turk\\data\\Terran\\BaseManager\\Terran_twofactoryvulture_v1.txt";
-	build_name << "C:\\Users\\User\\Desktop\\SCAI\\Turk\\data\\Terran\\BaseManager" << "\\Terran_twofactoryvulture_v1.txt.txt";
+	build_name << std::getenv("TURKDIR") << "\\data\\Terran\\BaseManager" << "\\Terran_twofactoryvulture_v1.txt";
 	initialize_build_queue(build_name.str());
 
 }
@@ -109,7 +108,8 @@ build_prep_struct BaseManager::building(BWAPI::UnitType bu) {
 	// find a worker
 	// grab one going to the mineral field
 	BWAPI::Unit builder;
-	for (auto w : workers_) {
+	for (auto wrkr : workers_) {
+        BWAPI::Unit w = wrkr.getUnit();
 		if (w->isIdle()) {
 			builder = w;
 			break;
@@ -126,6 +126,8 @@ build_prep_struct BaseManager::building(BWAPI::UnitType bu) {
 	bool searching = true;
 	unsigned count = 0;
 	while (searching) {
+
+		if (count++ > 8) break;
 
 		// if the building is a refinery
 		if (bu.isRefinery()) {
@@ -155,7 +157,7 @@ build_prep_struct BaseManager::building(BWAPI::UnitType bu) {
 		searching = !success;
 		//searching = false;
 
-		if (count++ > 7) break;
+		
 	}
 
 	// add worker and building type to the prep queue

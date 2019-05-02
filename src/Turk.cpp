@@ -1,4 +1,7 @@
 #include "Turk.h"
+
+#include <boost/archive/text_iarchive.hpp>
+
 #include <iostream>
 #include <fstream>
 
@@ -9,6 +12,9 @@ using namespace Turk;
 // Define static member data
 const char * TheTurk::m_name = "TheTurk";
 Logger * Logger::m_ptr = 0;
+
+// define the empty artie
+ArtieInterface Turk::artie;
 
 //
 // default constructor
@@ -70,14 +76,41 @@ void TheTurk::onStart()
 	// Enable the UserInput flag, which allows us to control the bot and type messages.
 	Broodwar->enableFlag(Flag::UserInput);
 
-	
-
 	// Uncomment the following line and the bot will know about everything through the fog of war (cheat).
 	//Broodwar->enableFlag(Flag::CompleteMapInformation);
 
 	// Set the command optimization level so that common commands can be grouped
 	// and reduce the bot's APM (Actions Per Minute).
 	Broodwar->setCommandOptimizationLevel(2);
+
+    // Determine the map and load the appropriate ARTIE
+	// get the map name
+	std::string mapName = Broodwar->mapFileName();
+	std::string artName;
+	artName = std::string(std::getenv("TURKDIR")) + "\\data\\artie_data\\" + mapName.substr(0,mapName.length()-4) + "_artie.txt";
+
+	sprintf(msg, "ARTIE: %s", artName);
+	m_log->log(m_name, msg);
+
+	// load the analyzed map
+	//std::ifstream artie_ar(artName);
+	//boost::archive::text_iarchive ar(artie_ar);
+	//ar >> artie;
+	artie.load_artie(artName);
+
+	// log some information about the ARITE object
+	m_log->log(m_name, "Logging ARTIE graph");
+	m_log->log(m_name, "index  x  y  choke  artic");
+	const std::vector<unsigned> & chokes = artie.getARTIE().get_chokes();
+	const unsigned N = chokes.size();
+	for (unsigned i = 0; i != N; i++) {
+		const Turk::region & reg = artie.getARTIE()[i];
+		
+		std::stringstream mss;
+		mss << i << " " << reg.position().x << " " << reg.position().y << " " << reg.is_choke() << " " << reg.is_articulation();
+		m_log->log(m_name, mss.str().c_str());
+	}
+
 
 	// Check if this is a replay
 	if (Broodwar->isReplay()){
@@ -122,15 +155,20 @@ void TheTurk::onFrame(){
 	// Return if the game is a replay or is paused
 	if (Broodwar->isReplay() || Broodwar->isPaused() || !Broodwar->self())
 		return;
-
 	// draw the HUD
 	//m_hud.drawInterface();
 	HUD::Instance().drawInterface();
 
+	
 	// Prevent spamming by only running our onFrame once every number of latency frames.
 	// Latency frames are the number of frames before commands are processed.
 	if (Broodwar->getFrameCount() % Broodwar->getLatencyFrames() != 0)
 		return;
+	
+	// process UnitManager
+	umanity.process();
+
+	
 
 	// process the bot
 	strat_man_.process();
@@ -209,6 +247,8 @@ void TheTurk::onUnitCreate(BWAPI::Unit unit)
 
 void TheTurk::onUnitDestroy(BWAPI::Unit unit)
 {
+	// call unit manager to update loss to agents
+	umanity.onUnitDestroy(unit);
 
 }
 
