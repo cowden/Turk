@@ -57,7 +57,12 @@ public:
 	/**
 	* initialize the type
 	*/
-	bot(const std::string & t):type_(t) { }
+	bot(const std::string & t):verbose_(0),type_(t) { }
+
+	/*
+	* initialize with other verbosity
+	*/
+	bot(const std::string & t, const int verbosity) :verbose_(verbosity), type_(t) { }
 
 	/**
 	* Execute a given command encoded as an integer
@@ -127,6 +132,17 @@ public:
   * return isalive status of the agent
   */
   virtual bool isAlive() const { return true; }
+
+
+  /**
+  * set the verbosity level after initialization
+  */
+  inline virtual void setVerbosity(const int v) { verbose_ = v; }
+
+protected:
+
+	// verbose level for logging
+	int verbose_;
 
 private:
 

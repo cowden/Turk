@@ -21,5 +21,6 @@ int ArmyManager::execute(int command, const bot_args & args) {
 
 void ArmyManager::initiate_scout() {
 	scout_ = new Scout();
+	scout_->setVerbosity(verbose_);
 	umanity.request(BWAPI::Broodwar->self()->getRace().getWorker(), scout_);
 }
