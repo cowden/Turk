@@ -138,7 +138,7 @@ public:
   */
   inline void unregister_agent(bot *b) {
 	  std::stringstream msg;
-	  msg << "Unloading bot " << b->name() << " of type: " << b->type() << "at: 0x" << std::hex << (int)b;
+	  msg << "Unloading bot " << b->name() << " of type: " << b->type() << " at: 0x" << std::hex << (int)b;
 	  Turk::Logger::instance()->log(m_name.c_str(), msg.str().c_str());
 	  
 	  // find agent
@@ -202,15 +202,13 @@ public:
 	  // add the unit to the queue
 	  Turk::bot * bm = findNearestAgent(BWAPI::Position(b->location()), "BaseManager");
 
-	  unit_queue_.push(unit_request(bm,b,t));
-
 	  // request the unit from the base manager
 	  // if the unit is a worker, take one from the base manager
 	  if (t.isWorker()) {
 		  request(t, bm, b);
-		  unit_queue_.pop();
 	  }
 	  else {
+		  unit_queue_.push(unit_request(bm, b, t));
 		  request(t, bm, b);
 	  }
 
@@ -238,6 +236,9 @@ public:
 	  UnitProxy px = sup->removeUnit(t);
 	  if (!px.is_empty()) {
 		  transfer(sup, req, std::vector<UnitProxy>(1, px));
+	  }
+	  else if (sup->type() == "BaseManager" ) {
+		  sup->requestUnit(t);
 	  }
   }
 
@@ -267,6 +268,12 @@ public:
 	  for (unsigned i = 0; i != nunits; i++) {
 		  assert(units[i] == units[i]);
 		  if (unit_map_.rfind(units[i]) == a) {
+
+			  // log the transfer
+			  std::stringstream msg;
+			  msg << "Transferring unit " << units[i].getUnit()->getType() << ":" << std::hex << "0x" << (int)a << 
+				  "(" << a->name() << ") -> " << std::hex << "0x" << (int)b << "(" << b->name() << ")";
+			  Turk::Logger::instance()->log(m_name.c_str(), msg.str().c_str());
 			  // swap bot pointer
 			  unit_map_.set(units[i], const_cast<Turk::bot *>(b));
 		  }
@@ -283,6 +290,24 @@ public:
   */
   inline const std::vector<bot *> & get_agents() const {
 	  return agents_;
+  }
+
+
+  /**
+  * Return the number of enqueued units of a given type by a given agent.
+  */
+  unsigned requestQueueLength(BWAPI::UnitType & ut, const bot * b) {
+	  unsigned unit_count = 0U;
+
+	  // cycle through queue
+	  const unsigned nq = unit_queue_.nqueued();
+	  for (unsigned i = 0; i != nq; i++) {
+		  unit_request ur = unit_queue_[i];
+		  if (b == ur.requester && ut == ur.unit_type)
+			  unit_count++;
+	  }
+
+	  return unit_count;
   }
 
 protected:

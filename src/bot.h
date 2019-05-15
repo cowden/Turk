@@ -123,6 +123,11 @@ public:
   virtual UnitProxy removeUnit(const BWAPI::UnitType &) = 0;
 
   /**
+  * request a unit to be produced or scheduled to transfer
+  */
+  virtual void requestUnit(const BWAPI::UnitType & ut) { return; }
+
+  /**
   * update unit list under bot control
   */
   virtual void updateUnits() = 0;

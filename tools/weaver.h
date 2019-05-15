@@ -300,7 +300,31 @@ public:
 		return TUnit(BWAPI::UnitTypes::None);
 	}
 
+	/**
+	* Update progress in Turk techtree
+	* i.e. upon building complete or upgrade
+	*/
+
+	/**
+	* Update enemy techtree by 
+	* spotting  enemy units and buildings.
+	*/
+
+	/**
+	* Can Turk produce a unit?
+	*/
+
+	/**
+	* Can enemy produce a unit?
+	*/
+
 private:
+
+
+	// The Turk's tech tree
+
+	// enemy tech trees
+
 
 };
 

@@ -86,7 +86,7 @@ public:
 		/**
 		* Load a model
 		*/
-		virtual void loadModel(const model_args & args) { }
+		virtual void loadModel(const model_args & args);
 
 		/**
 		* Dump the model
@@ -173,6 +173,24 @@ public:
 				}
 			}
 
+			// do I expect units
+			// do I need more units
+			if (s < 5) {
+				
+				// do I have units already in the queue
+				BWAPI::UnitType ut(BWAPI::UnitTypes::Terran_Marine);
+				if (umanity.requestQueueLength(ut,this) < 5) {
+
+					// request more units
+					// for now lets just request marines
+					umanity.request(ut, this);
+
+				}
+			}
+			
+
+			// request new units
+
 		}
 
 		inline virtual void addUnits(const std::vector<UnitProxy> & units) { 
@@ -214,6 +232,12 @@ public:
 
 protected:
 
+	/**
+	* do the work of loading a model.  Read in the file name
+	* and set the appropriate parameters.
+	*/
+	void initialize_model(const std::string &);
+
 	Turk::location loc_;
 	Turk::status status_;
 
@@ -236,6 +260,7 @@ private:
 		Turk::vvec<ArmyManager *> armies_;
 		
 		ArmyManager * scout_;
+
 
 };
 

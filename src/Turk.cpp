@@ -56,7 +56,14 @@ TheTurk::TheTurk() {
 	res = m_db->query("SELECT value FROM config WHERE key = 'Verbosity';");
 	verbose_ = atoi(res[0].c_str());
 	
-	
+	// test reading data
+	m_log->log(m_name, "Testing reading data");
+	res = m_db->query("SELECT * from test_data;");
+	sprintf(msg, "query result is %d long.", res.size());
+	m_log->log(m_name, msg);
+	for (auto r : res) {
+		m_log->log(m_name, r.c_str());
+	}
 	
 
 }
