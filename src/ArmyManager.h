@@ -201,7 +201,6 @@ public:
 				squads_.push(sq);
 			}
 
-			//squads_[0]->addUnits(units);
 			umanity.transfer(this, squads_[0], units);
 
 		}

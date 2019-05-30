@@ -284,8 +284,8 @@ public:
 	/**
 	* Request a unit to be trained
 	*/
-	inline virtual void requestUnit(const BWAPI::UnitType & ut) {
-
+	inline virtual bool requestUnit(const BWAPI::UnitType & ut) {
+		return false;
 	}
 
 	/**

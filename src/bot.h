@@ -123,9 +123,11 @@ public:
   virtual UnitProxy removeUnit(const BWAPI::UnitType &) = 0;
 
   /**
-  * request a unit to be produced or scheduled to transfer
+  * request a unit to be produced or scheduled to transfer.
+  * return true/false if the request can be process or added to queue.
+  * For example, return false to requests for marines before barrakcs.
   */
-  virtual void requestUnit(const BWAPI::UnitType & ut) { return; }
+  virtual bool requestUnit(const BWAPI::UnitType & ut) { return false; }
 
   /**
   * update unit list under bot control

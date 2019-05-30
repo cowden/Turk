@@ -49,6 +49,17 @@ namespace Turk {
 			return result;
 		}
 
+		///
+		/// try a better query method
+		inline std::vector<std::vector<char *> > query(int & nrows, const char * qry) {
+			char * zErrMsg = 0;
+
+			callback cb;
+			int rc = sqlite3_exec(m_db, qry, cb.functor, static_cast<void*>(&cb), &zErrMsg);
+
+			return cb.res_;
+		}
+
 
 	private:
 
@@ -60,5 +71,35 @@ namespace Turk {
 		}
 
 		sqlite3 * m_db;
+
+		class callback {
+		public:
+			std::vector<std::vector<char *> > res_;
+			int nrows_;
+			int ncols_;
+
+
+
+		public:
+
+			inline callback() :nrows_(0), ncols_(0) { }
+
+			static inline int functor (void *obj, int argc, char **argv, char **azColName) {
+				callback * cobj = static_cast<callback*>(obj);
+
+				if (cobj->nrows_ == 0) {
+					cobj->ncols_ = argc;
+					cobj->res_.resize(cobj->ncols_);
+				}
+
+				assert(cobj->ncols_ == argc);
+
+				for (int i = 0; i < argc; i++) {
+					cobj->res_[i].push_back(argv[i]);
+				}
+
+				return 0;
+			}
+		};
 	};
 }

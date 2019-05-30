@@ -58,12 +58,11 @@ TheTurk::TheTurk() {
 	
 	// test reading data
 	m_log->log(m_name, "Testing reading data");
-	res = m_db->query("SELECT * from test_data;");
-	sprintf(msg, "query result is %d long.", res.size());
+	int nrows = 0;
+	std::vector<std::vector<char *> > vres = m_db->query(nrows, "SELECT * from test_data;");
+	sprintf(msg, "query result is %d wide and %d long.", vres.size(), vres[0].size());
 	m_log->log(m_name, msg);
-	for (auto r : res) {
-		m_log->log(m_name, r.c_str());
-	}
+
 	
 
 }

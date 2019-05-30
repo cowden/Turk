@@ -36,17 +36,6 @@ void UnitManager::initialize() {
 		else if (a->type().compare("ArmyManager") == 0) am = a;
 	}
 	
-	// get a list of all units
-    // assign each worker unit to the BaseManager
-	// assign all combat units to the ArmyManager (in case such units exist).
-	for (auto &u : BWAPI::Broodwar->self()->getUnits()) {
-		if (u->getType().isWorker() && bm != NULL ) {
-			std::string msg("loading worker to ");
-			msg += bm->name();
-			Turk::Logger::instance()->log(m_name.c_str(), msg.c_str());
-			//unit_map_.insert(std::pair<bot *, BWAPI::Unit>(bm, u));
-		}
-	}
 }
 
 
@@ -138,6 +127,7 @@ void UnitManager::updateHUD() {
 	HUD::Instance().clear(hud_lane_);
 
 	// dump the registered agents
+	HUD::Instance().write(hud_lane_, "Registered Agents");
 	for (unsigned i = 0; i != agent_count_; i++) {
 
 		if (!agents_[i]) continue;
@@ -145,6 +135,19 @@ void UnitManager::updateHUD() {
 		std::stringstream msg;
 		msg << agents_[i]->name() << " (" << agents_[i]->location().x 
 			<< "," << agents_[i]->location().y << ")";
+
+		HUD::Instance().write(hud_lane_, msg.str().c_str());
+	}
+
+	// list the transfer request queue
+	HUD::Instance().write(hud_lane_, "");
+	HUD::Instance().write(hud_lane_, "Unit Request Queue");
+	const unsigned nq = unit_queue_.nqueued();
+	for (unsigned i = 0; i != nq; i++) {
+
+		std::stringstream msg;
+		msg << unit_queue_[i].producer->name() << "\n ->" << unit_queue_[i].requester->name()
+			<< ":\n" << unit_queue_[i].unit_type;
 
 		HUD::Instance().write(hud_lane_, msg.str().c_str());
 	}

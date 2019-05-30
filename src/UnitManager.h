@@ -208,7 +208,6 @@ public:
 		  request(t, bm, b);
 	  }
 	  else {
-		  unit_queue_.push(unit_request(bm, b, t));
 		  request(t, bm, b);
 	  }
 
@@ -238,7 +237,8 @@ public:
 		  transfer(sup, req, std::vector<UnitProxy>(1, px));
 	  }
 	  else if (sup->type() == "BaseManager" ) {
-		  sup->requestUnit(t);
+		  if (sup->requestUnit(t))
+			  unit_queue_.push(unit_request(sup, req, t));
 	  }
   }
 
@@ -249,8 +249,6 @@ public:
 
 
 	  // if a or b is not registered, throw an error
-	  //assert(!unit_map_.find(a).is_empty());
-	  //assert(!unit_map_.find(b).is_empty());
 	  bool have_a = false;
 	  bool have_b = false;
 	  for (unsigned i = 0; i != agent_count_; i++) {
