@@ -301,6 +301,11 @@ public:
 	}
 
 	/**
+	* Load the tech tree
+	*/
+	void loadTechTree();
+
+	/**
 	* Update progress in Turk techtree
 	* i.e. upon building complete or upgrade
 	*/
@@ -320,10 +325,14 @@ public:
 
 private:
 
+	// techtree
+	std::vector<unsigned> tech_tree_;
+	unsigned tech_size_;
 
-	// The Turk's tech tree
+	// The Turk's tech tree (i.e. units it has)
+	
 
-	// enemy tech trees
+	// enemy tech trees (i.e. units it has)
 
 
 };

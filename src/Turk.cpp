@@ -23,7 +23,6 @@ TheTurk::TheTurk() {
 	char * tdir = std::getenv("TURKDIR");
 	std::string baseDir(tdir);
 	std::string logDir("\\logs\\TurkTest");
-	std::string configName("\\TurkConfiguration.sqlite");
 
 	// connect to logger
 	m_log = Turk::Logger::instance();
@@ -57,12 +56,14 @@ TheTurk::TheTurk() {
 	verbose_ = atoi(res[0].c_str());
 	
 	// test reading data
-	m_log->log(m_name, "Testing reading data");
+	/*m_log->log(m_name, "Testing reading data");
 	int nrows = 0;
 	std::vector<std::vector<char *> > vres = m_db->query(nrows, "SELECT * from test_data;");
 	sprintf(msg, "query result is %d wide and %d long.", vres.size(), vres[0].size());
-	m_log->log(m_name, msg);
+	m_log->log(m_name, msg);*/
 
+	// load the tech tree
+	weaver.loadTechTree();
 	
 
 }

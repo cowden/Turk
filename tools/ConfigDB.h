@@ -6,6 +6,7 @@
 ///////////////////////////////////////
 
 #include <string>
+#include <cassert>
 
 #include "sqlite3.h"
 
@@ -57,6 +58,7 @@ namespace Turk {
 			callback cb;
 			int rc = sqlite3_exec(m_db, qry, cb.functor, static_cast<void*>(&cb), &zErrMsg);
 
+			nrows = cb.nrows_;
 			return cb.res_;
 		}
 
@@ -97,6 +99,8 @@ namespace Turk {
 				for (int i = 0; i < argc; i++) {
 					cobj->res_[i].push_back(argv[i]);
 				}
+
+				cobj->nrows_++;
 
 				return 0;
 			}
