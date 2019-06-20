@@ -54,13 +54,6 @@ TheTurk::TheTurk() {
 	m_log->log(m_name, "Get Verbosity Level");
 	res = m_db->query("SELECT value FROM config WHERE key = 'Verbosity';");
 	verbose_ = atoi(res[0].c_str());
-	
-	// test reading data
-	/*m_log->log(m_name, "Testing reading data");
-	int nrows = 0;
-	std::vector<std::vector<char *> > vres = m_db->query(nrows, "SELECT * from test_data;");
-	sprintf(msg, "query result is %d wide and %d long.", vres.size(), vres[0].size());
-	m_log->log(m_name, msg);*/
 
 	// load the tech tree
 	weaver.loadTechTree();
@@ -73,7 +66,7 @@ void TheTurk::onStart()
 
 	// Hello World!
 	//Broodwar->sendText("Hello world!");
-	Broodwar->setLocalSpeed(20);
+	Broodwar->setLocalSpeed(1);
 
 	char msg[500];
 	sprintf(msg, ">>>> Starting New Game <<<<");
@@ -105,9 +98,6 @@ void TheTurk::onStart()
 	m_log->log(m_name, msg);
 
 	// load the analyzed map
-	//std::ifstream artie_ar(artName);
-	//boost::archive::text_iarchive ar(artie_ar);
-	//ar >> artie;
 	artie.load_artie(artName);
 
 	// log some information about the ARITE object
