@@ -8,6 +8,68 @@
 using namespace Turk;
 
 
+
+TUnitCollection Weaver::getRequirements(const TUnit & unit ) {
+
+  TUnitCollection col;
+
+  // check if the unit can already be produced
+  // if so, return an empty collection
+  if ( turk_units_.findUnit(unit) < UINT_MAX ) return col;
+
+  // check if race is correct, return a collection of None_t
+  if ( turk_race_ != unit.getRace() ) {
+    col.push(TUnit());
+    return col;
+  }
+  
+  // find the index of the unit in the tech tree
+  unsigned index = 0;
+  WeaverTypes unit_type = unit.getType();
+  const unsigned col = unit.getType(); 
+  for ( unsigned i=0; i != tech_size_; i++ ) {
+    if ( tech_map_[col*tech_size_+i] == id ) {
+      index = i;
+      break;
+    }
+  }
+
+  // follow dependencies
+  // if the dependency can already be produced stop on that path
+  // to keep the order, do a breadth first search of dependencies
+  // use a queue to track next dependency, start with index
+  vqueue<unsigned> queue;
+  queue.push(index);
+  while ( !queue.empty() ) {
+
+    unsigned i = queue.pop();
+
+    for ( unsigned j=0; j != tech_size_; j++ ) {
+
+      if ( tech_tree_[j*tech_size_+i] == 1) {
+
+        queue.push(j);
+
+        const unsigned req_type = tech_map_[4*tech_size_+j];
+        if ( req_type == WeaverTypes::Unit_t ) {
+          col.push(TUnit(BWAPI::UnitType(tech_map_[req_type*tech_size_+j])));
+        } else if ( req_type == WeaverTypes::Upgrade_t ) {
+          col.push(TUnit(BWAPI::UpgradeType(tech_map_[req_type*tech_size_+j])));
+        } else if ( req_type == WeaverTypes::Tech_t ) {
+          col.push(TUnit(BWAPI::TechType(tech_map_[req_type*tech_size_+j])));
+        } 
+
+      }
+    }
+  }
+
+  return col;
+   
+
+}
+
+
+
 void Weaver::loadTechTree() {
 
 	// connect to configuration database

@@ -305,7 +305,18 @@ public:
 
         Weaver():enemy_race_known_(false) { }
 
-  
+        // -------- accessor methods ----------
+        /**
+        * Determine the ordered set of requirements to produce
+        * a particular unit.  Return an empty set
+        * if the unit can already be produced.
+        * For example, Terran_Marine -> Barracks (assuming there are SCVs and a command center.)
+        */
+        TUnitCollection getRequirements(const TUnit &);
+ 
+        /**
+        * Search for a Unit type by a given string.
+        */ 
 	inline TUnit getUnitType(const std::string & str) {
 		// cycle over all units.
 		for (auto unit : BWAPI::UnitTypes::allUnitTypes()) {
@@ -316,6 +327,33 @@ public:
 
 		return TUnit(BWAPI::UnitTypes::None);
 	}
+
+	/**
+	* Can Turk produce a unit?
+	*/
+        bool canTurkProduce(const TUnit & unit ) {
+          // cycle over units
+          return turk_units_.findUnit(unit) < UINT_MAX;
+        }
+
+	/**
+	* Can enemy produce a unit?
+	*/
+        bool canEnemyProduce(const TUnit & unit) {
+          // cycle over enemy units
+          return enemy_units_.findUnit(unit) < UINT_MAX;
+        }
+
+      /**
+      * Have we observed a particular unit
+      */
+      bool observedEnemyUnit(const TUnit & unit) {
+        // cycle over observed enemy units
+        return observed_enemy_units_.findUnit(unit) < UINT_MAX;
+      }
+
+
+        // ----- updating methods --------
 
         /**
         *  Load the tech tree data
@@ -351,29 +389,6 @@ public:
 	*/
         void updateEnemyTree(const TUnit & );
 
-	/**
-	* Can Turk produce a unit?
-	*/
-        bool canTurkProduce(const TUnit & unit ) {
-          // cycle over units
-          return turk_units_.findUnit(unit) < UINT_MAX;
-        }
-
-	/**
-	* Can enemy produce a unit?
-	*/
-        bool canEnemyProduce(const TUnit & unit) {
-          // cycle over enemy units
-          return enemy_units_.findUnit(unit) < UINT_MAX;
-        }
-
-      /**
-      * Have we observed a particular unit
-      */
-      bool observedEnemyUnit(const TUnit & unit) {
-        // cycle over observed enemy units
-        return observed_enemy_units_.findUnit(unit) < UINT_MAX;
-      }
 
 protected:
 
