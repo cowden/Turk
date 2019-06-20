@@ -96,11 +96,6 @@ void Weaver::loadTechTree() {
 		}
 	}
 
-	// pull in tech map
-	nrows = 0;
-	std::vector<std::vector<char *> > vres2 = db->query(nrows, "SELECT * FROM techmap;");
-
-
 
 }
 
