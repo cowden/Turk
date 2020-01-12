@@ -56,7 +56,7 @@ TheTurk::TheTurk() {
 	verbose_ = atoi(res[0].c_str());
 
 	// load the tech tree
-	weaver.loadTechTree();
+	weaver.load();
 	
 
 }

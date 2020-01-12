@@ -4,6 +4,7 @@
 #include <cassert>
 
 #include "ConfigDB.h"
+#include "volatile_collections.h"
 
 using namespace Turk;
 
@@ -25,14 +26,14 @@ TUnitCollection Weaver::getRequirements(const TUnit & unit ) {
   
   // find the index of the unit in the tech tree
   unsigned index = 0;
-  WeaverTypes unit_type = unit.getType();
+  /*WeaverTypes unit_type = unit.getType();
   const unsigned col = unit.getType(); 
   for ( unsigned i=0; i != tech_size_; i++ ) {
     if ( tech_map_[col*tech_size_+i] == id ) {
       index = i;
       break;
     }
-  }
+  }*/
 
   // follow dependencies
   // if the dependency can already be produced stop on that path
@@ -138,7 +139,7 @@ void Turk::Weaver::updateTurkTree(const TUnit & unit ) {
 
   // find index into tech tree
   unsigned index = 0;
-  Turk::WeaverTypes unit_type = unit.getType();
+  //Turk::WeaverTypes unit_type = unit.getType();
   const unsigned id = unit.getID();
   const unsigned col = unit.getType();
   for ( unsigned i=0; i != tech_size_; i++ ) {
@@ -161,18 +162,23 @@ void Turk::Weaver::updateTurkTree(const TUnit & unit ) {
 
       // add the unit to the unit list of available units
       if ( new_type == Turk::WeaverTypes::Unit_t ) {
-
-        TUnit new_unit(BWAPI::UnitType(tech_map_[new_type*tech_size_+i]));
+		  const unsigned indx = new_type * tech_size_ + i;
+		  const unsigned uti = tech_map_[indx];
+        TUnit new_unit = TUnit(BWAPI::UnitType(uti));
         if ( !canTurkProduce(new_unit) ) turk_units_.push(new_unit);
 
       } else if ( new_type == Turk::WeaverTypes::Upgrade_t ) {
 
-        TUnit new_unit(BWAPI::UpgradeType(tech_map_[new_type*tech_size_+i]));
+		  const unsigned indx = new_type * tech_size_ + i;
+		  const unsigned uti = tech_map_[indx];
+        TUnit new_unit = TUnit(BWAPI::UpgradeType(uti));
         if ( !canTurkProduce(new_unit) ) turk_units_.push(new_unit);
 
       } else if ( new_type == Turk::WeaverTypes::Tech_t ) {
 
-        TUnit new_unit(BWAPI::TechType(tech_map_[new_type*tech_size_+i]);
+		  const unsigned indx = new_type * tech_size_ + i;
+		  const unsigned uti = tech_map_[indx];
+        TUnit new_unit = TUnit(BWAPI::TechType(uti));
         if ( !canTurkProduce(new_unit) ) turk_units_.push(new_unit);
 
       }
@@ -199,7 +205,7 @@ void Turk::Weaver::updateEnemyTree(const TUnit & unit) {
 
   // find index into tech tree
   unsigned index = 0;
-  Turk::WeaverTypes unit_type = unit.getType();
+  //Turk::WeaverTypes unit_type = unit.getType();
   const unsigned id = unit.getID();
   const unsigned col = unit.getType();
   for ( unsigned i=0; i != tech_size_; i++ ) {
@@ -220,20 +226,23 @@ void Turk::Weaver::updateEnemyTree(const TUnit & unit) {
       const unsigned new_type = tech_map_[4*tech_size_+i];
       assert(new_type < 4);
 
+	  const unsigned indx = new_type * tech_size_ + i;
+	  const unsigned uti = tech_map_[indx];
+
       // add the unit to the unit list of available units
       if ( new_type == Turk::WeaverTypes::Unit_t ) {
-
-        TUnit new_unit(BWAPI::UnitType(tech_map_[new_type*tech_size_+i]));
+  
+        TUnit new_unit = TUnit(BWAPI::UnitType(uti));
         if ( !canTurkProduce(new_unit) ) enemy_units_.push(new_unit);
 
       } else if ( new_type == Turk::WeaverTypes::Upgrade_t ) {
 
-        TUnit new_unit(BWAPI::UpgradeType(tech_map_[new_type*tech_size_+i]));
+        TUnit new_unit = TUnit(BWAPI::UpgradeType(uti));
         if ( !canTurkProduce(new_unit) ) enemy_units_.push(new_unit);
 
       } else if ( new_type == Turk::WeaverTypes::Tech_t ) {
 
-        TUnit new_unit(BWAPI::TechType(tech_map_[new_type*tech_size_+i]);
+        TUnit new_unit = TUnit(BWAPI::TechType(uti));
         if ( !canTurkProduce(new_unit) ) enemy_units_.push(new_unit);
 
       }
