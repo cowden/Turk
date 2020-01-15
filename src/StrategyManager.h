@@ -104,10 +104,12 @@ struct strategy_args : bot_args {
 
 	  // load initial base manager
 	  bases_.push_back(new BaseManager());
+	  bases_[0]->setVerbosity(verbose_);
 	  
 
 	  // load initial army manager
 	  armies_.push_back(new ArmyManager());
+	  armies_[0]->setVerbosity(verbose_);
 	  
 
 	  // initialize unit manager

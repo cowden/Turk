@@ -752,8 +752,9 @@ void TechTree::dump_map(const char * name ) {
 
     // type
     ofile << "," << static_cast<int>(unit.getType());
+
+    ofile << std::endl;
   }
-  ofile << std::endl;
 
   // close the file
   ofile.close();

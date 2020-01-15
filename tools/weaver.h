@@ -48,7 +48,8 @@ public:
     ,upgrade_(BWAPI::UpgradeTypes::Enum::None)
     ,tech_(BWAPI::TechTypes::Enum::None)
     ,level_(0)
-    ,type_(WeaverTypes::None_t) {}
+    ,type_(WeaverTypes::None_t)
+    ,id_(UINT_MAX) {}
 
   /**
   * Initialize to a unit 
@@ -58,7 +59,8 @@ public:
     ,upgrade_(BWAPI::UpgradeTypes::Enum::None)
     ,tech_(BWAPI::TechTypes::Enum::None)
     ,level_(0)
-    ,type_(WeaverTypes::Unit_t) { }
+    ,type_(WeaverTypes::Unit_t)
+    ,id_(t.getID()) { }
 
   /**
   * Initialize to an upgrade
@@ -68,7 +70,8 @@ public:
     ,upgrade_(t)
     ,tech_(BWAPI::TechTypes::Enum::None) 
     ,level_(0)
-    ,type_(WeaverTypes::Upgrade_t) { }
+    ,type_(WeaverTypes::Upgrade_t)
+    ,id_(t.getID()) { }
 
   /**
   * Initialize to an upgrade and level
@@ -78,7 +81,8 @@ public:
     ,upgrade_(t)
     ,tech_(BWAPI::TechTypes::Enum::None)
     ,level_(level)
-    ,type_(WeaverTypes::Upgrade_t) { }
+    ,type_(WeaverTypes::Upgrade_t)
+    ,id_(t.getID()) { }
 
   /** 
   * Initialize to a tech
@@ -88,7 +92,8 @@ public:
     ,upgrade_(BWAPI::UpgradeTypes::Enum::None)
     ,tech_(t) 
     ,level_(0)
-    ,type_(WeaverTypes::Tech_t) {}
+    ,type_(WeaverTypes::Tech_t)
+    ,id_(t.getID()) {}
 
 
   /**
@@ -102,6 +107,7 @@ public:
     ,type_(WeaverTypes::Unit_t)
   {
     race_ = unit_.getRace(); 
+    id_ = unit_.getID();
   }
 
 
@@ -116,6 +122,7 @@ public:
     ,type_(WeaverTypes::Upgrade_t)
   {
     race_ = upgrade_.getRace();
+    id_ = upgrade_.getID();
   }
 
 
@@ -130,6 +137,7 @@ public:
     ,type_(WeaverTypes::Upgrade_t)
   {
     race_ = upgrade_.getRace();
+    id_ = upgrade_.getID();
   }
 
   /**
@@ -143,6 +151,7 @@ public:
     ,type_(WeaverTypes::Tech_t)
   {
     race_ = tech_.getRace();
+    id_ = tech_.getID();
   }
     
 
@@ -165,6 +174,9 @@ public:
   // get the upgrade level
   inline int getLevel() const { return level_; }
 
+  // return the id
+  inline unsigned getID() const { return id_; }
+
 
   /**
   * equality operator
@@ -180,6 +192,8 @@ private:
 
   int level_; // level of upgrade
   WeaverTypes::types_t type_;
+
+  unsigned id_;
 
 };
 
@@ -288,7 +302,21 @@ private:
 */
 class Weaver {
 public:
-  
+
+        Weaver():enemy_race_known_(false) { }
+
+        // -------- accessor methods ----------
+        /**
+        * Determine the ordered set of requirements to produce
+        * a particular unit.  Return an empty set
+        * if the unit can already be produced.
+        * For example, Terran_Marine -> Barracks (assuming there are SCVs and a command center.)
+        */
+        TUnitCollection getRequirements(const TUnit &);
+ 
+        /**
+        * Search for a Unit type by a given string.
+        */ 
 	inline TUnit getUnitType(const std::string & str) {
 		// cycle over all units.
 		for (auto unit : BWAPI::UnitTypes::allUnitTypes()) {
@@ -300,7 +328,109 @@ public:
 		return TUnit(BWAPI::UnitTypes::None);
 	}
 
+	/**
+	* Can Turk produce a unit?
+	*/
+        bool canTurkProduce(const TUnit & unit ) {
+          // cycle over units
+          return turk_units_.findUnit(unit) < UINT_MAX;
+        }
+
+	/**
+	* Can enemy produce a unit?
+	*/
+        bool canEnemyProduce(const TUnit & unit) {
+          // cycle over enemy units
+          return enemy_units_.findUnit(unit) < UINT_MAX;
+        }
+
+      /**
+      * Have we observed a particular unit
+      */
+      bool observedEnemyUnit(const TUnit & unit) {
+        // cycle over observed enemy units
+        return observed_enemy_units_.findUnit(unit) < UINT_MAX;
+      }
+
+
+        // ----- updating methods --------
+
+        /**
+        *  Load the tech tree data
+        */
+        inline void load() {
+          loadTechTree();
+          loadTechMap();
+        }
+
+        /**
+        * Set the turk race
+        */
+        inline void setRace(BWAPI::Race race) { turk_race_ = race; }
+
+        /**
+        * Set enemy race
+        */
+        inline void setEnemyRace(BWAPI::Race race) {
+          enemy_race_known_ = true;
+          enemy_race_ = race;
+        }
+
+
+	/**
+	* Update progress in Turk techtree
+	* i.e. upon building complete or upgrade
+	*/
+        void updateTurkTree(const TUnit & );
+
+	/**
+	* Update enemy techtree by 
+	* spotting  enemy units and buildings.
+	*/
+        void updateEnemyTree(const TUnit & );
+
+
+protected:
+
+	/**
+	* Load the tech tree
+	*/
+	void loadTechTree();
+
+        /**
+        * Load the tech map
+        */
+        void loadTechMap();
+
+
 private:
+
+	// techtree
+	std::vector<unsigned> tech_tree_;
+	unsigned tech_size_;
+
+        std::vector<unsigned> tech_map_;
+
+	// The Turk's tech tree (i.e. units it has)
+        std::vector<unsigned> turk_tree_;
+
+        // list of Turk's available units to produce	
+        TUnitCollection turk_units_;
+
+	// enemy tech trees (i.e. units it has)
+        std::vector<unsigned> enemy_tree_;
+
+        // list of enemy available units to produce
+        TUnitCollection enemy_units_;
+
+        // list of observed enemy units
+        TUnitCollection observed_enemy_units_;
+
+        //
+        BWAPI::Race turk_race_;
+        bool enemy_race_known_;
+        BWAPI::Race enemy_race_;
+
 
 };
 

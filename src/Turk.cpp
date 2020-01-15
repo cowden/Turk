@@ -23,7 +23,6 @@ TheTurk::TheTurk() {
 	char * tdir = std::getenv("TURKDIR");
 	std::string baseDir(tdir);
 	std::string logDir("\\logs\\TurkTest");
-	std::string configName("\\TurkConfiguration.sqlite");
 
 	// connect to logger
 	m_log = Turk::Logger::instance();
@@ -50,8 +49,14 @@ TheTurk::TheTurk() {
 		m_log->log(m_name, r.c_str());
 	}
 	
-	
-	
+
+	// get the verbosity level
+	m_log->log(m_name, "Get Verbosity Level");
+	res = m_db->query("SELECT value FROM config WHERE key = 'Verbosity';");
+	verbose_ = atoi(res[0].c_str());
+
+	// load the tech tree
+	weaver.load();
 	
 
 }
@@ -61,7 +66,7 @@ void TheTurk::onStart()
 
 	// Hello World!
 	//Broodwar->sendText("Hello world!");
-	Broodwar->setLocalSpeed(20);
+	Broodwar->setLocalSpeed(1);
 
 	char msg[500];
 	sprintf(msg, ">>>> Starting New Game <<<<");
@@ -93,22 +98,21 @@ void TheTurk::onStart()
 	m_log->log(m_name, msg);
 
 	// load the analyzed map
-	//std::ifstream artie_ar(artName);
-	//boost::archive::text_iarchive ar(artie_ar);
-	//ar >> artie;
 	artie.load_artie(artName);
 
 	// log some information about the ARITE object
-	m_log->log(m_name, "Logging ARTIE graph");
-	m_log->log(m_name, "index  x  y  choke  artic");
-	const std::vector<unsigned> & chokes = artie.getARTIE().get_chokes();
-	const unsigned N = chokes.size();
-	for (unsigned i = 0; i != N; i++) {
-		const Turk::region & reg = artie.getARTIE()[i];
-		
-		std::stringstream mss;
-		mss << i << " " << reg.position().x << " " << reg.position().y << " " << reg.is_choke() << " " << reg.is_articulation();
-		m_log->log(m_name, mss.str().c_str());
+	if (verbose_ > 0) {
+		m_log->log(m_name, "Logging ARTIE graph");
+		m_log->log(m_name, "index  x  y  choke  artic");
+		const std::vector<unsigned> & chokes = artie.getARTIE().get_chokes();
+		const unsigned N = chokes.size();
+		for (unsigned i = 0; i != N; i++) {
+			const Turk::region & reg = artie.getARTIE()[i];
+
+			std::stringstream mss;
+			mss << i << " " << reg.position().x << " " << reg.position().y << " " << reg.is_choke() << " " << reg.is_articulation();
+			m_log->log(m_name, mss.str().c_str());
+		}
 	}
 
 
@@ -142,6 +146,7 @@ void TheTurk::onStart()
 		}
 
 		// start the strategy managery and itialize the models
+		strat_man_.setVerbosity(verbose_);
 		strat_man_.initialize(Broodwar->self()->getRace(), Broodwar->enemy()->getRace());
 	}
 

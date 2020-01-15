@@ -79,7 +79,7 @@ T & vqueue<T>::pop() {
   }
   size_--;
   nqueued_--;
-  return data_[++pos_];
+  return data_[pos_++];
 }
 
 // vqueue operator[]

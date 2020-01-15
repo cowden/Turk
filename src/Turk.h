@@ -64,6 +64,11 @@ private:
 	// The strategy manager
 	StrategyManager strat_man_;
 
+	// verbosity level
+	// 0 - minimal Turk output
+	// 1 - lots stuff
+	int verbose_;
+
 };  // end TheTurk class declaration
 
 

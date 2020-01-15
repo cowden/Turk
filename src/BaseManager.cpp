@@ -135,10 +135,12 @@ build_prep_struct BaseManager::building(BWAPI::UnitType bu) {
 			//BWAPI::Position pos(findGeyser());
 			BWAPI::TilePosition tp(findGeyser());
 			buildPosition = BWAPI::Broodwar->getBuildLocation(bu, tp);
-			std::stringstream msg;
-			msg << "Attempting to build Refinery @ " << buildPosition;
-			BWAPI::Broodwar << msg.str() << std::endl;
-			Logger::instance()->log(name().c_str(), msg.str().c_str());
+			if (verbose_) {
+				std::stringstream msg;
+				msg << "Attempting to build Refinery @ " << buildPosition;
+				BWAPI::Broodwar << msg.str() << std::endl;
+				Logger::instance()->log(name().c_str(), msg.str().c_str());
+			}
 			bool success = builder->build(bu, buildPosition);
 			searching = !success;
 			continue;
@@ -146,11 +148,13 @@ build_prep_struct BaseManager::building(BWAPI::UnitType bu) {
 
 		BWAPI::TilePosition delta(rand() % (100 + 1) - 50, rand() % (100 + 1) - 50);
 		buildPosition = BWAPI::Broodwar->getBuildLocation(bu,depot_->getTilePosition(),20);
-		std::stringstream msg;
-		msg << "Searching to build " << bu.getName() << " @ " << buildPosition << " "
-			<< buildPosition.getApproxDistance(depot_->getTilePosition()) << " from depot";
-		BWAPI::Broodwar << msg.str() << std::endl;
-		Logger::instance()->log(name().c_str(), msg.str().c_str());
+		if (verbose_) {
+			std::stringstream msg;
+			msg << "Searching to build " << bu.getName() << " @ " << buildPosition << " "
+				<< buildPosition.getApproxDistance(depot_->getTilePosition()) << " from depot";
+			BWAPI::Broodwar << msg.str() << std::endl;
+			Logger::instance()->log(name().c_str(), msg.str().c_str());
+		}
 		bool success = builder->build(bu, buildPosition);
 
 		unsigned min = BWAPI::Broodwar->self()->minerals();

@@ -91,6 +91,8 @@ public:
   */
   BWAPI::Unit & getUnit() { return unit_; }
 
+  const BWAPI::Unit & getUnit() const { return unit_;  }
+
   /**
   * overload the equality operator
   */
